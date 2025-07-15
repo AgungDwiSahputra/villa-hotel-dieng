@@ -10,7 +10,7 @@ use Illuminate\Support\Str;
 class TransaksiDetail extends Model
 {
     use Loggable;
-    protected $fillable  = ['transaksi_id','produk_id','date','unit'];
+    protected $fillable  = ['transaksi_id','produk_id','date','unit','status'];
     
     public $incrementing = false;
     protected $keyType = 'string';

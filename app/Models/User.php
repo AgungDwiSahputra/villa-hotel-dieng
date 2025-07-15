@@ -16,10 +16,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
+use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, Loggable, HasRoles, SoftDeletes;
+    use HasApiTokens, HasFactory, Notifiable, Loggable, HasRoles, SoftDeletes;
 
     protected $fillable  = ['name','email','password','no_hp','role','image'];
     protected $hidden    = ['password','remember_token'];

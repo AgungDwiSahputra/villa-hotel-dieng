@@ -17,7 +17,7 @@ class TransaksiDataTable extends DataTable
         return (new EloquentDataTable($query))
             ->addColumn('action', 'admin.transaksi.transaksi.action')
             ->editColumn('created_at', fn($query) => $query->created_at->format('d M Y'))
-            ->editColumn('status', fn($query) => $query->status == "Menunggu Konfiramsi" ? '<span class="badge bg-warning">Menunggu Konfiramsi</span>' : ($query->status == "Terima" ? '<span class="badge bg-success">Terima</span>' : '<span class="badge bg-danger">Tolak</span>'))
+            ->editColumn('status', fn($query) => $query->status == "PENDING" ? '<span class="badge bg-warning">PENDING</span>' : ($query->status == "Terima" ? '<span class="badge bg-success">Terima</span>' : '<span class="badge bg-danger">Tolak</span>'))
             ->addIndexColumn()
             ->rawColumns(['action', 'status']);
     }

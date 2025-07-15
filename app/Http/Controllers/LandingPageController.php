@@ -26,9 +26,19 @@ class LandingPageController extends Controller
 
     public function produk($slug)
     {
+        // mengambil data produk berdasarkan slug yang dikirimkan
+        // beserta relasinya yaitu gambar, fasilitas, wisata dan syarat
         $produk = Produk::with('images', 'fasilitases', 'wisatas', 'syarats')->where('slug', $slug)->firstOrFail();
-        $booked = TransaksiDetail::where('produk_id', $produk->id)->where('status', '!=', 'Tolak')->select('date', DB::raw('SUM(unit) as total'))->groupBy('date')->pluck('total', 'date');
+
+        // menghitung total unit yang sudah dibooking per tanggal
+        // berdasarkan status yang tidak sama dengan "REJECTED"
+        $booked = TransaksiDetail::where('produk_id', $produk->id)->where('status', '!=', 'REJECTED')->select('date', DB::raw('SUM(unit) as total'))->groupBy('date')->pluck('total', 'date');
+
+        // mengambil data produk lainnya secara acak
+        // dengan batas 3 produk dan tidak sama dengan produk yang sedang dibuka
         $rekomendasis = Produk::with('images')->where('id', '!=', $produk->id)->inRandomOrder()->limit(3)->get();
+
+        // mengirimkan data ke view
         return view('landing.produk', [
             'produk' => $produk,
             'booked' => $booked,
