@@ -17,7 +17,7 @@ return [
 
     'paths' => ['api/*', 'api/v1/*', 'sanctum/csrf-cookie'], // Apply CORS to API routes
     'allowed_methods' => ['*'], // Allow all HTTP methods (GET, POST, etc.)
-    'allowed_origins' => ['https://management-hotel-dieng.test', 'https://management-hotel-dieng.dekreatif.id/'], // Explicitly allow your frontend origin
+    'allowed_origins' => ['https://management-hotel-dieng.test', 'https://management-hotel-dieng.dekreatif.id'], // Explicitly allow your frontend origin
     'allowed_origins_patterns' => [],
     'allowed_headers' => ['*'], // Allow all headers
     'exposed_headers' => [],
