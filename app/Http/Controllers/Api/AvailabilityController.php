@@ -23,6 +23,10 @@ class AvailabilityController extends Controller
             'dates.*.is_available' => 'required|boolean',
         ]);
 
+        if (empty($data['dates'])) {
+            return response()->json(['message' => 'Harus memilih 2 tanggal.'], 404);
+        }
+
         foreach ($data['dates'] as $entry) {
             $availability = Availability::updateOrCreate(
                 [
