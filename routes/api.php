@@ -21,6 +21,7 @@ Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
     Route::get('/products', [ProductController::class, 'getAllProduct']);
     Route::get('/products/{id}', [ProductController::class, 'getProductById']);
     Route::get('/availability/{produk_id}', [AvailabilityController::class, 'show']);
+    Route::post('/availability/{produk_id}', [AvailabilityController::class, 'update']);
     Route::put('/availability/{produk_id}/{id}', [AvailabilityController::class, 'update']);
     Route::delete('/availability/{produk_id}/{id}', [AvailabilityController::class, 'destroy']);
 
