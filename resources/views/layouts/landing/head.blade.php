@@ -1,7 +1,12 @@
 <head>
     <meta charset="utf-8">
-    <title>{{ $settings['name'] ?? null }}</title>
-    <meta name="author" content="thedaywebsite.com">
+    <title>{{ $settings['name'] ?? 'Villadieng - Penginapan Villa & Hotel Dieng Murah' }}</title>
+    
+    <meta name="description" content="Villadieng merupakan situs layanan Penginapan maupun Hotel serta Villa Dieng dengan view alam yang bagus dengan harga murah pada tempat Wisata Dieng Wonosobo yang di kenal dengan alam maupun negeri di atas awan.">
+    <meta name="author" content="Villadieng">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://villahoteldieng.com/" />
+    <meta name="google-site-verification" content="NvAwI-RHScYQA82tWGK1kWvtosyebFBpCArrNk7NmmM" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <link rel="manifest" href="{{ asset('manifest.json') }}">
     <meta name="theme-color" content="#0d6efd">
