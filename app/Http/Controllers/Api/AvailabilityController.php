@@ -14,7 +14,7 @@ class AvailabilityController extends Controller
         return response()->json($availabilities);
     }
 
-    public function update(Request $request, $produk_id, $id)
+    public function update(Request $request, $produk_id)
     {
         $data = $request->validate([
             'dates' => 'required|array',
