@@ -23,7 +23,7 @@ class AvailabilityController extends Controller
             'dates.*.is_available' => 'required|boolean',
         ]);
 
-        if (empty($data['dates'])) {
+        if (empty($data['dates']) || count($data['dates']) < 0) {
             return response()->json(['message' => 'Harus memilih 2 tanggal.'], 404);
         }
 
