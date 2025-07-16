@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Landing\ProdukFinalRequest;
+use App\Models\Availability;
 use App\Models\Produk\Produk;
 use App\Models\Produk\ProdukCategory;
 use App\Models\Rekening;
@@ -30,9 +31,18 @@ class LandingPageController extends Controller
         // beserta relasinya yaitu gambar, fasilitas, wisata dan syarat
         $produk = Produk::with('images', 'fasilitases', 'wisatas', 'syarats')->where('slug', $slug)->firstOrFail();
 
+        // mengambil data produk berdasarkan slug yang dikirimkan
+        // beserta relasinya yaitu gambar, fasilitas, wisata dan syarat
+        // jika tidak ditemukan maka akan mengembalikan halaman 404
+        $availableProduk = Availability::select('date', DB::raw('"1" as total'))->where('produk_id', $produk->id)->pluck('total', 'date');
+
         // menghitung total unit yang sudah dibooking per tanggal
         // berdasarkan status yang tidak sama dengan "REJECTED"
         $booked = TransaksiDetail::where('produk_id', $produk->id)->where('status', '!=', 'REJECTED')->select('date', DB::raw('SUM(unit) as total'))->groupBy('date')->pluck('total', 'date');
+        
+        // if ($availableProduk) {
+        //     $booked = $booked->merge($availableProduk);
+        // }
 
         // mengambil data produk lainnya secara acak
         // dengan batas 3 produk dan tidak sama dengan produk yang sedang dibuka
@@ -42,6 +52,7 @@ class LandingPageController extends Controller
         return view('landing.produk', [
             'produk' => $produk,
             'booked' => $booked,
+            'availableProducts' => $availableProduk,
             'rekomendasis' => $rekomendasis,
         ]);
     }

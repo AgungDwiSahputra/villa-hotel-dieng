@@ -398,6 +398,12 @@
                 pointer-events: none;
                 opacity: 0.6;
             }
+            .close-date {
+                background: #4F545A !important;
+                color: #4F545A !important;
+                pointer-events: none;
+                opacity: 0.6;
+            }
 
             .fc-daygrid-day.selected-start,
             .fc-daygrid-day.in-range,
@@ -522,8 +528,9 @@
             const hargaWeekday = {{ $produk->harga_weekday }};
             const hargaWeekend = {{ $produk->harga_weekend }};
             const bookedPerDate = @json($booked);
-            console.log(hargaWeekday);
-            console.log(hargaWeekend);
+            const availableProducts = @json($availableProducts);
+            // console.log(hargaWeekday);
+            // console.log(hargaWeekend);
             let startDate = null,
                 endDate = null,
                 basePrice = 0;
@@ -674,6 +681,17 @@
                                 position: 'relative'
                             }).append(
                                 `<div style="position:absolute;bottom:0;left:50%;transform:translateX(-50%);font-size:0.75em;font-weight:bold;color:#000;margin-bottom:-5px;">Penuh</div>`
+                            );
+                        }
+                        if(availableProducts[dateStr]) {
+                            $(el).addClass('close-date').css({
+                                backgroundColor: '#f8d7da',
+                                color: '#721c24',
+                                pointerEvents: 'none',
+                                cursor: 'not-allowed',
+                                position: 'relative'
+                            }).append(
+                                `<div style="position:absolute;bottom:0;left:50%;transform:translateX(-50%);font-size:0.75em;font-weight:bold;color:#000;margin-bottom:-5px;">Tutup</div>`
                             );
                         }
                     }
