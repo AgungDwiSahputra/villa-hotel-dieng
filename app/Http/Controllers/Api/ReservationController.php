@@ -65,6 +65,24 @@ class ReservationController extends Controller
         ->get();
     }
 
+    public function reservationByDate($date)
+    {
+        return TransaksiDetail::select([
+            'transaksi_details.id',
+            'transaksi_details.transaksi_id',
+            'transaksi_details.date',
+            'transaksi_details.unit',
+            'transaksi_details.status',
+            'transaksi_details.created_at',
+            'produks.name as produk_name',
+            'produk_categories.name as category_name'
+        ])
+        ->join('produks', 'transaksi_details.produk_id', '=', 'produks.id')
+        ->join('produk_categories', 'produks.category_id', '=', 'produk_categories.id')
+        ->whereDate('transaksi_details.date', $date)
+        ->get();
+    }
+
     public function acceptAll($id)
     {
         $reservations = TransaksiDetail::where('transaksi_id', $id)->get();
