@@ -12,7 +12,7 @@ class AvailabilityController extends Controller
 {
     public function show($produk_id)
     {
-        $availabilities = TransaksiDetail::select('transaksi_details.*', 'produks.unit as product_unit')
+        $availabilities = TransaksiDetail::select('transaksi_details.*', 'produks.unit as product_unit', 'produks.owner as product_owner')
             ->join('produks', 'transaksi_details.produk_id', '=', 'produks.id')
             ->where('transaksi_details.produk_id', $produk_id)
             ->get();

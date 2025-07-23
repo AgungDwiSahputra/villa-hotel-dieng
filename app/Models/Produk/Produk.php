@@ -11,7 +11,7 @@ class Produk extends Model
 {
     use Loggable;
 
-    protected $fillable  = ['category_id', 'name', 'slug', 'unit', 'kamar', 'orang', 'maks_orang', 'lokasi', 'harga_weekday', 'harga_weekend', 'label','urutan'];
+    protected $fillable  = ['category_id', 'owner', 'name', 'slug', 'unit', 'kamar', 'orang', 'maks_orang', 'lokasi', 'harga_weekday', 'harga_weekend', 'label','urutan', 'status'];
 
     public $incrementing = false;
     protected $keyType = 'string';

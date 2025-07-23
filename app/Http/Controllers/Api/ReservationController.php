@@ -17,6 +17,7 @@ class ReservationController extends Controller
         return Transaksi::select([
             'transaksis.id',
             'transaksis.order_id',
+            'produks.owner as produk_owner',
             'produks.name as produk_name',
             'produk_categories.name as category_name',
             'transaksis.start_date',

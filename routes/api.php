@@ -17,10 +17,14 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
-    // Availability
+    // Products
     Route::get('/products', [ProductController::class, 'getAllProduct']);
     Route::get('/products/{id}', [ProductController::class, 'getProductById']);
-    Route::post('/products/{id}', [ProductController::class, 'updateProductById']);
+    Route::post('/products', [ProductController::class, 'storeProduct']);
+    Route::put('/products/{id}', [ProductController::class, 'updateProductById']);
+    Route::delete('/products/{id}', [ProductController::class, 'deleteProductById']);
+
+    // Availability
     Route::get('/availability/{produk_id}', [AvailabilityController::class, 'show']);
     Route::post('/availability/{produk_id}', [AvailabilityController::class, 'store']);
     Route::put('/availability/{produk_id}/{id}', [AvailabilityController::class, 'update']);
