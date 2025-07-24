@@ -25,6 +25,6 @@ class ProdukCategory extends Model
     }
 
     public function produks(){
-        return $this->hasMany(Produk::class,'category_id')->orderBy('urutan');
+        return $this->hasMany(Produk::class,'category_id')->where('status', 'publish')->orderBy('urutan');
     }
 }
