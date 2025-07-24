@@ -108,17 +108,22 @@ class BookingController extends Controller
 
     public function handleCallback(Request $request)
     {
-        \Midtrans\Config::$serverKey = config('midtrans.server_key');
-        \Midtrans\Config::$isProduction = config('midtrans.is_production');
+        \Midtrans\Config::$serverKey = env('MIDTRANS_SERVER_KEY');
+        \Midtrans\Config::$isProduction = env('MIDTRANS_IS_PRODUCTION', false);
 
         $notification = new \Midtrans\Notification();
 
-        $orderId = $notification->order_id;
-        $transactionStatus = $notification->transaction_status;
-        $fraudStatus = $notification->fraud_status;
-        $signatureKey = $notification->signature_key;
+        $orderId = $notification->order_id ?? null;
+        $transactionStatus = $notification->transaction_status ?? null;
+        $fraudStatus = $notification->fraud_status ?? null;
+        $signatureKey = $notification->signature_key ?? null;
 
-        $localSignatureKey = hash('sha512', $orderId . $notification->status_code . $notification->gross_amount . config('midtrans.server_key'));
+        if (!$orderId) {
+            Log::warning('Midtrans notification missing order_id.', ['notification' => $notification]);
+            return response()->json(['message' => 'Missing order_id'], 400);
+        }
+
+        $localSignatureKey = hash('sha512', $orderId . $transactionStatus . $notification->gross_amount . config('midtrans.server_key'));
 
         if ($signatureKey !== $localSignatureKey) {
             Log::warning('Midtrans notification signature mismatch.', ['order_id' => $orderId]);
@@ -132,22 +137,27 @@ class BookingController extends Controller
             return response()->json(['message' => 'Transaction not found'], 404);
         }
 
-        if ($transactionStatus == 'capture') {
-            if ($fraudStatus == 'accept') {
+        try {
+            if ($transactionStatus == 'capture') {
+                if ($fraudStatus == 'accept') {
+                    $transaction->status = 'success';
+                }
+            } else if ($transactionStatus == 'settlement') {
                 $transaction->status = 'success';
+            } else if ($transactionStatus == 'pending') {
+                $transaction->status = 'pending';
+            } else if ($transactionStatus == 'deny' || $transactionStatus == 'expire' || $transactionStatus == 'cancel') {
+                $transaction->status = 'failed';
             }
-        } else if ($transactionStatus == 'settlement') {
-            $transaction->status = 'success';
-        } else if ($transactionStatus == 'pending') {
-            $transaction->status = 'pending';
-        } else if ($transactionStatus == 'deny' || $transactionStatus == 'expire' || $transactionStatus == 'cancel') {
-            $transaction->status = 'failed';
+
+            $transaction->save();
+
+            Log::info('Midtrans notification processed successfully.', ['order_id' => $orderId, 'status' => $transaction->status]);
+
+            return response()->json(['message' => 'Notification processed successfully'], 200);
+        } catch (\Exception $e) {
+            Log::error('Error updating transaction status:', ['order_id' => $orderId, 'error' => $e->getMessage()]);
+            return response()->json(['message' => 'Error updating transaction status'], 500);
         }
-
-        $transaction->save();
-
-        Log::info('Midtrans notification processed successfully.', ['order_id' => $orderId, 'status' => $transaction->status]);
-
-        return response()->json(['message' => 'Notification processed successfully'], 200);
     }
 }
