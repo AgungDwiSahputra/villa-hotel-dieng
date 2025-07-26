@@ -57,6 +57,7 @@ class ReservationController extends Controller
             'transaksi_details.unit',
             'transaksi_details.status',
             'transaksi_details.created_at',
+            'produks.owner as produk_owner',
             'produks.name as produk_name',
             'produk_categories.name as category_name'
         ])
@@ -75,6 +76,7 @@ class ReservationController extends Controller
             'transaksi_details.unit',
             'transaksi_details.status',
             'transaksi_details.created_at',
+            'produks.owner as produk_owner',
             'produks.name as produk_name',
             'produk_categories.name as category_name'
         ])
