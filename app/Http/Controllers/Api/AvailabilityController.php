@@ -15,7 +15,7 @@ class AvailabilityController extends Controller
         $availabilities = TransaksiDetail::select('transaksi_details.*', 'produks.unit as product_unit', 'produks.owner as product_owner')
             ->join('produks', 'transaksi_details.produk_id', '=', 'produks.id')
             ->where('transaksi_details.produk_id', $produk_id)
-            ->where('transaksi_details.status', '!=', 'REJECTED')
+            // ->where('transaksi_details.status', '!=', 'REJECTED')
             ->get();
         return response()->json($availabilities);
     }
