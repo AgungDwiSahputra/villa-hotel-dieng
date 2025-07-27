@@ -177,8 +177,6 @@ class ReservationController extends Controller
             })
             ->get();
 
-            return $reservations;
-
         if ($reservations->isEmpty()) {
             return response()->json(['message' => 'No reservations found'], 404);
         }
