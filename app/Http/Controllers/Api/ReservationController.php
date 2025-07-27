@@ -70,7 +70,7 @@ class ReservationController extends Controller
         ->get();
     }
 
-    public function reservationByDate($date)
+    public function reservationByDate($date, $produkId = null)
     {
         return TransaksiDetail::select([
             'transaksis.name',
@@ -88,6 +88,9 @@ class ReservationController extends Controller
         ->join('produks', 'transaksi_details.produk_id', '=', 'produks.id')
         ->join('produk_categories', 'produks.category_id', '=', 'produk_categories.id')
         ->whereDate('transaksi_details.date', $date)
+        ->when($produkId, function ($query) use ($produkId) {
+            return $query->where('transaksi_details.produk_id', $produkId);
+        })
         ->get();
     }
 

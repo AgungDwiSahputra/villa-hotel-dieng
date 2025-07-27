@@ -33,7 +33,7 @@ Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
     // Reservations
     Route::get('/reservations', [ReservationController::class, 'index']);
     Route::get('/reservations/{id}', [ReservationController::class, 'indexDetail']);
-    Route::get('/reservations/by-date/{date}', [ReservationController::class, 'reservationByDate']);
+    Route::get('/reservations/by-date/{date}/{produk_id?}', [ReservationController::class, 'reservationByDate']);
     Route::post('/reservations/{transaksi_id}/acceptAll', [ReservationController::class, 'acceptAll']);
     Route::post('/reservations/{id}/accept', [ReservationController::class, 'accept']);
     Route::post('/reservations/{id}/reject', [ReservationController::class, 'reject']);
