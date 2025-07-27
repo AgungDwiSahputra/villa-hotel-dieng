@@ -94,9 +94,18 @@ class ReservationController extends Controller
         ->get();
     }
 
-    public function acceptAll($id)
+    public function acceptAll($id, $date = null)
     {
-        $reservations = TransaksiDetail::where('transaksi_id', $id)->get();
+        $reservations = TransaksiDetail::where('transaksi_id', $id)
+            ->when($date, function ($query) use ($date) {
+                return $query->whereDate('date', $date);
+            })
+            ->get();
+
+        if ($reservations->isEmpty()) {
+            return response()->json(['message' => 'No reservations found'], 404);
+        }
+        
         foreach ($reservations as $reservation) {
             try {
                 $reservation->status = 'APPROVED';
