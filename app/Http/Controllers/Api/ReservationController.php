@@ -105,7 +105,7 @@ class ReservationController extends Controller
         if ($reservations->isEmpty()) {
             return response()->json(['message' => 'No reservations found'], 404);
         }
-        
+
         foreach ($reservations as $reservation) {
             try {
                 $reservation->status = 'APPROVED';
@@ -117,6 +117,31 @@ class ReservationController extends Controller
 
         // Kirim email notifikasi jika perlu
         return response()->json(['message' => 'Reservation approved']);
+    }
+
+    public function rejectAll($id, $date = null)
+    {
+        $reservations = TransaksiDetail::where('transaksi_id', $id)
+            ->when($date, function ($query) use ($date) {
+                return $query->whereDate('date', $date);
+            })
+            ->get();
+
+        if ($reservations->isEmpty()) {
+            return response()->json(['message' => 'No reservations found'], 404);
+        }
+
+        foreach ($reservations as $reservation) {
+            try {
+                $reservation->status = 'REJECTED';
+                $reservation->save();
+            } catch (\Exception $e) {
+                return response()->json(['message' => 'Error processing reservation: ' . $e->getMessage()], 500);
+            }
+        }
+
+        // Kirim email notifikasi jika perlu
+        return response()->json(['message' => 'Reservation rejected']);
     }
 
     public function accept($id)
