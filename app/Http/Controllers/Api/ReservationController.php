@@ -16,6 +16,7 @@ class ReservationController extends Controller
         // Jika tidak ada rincian yang ada, maka 'detail_status' default ke 'BERHASIL'.
         return Transaksi::select([
             'transaksis.id',
+            'transaksis.name',
             'transaksis.order_id',
             'produks.owner as produk_owner',
             'produks.name as produk_name',
@@ -51,6 +52,7 @@ class ReservationController extends Controller
     public function indexDetail($transaksiId)
     {
         return TransaksiDetail::select([
+            'transaksis.name',
             'transaksi_details.id',
             'transaksi_details.transaksi_id',
             'transaksi_details.date',
@@ -61,6 +63,7 @@ class ReservationController extends Controller
             'produks.name as produk_name',
             'produk_categories.name as category_name'
         ])
+        ->join('transaksis', 'transaksi_details.transaksi_id', '=', 'transaksis.id')
         ->join('produks', 'transaksi_details.produk_id', '=', 'produks.id')
         ->join('produk_categories', 'produks.category_id', '=', 'produk_categories.id')
         ->where('transaksi_details.transaksi_id', $transaksiId)
@@ -70,6 +73,7 @@ class ReservationController extends Controller
     public function reservationByDate($date)
     {
         return TransaksiDetail::select([
+            'transaksis.name',
             'transaksi_details.id',
             'transaksi_details.transaksi_id',
             'transaksi_details.date',
@@ -80,6 +84,7 @@ class ReservationController extends Controller
             'produks.name as produk_name',
             'produk_categories.name as category_name'
         ])
+        ->join('transaksis', 'transaksi_details.transaksi_id', '=', 'transaksis.id')
         ->join('produks', 'transaksi_details.produk_id', '=', 'produks.id')
         ->join('produk_categories', 'produks.category_id', '=', 'produk_categories.id')
         ->whereDate('transaksi_details.date', $date)
