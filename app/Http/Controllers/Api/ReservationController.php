@@ -94,7 +94,7 @@ class ReservationController extends Controller
         ->get();
     }
 
-    public function acceptAll($id, $date = null)
+    public function acceptAllByTransaksi($id, $date = null)
     {
         $reservations = TransaksiDetail::where('transaksi_id', $id)
             ->when($date, function ($query) use ($date) {
@@ -119,13 +119,65 @@ class ReservationController extends Controller
         return response()->json(['message' => 'Reservation approved']);
     }
 
-    public function rejectAll($id, $date = null)
+    public function rejectAllByTransaksi($id, $date = null)
     {
         $reservations = TransaksiDetail::where('transaksi_id', $id)
             ->when($date, function ($query) use ($date) {
                 return $query->whereDate('date', $date);
             })
             ->get();
+
+        if ($reservations->isEmpty()) {
+            return response()->json(['message' => 'No reservations found'], 404);
+        }
+
+        foreach ($reservations as $reservation) {
+            try {
+                $reservation->status = 'REJECTED';
+                $reservation->save();
+            } catch (\Exception $e) {
+                return response()->json(['message' => 'Error processing reservation: ' . $e->getMessage()], 500);
+            }
+        }
+
+        // Kirim email notifikasi jika perlu
+        return response()->json(['message' => 'Reservation rejected']);
+    }
+
+    public function acceptAll($id, $date = null)
+    {
+        $reservations = TransaksiDetail::where('produk_id', $id)
+            ->when($date, function ($query) use ($date) {
+                return $query->whereDate('date', $date);
+            })
+            ->get();
+
+        if ($reservations->isEmpty()) {
+            return response()->json(['message' => 'No reservations found'], 404);
+        }
+
+        foreach ($reservations as $reservation) {
+            try {
+                $reservation->status = 'APPROVED';
+                $reservation->save();
+            } catch (\Exception $e) {
+                return response()->json(['message' => 'Error processing reservation: ' . $e->getMessage()], 500);
+            }
+        }
+
+        // Kirim email notifikasi jika perlu
+        return response()->json(['message' => 'Reservation approved']);
+    }
+
+    public function rejectAll($id, $date = null)
+    {
+        $reservations = TransaksiDetail::where('produk_id', $id)
+            ->when($date, function ($query) use ($date) {
+                return $query->whereDate('date', $date);
+            })
+            ->get();
+
+            return $reservations;
 
         if ($reservations->isEmpty()) {
             return response()->json(['message' => 'No reservations found'], 404);
