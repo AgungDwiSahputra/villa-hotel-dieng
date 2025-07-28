@@ -17,7 +17,7 @@
                             <div class="tab-pane fade show active">
                                 <div class="row">
                                     @forelse ($produks as $produk)
-                                        <div class="col-sm-6 col-lg-3">
+                                        <div class="col-sm-6 col-lg-3 p-2">
                                             <div class="tour-listing wow fadeInUp animated" data-wow-delay="0.1s">
                                                 <a href="{{ route('produk',$produk->slug) }}" class="tour-listing-image">
                                                     <div class="badge-top flex-two">
@@ -29,7 +29,7 @@
                                                             </span>
                                                         </div>
                                                     </div>
-                                                    <img src="{{ asset('storage/'.$produk->images?->first()?->image ?? '') }}" alt="Image Listing">
+                                                    <img src="{{ asset('storage/'.$produk->images?->first()?->image ?? '') }}" style="height: 370px; object-fit: cover; object-position: center bottom;" alt="Image Listing">
                                                 </a>
                                                 <div class="tour-listing-content">
                                                     <span class="map"><i class="icon-Vector4"></i>{{ $produk->lokasi }}</span>
