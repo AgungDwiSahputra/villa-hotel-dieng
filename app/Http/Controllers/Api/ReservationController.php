@@ -17,6 +17,7 @@ class ReservationController extends Controller
         return Transaksi::select([
             'transaksis.id',
             'transaksis.name',
+            'transaksis.produk_id',
             'transaksis.order_id',
             'produks.owner as produk_owner',
             'produks.name as produk_name',
@@ -53,6 +54,7 @@ class ReservationController extends Controller
     {
         return TransaksiDetail::select([
             'transaksis.name',
+            'transaksis.produk_id',
             'transaksi_details.id',
             'transaksi_details.transaksi_id',
             'transaksi_details.date',
@@ -74,6 +76,7 @@ class ReservationController extends Controller
     {
         return TransaksiDetail::select([
             'transaksis.name',
+            'transaksis.produk_id',
             'transaksi_details.id',
             'transaksi_details.transaksi_id',
             'transaksi_details.date',
