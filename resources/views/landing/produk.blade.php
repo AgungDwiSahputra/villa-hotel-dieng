@@ -242,7 +242,7 @@
                                         </span>
                                     </div>
                                 </div>
-                                <img src="{{ asset('storage/' . $item->images?->first()?->image ?? '') }}"
+                                <img src="{{ asset('storage/' . $item->images?->first()?->image ?? '') }}" style="height: 370px; object-fit: cover; object-position: center bottom;"
                                     alt="Image Listing">
                             </a>
                             <div class="tour-listing-content">

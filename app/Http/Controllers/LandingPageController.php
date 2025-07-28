@@ -46,7 +46,7 @@ class LandingPageController extends Controller
 
         // mengambil data produk lainnya secara acak
         // dengan batas 3 produk dan tidak sama dengan produk yang sedang dibuka
-        $rekomendasis = Produk::with('images')->where('id', '!=', $produk->id)->inRandomOrder()->limit(3)->get();
+        $rekomendasis = Produk::with('images')->where('id', '!=', $produk->id)->where('status', 'publish')->inRandomOrder()->limit(3)->get();
 
         // mengirimkan data ke view
         return view('landing.produk', [
