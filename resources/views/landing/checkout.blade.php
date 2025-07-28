@@ -140,7 +140,7 @@
                 const bookingForm = document.getElementById('booking-form');
                 const bookingButton = document.getElementById('booking-button');
 
-                bookingButton.addEventListener('click', function(e) {
+                bookingButton.addEventListener('click', async function(e) {
                     e.preventDefault();
 
                     bookingButton.disabled = true;
@@ -148,7 +148,8 @@
 
                     const formData = new FormData(bookingForm);
 
-                    fetch('/booking/process', {
+                    try {
+                        const response = await fetch('/booking/process', {
                             method: 'POST',
                             body: formData,
                             headers: {
@@ -156,72 +157,63 @@
                                     .getAttribute('content'),
                                 'Accept': 'application/json'
                             }
-                        })
-                        .then(response => {
-                            if (!response.ok) {
-                                throw new Error('Network response was not ok');
-                            }
-                            return response.json();
-                        })
-                        .then(data => {
-                            console.log('Server response:', data);
-
-                            if (data.status === 'success' && data.snap_token) {
-                                if (typeof window.snap === 'undefined') {
-                                    alert(
-                                        'Midtrans Snap tidak dimuat dengan benar. Silakan refresh halaman.'
-                                    );
-                                    return;
-                                }
-
-                                window.snap.pay(data.snap_token, {
-                                    onSuccess: function(result) {
-                                        console.log('Payment success:', result);
-
-                                        Swal.fire({
-                                            icon: 'success',
-                                            title: 'Pembayaran Berhasil',
-                                            text: "Terima kasih, transaksi Anda telah berhasil.",
-                                            showConfirmButton: true
-                                        }).then(() => {
-                                            window.location.href = document.referrer;
-                                        });
-                                    },
-                                    onPending: function(result) {
-                                        console.log('Payment pending:', result);
-                                        resetButton();
-                                    },
-                                    onError: function(result) {
-                                        console.log('Payment error:', result);
-                                        Swal.fire({
-                                            icon: 'error',
-                                            title: 'Pembayaran Gagal',
-                                            text: "Pembayaran Anda gagal. Silakan coba lagi.",
-                                            showConfirmButton: true
-                                        })
-                                        resetButton();
-                                    },
-                                    onClose: function() {
-                                        console.log('Payment popup closed');
-                                        resetButton();
-                                    }
-                                });
-                            } else {
-                                alert('Error: ' + (data.message || 'Terjadi kesalahan'));
-                                resetButton();
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            alert('Terjadi kesalahan koneksi. Silakan coba lagi.');
-                            resetButton();
                         });
 
-                    function resetButton() {
-                        bookingButton.disabled = false;
-                        bookingButton.innerHTML = 'Booking';
+                        const data = await response.json();
+
+                        if (response.ok && data.status === 'success' && data.snap_token) {
+                            await payWithSnap(data.snap_token);
+                        } else {
+                            throw new Error(data.message || 'Terjadi kesalahan');
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        alert('Terjadi kesalahan koneksi. Silakan coba lagi.');
+                    } finally {
+                        resetButton();
                     }
                 });
+
+                async function payWithSnap(snapToken) {
+                    try {
+                        await window.snap.pay(snapToken, {
+                            onSuccess: function(result) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Pembayaran Berhasil',
+                                    text: "Terima kasih, transaksi Anda telah berhasil.",
+                                    showConfirmButton: true
+                                }).then(() => {
+                                    window.location.href = document.referrer;
+                                });
+                            },
+                            onPending: function(result) {
+                                resetButton();
+                            },
+                            onError: function(result) {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Pembayaran Gagal',
+                                    text: "Pembayaran Anda gagal. Silakan coba lagi.",
+                                    showConfirmButton: true
+                                })
+                                resetButton();
+                            },
+                            onClose: function() {
+                                resetButton();
+                            }
+                        });
+                    } catch (error) {
+                        console.error('Error:', error);
+                        alert('Terjadi kesalahan koneksi. Silakan coba lagi.');
+                        resetButton();
+                    }
+                }
+
+                function resetButton() {
+                    bookingButton.disabled = false;
+                    bookingButton.innerHTML = 'Booking';
+                }
             });
         </script>
     @endpush
