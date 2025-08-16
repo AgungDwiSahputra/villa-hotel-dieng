@@ -23,6 +23,7 @@ Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
     Route::post('/products', [ProductController::class, 'storeProduct']);
     Route::put('/products/{id}', [ProductController::class, 'updateProductById']);
     Route::delete('/products/{id}', [ProductController::class, 'deleteProductById']);
+    Route::delete('/product/owner/{owner}', [ProductController::class, 'deleteProductByOwner']);
 
     // Availability
     Route::get('/availability/{produk_id}', [AvailabilityController::class, 'show']);

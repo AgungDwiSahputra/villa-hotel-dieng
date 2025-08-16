@@ -5,11 +5,12 @@ namespace App\Models\Produk;
 use App\Models\Transaksi\TransaksiDetail;
 use Haruncpi\LaravelUserActivity\Traits\Loggable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 
 class Produk extends Model
 {
-    use Loggable;
+    use Loggable, SoftDeletes;
 
     protected $fillable  = ['category_id', 'owner', 'name', 'slug', 'unit', 'kamar', 'orang', 'maks_orang', 'lokasi', 'harga_weekday', 'harga_weekend', 'label','urutan', 'status'];
 
