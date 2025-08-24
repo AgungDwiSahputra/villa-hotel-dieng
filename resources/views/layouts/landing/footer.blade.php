@@ -8,6 +8,6 @@
         </nav>
         <p class="mb-0 fw-bold">{{ request()->getHost() }}</p>
         <p class="mb-0">{{ $settings['contact_address' ]}}</p>
-        <p class="mb-0">&copy; {{ date('Y') }} {{ $settings['company'] ?? null }}</p>
+        <p class="mb-0">Copyright &copy; {{ date('Y') }} | Powered by <a href="http://hostnesia.id" target="_blank" class="underline text-blue-600 hover:text-blue-800">HostNesia Indonesia</a></p>
     </div>
 </footer>
