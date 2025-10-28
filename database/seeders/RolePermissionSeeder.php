@@ -40,20 +40,20 @@ class RolePermissionSeeder extends Seeder
         foreach($moduls as $modul){
             foreach($actions as $action)
             {
-                $datas[] = $modul.' ('.$action.')'; 
+                $datas[] = $modul.' ('.$action.')';
             }
         }
 
+        // Insert permissions hanya jika belum ada
         foreach($datas as $data)
         {
-                Permission::create([
-                    'name' => $data
-                ]);
+            Permission::firstOrCreate([
+                'name' => $data
+            ]);
         }
         
-        $role = Role::create(['name' => 'Super Admin']);
+        // Buat role Super Admin hanya jika belum ada
+        $role = Role::firstOrCreate(['name' => 'Super Admin']);
         $role->syncPermissions($datas);
-
-
     }
 }

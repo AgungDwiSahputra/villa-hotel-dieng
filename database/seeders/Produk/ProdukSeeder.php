@@ -20,10 +20,9 @@ class ProdukSeeder extends Seeder
     {
         $hotel = ProdukCategory::where('name','Hotel')->first();
         $villa = ProdukCategory::where('name','Villa')->first();
-        $id = (string) Str::uuid();
-        $datas = [
+        
+        $products = [
             [
-                'id' => $id,
                 'category_id' => $hotel->id,
                 'name' => 'Calla cabin 1',
                 'slug' => Str::slug('Calla cabin 1'),
@@ -37,7 +36,6 @@ class ProdukSeeder extends Seeder
                 'label' => 'Favorit'
             ],
             [
-                'id' => (string) Str::uuid(),
                 'category_id' => $hotel->id,
                 'name' => 'Calla glamping',
                 'slug' => Str::slug('Calla glamping'),
@@ -51,7 +49,6 @@ class ProdukSeeder extends Seeder
                 'label' => 'Favorit'
             ],
             [
-                'id' => (string) Str::uuid(),
                 'category_id' => $villa->id,
                 'name' => 'Asoka villa',
                 'slug' => Str::slug('Asoka villa'),
@@ -65,7 +62,6 @@ class ProdukSeeder extends Seeder
                 'label' => 'Favorit'
             ],
             [
-                'id' => (string) Str::uuid(),
                 'category_id' => $villa->id,
                 'name' => 'Omah dieng 2 view candi arjuna',
                 'slug' => Str::slug('Omah dieng 2 view candi arjuna'),
@@ -80,60 +76,66 @@ class ProdukSeeder extends Seeder
             ]
         ];
         
-        Produk::insert($datas);
+        foreach ($products as $productData) {
+            $product = Produk::updateOrCreate(
+                ['slug' => $productData['slug']], // unique identifier
+                $productData
+            );
 
-        $dataFasilitas = [
-            'Kamar mandi dalam',
-            'Waterheater',
-            'Dapur',
-            'Alat masak',
-            'Tv android',
-            'Free wifi',
-            'Parkir',
-            'Balkon',
-            'Teh gula kopi',
-        ];
-
-        $fasilitases = array_map(function ($name) use ($id) {
-            return [
-                'id' => (string) Str::uuid(),
-                'produk_id' => $id,
-                'name' => $name,
+            $dataFasilitas = [
+                'Kamar mandi dalam',
+                'Waterheater',
+                'Dapur',
+                'Alat masak',
+                'Tv android',
+                'Free wifi',
+                'Parkir',
+                'Balkon',
+                'Teh gula kopi',
             ];
-        }, $dataFasilitas);
-        ProdukFasilitas::insert($fasilitases);
-        
-        
-        $dataWisatas = [
-            'Candi arjuan 5 menit',
-            'Kawah sikidang 7 meni',
-            'Sekunir 15 menit',
-            'Telaga warna 6 menit',
-            'Batu ratapan angin 6 menit',
-        ];
 
-        $wisatas = array_map(function ($name) use ($id) {
-            return [
-                'id' => (string) Str::uuid(),
-                'produk_id' => $id,
-                'name' => $name,
+            // Hapus fasilitas lama dan insert baru (untuk update data)
+            ProdukFasilitas::where('produk_id', $product->id)->delete();
+            foreach ($dataFasilitas as $name) {
+                ProdukFasilitas::create([
+                    'id' => (string) Str::uuid(),
+                    'produk_id' => $product->id,
+                    'name' => $name,
+                ]);
+            }
+            
+            $dataWisatas = [
+                'Candi arjuan 5 menit',
+                'Kawah sikidang 7 meni',
+                'Sekunir 15 menit',
+                'Telaga warna 6 menit',
+                'Batu ratapan angin 6 menit',
             ];
-        }, $dataWisatas);
-        ProdukWisata::insert($wisatas);
+
+            // Hapus wisata lama dan insert baru (untuk update data)
+            ProdukWisata::where('produk_id', $product->id)->delete();
+            foreach ($dataWisatas as $name) {
+                ProdukWisata::create([
+                    'id' => (string) Str::uuid(),
+                    'produk_id' => $product->id,
+                    'name' => $name,
+                ]);
+            }
       
-      
-        $dataSyarat = [
-            'Dilarang membawa minuman keras',
-            'Dilarang membawa hewan peliharaan',
-        ];
-
-        $syarat = array_map(function ($name) use ($id) {
-            return [
-                'id' => (string) Str::uuid(),
-                'produk_id' => $id,
-                'name' => $name,
+            $dataSyarat = [
+                'Dilarang membawa minuman keras',
+                'Dilarang membawa hewan peliharaan',
             ];
-        }, $dataSyarat);
-        ProdukSyarat::insert($syarat);
+
+            // Hapus syarat lama dan insert baru (untuk update data)
+            ProdukSyarat::where('produk_id', $product->id)->delete();
+            foreach ($dataSyarat as $name) {
+                ProdukSyarat::create([
+                    'id' => (string) Str::uuid(),
+                    'produk_id' => $product->id,
+                    'name' => $name,
+                ]);
+            }
+        }
     }
 }

@@ -14,21 +14,24 @@ class ProdukCategorySeeder extends Seeder
      */
     public function run(): void
     {
-        $datas = [
+        $categories = [
             [
-                'id' => (string) Str::uuid(),
                 'name' => 'Villa',
                 'slug' => 'villa',
                 'urutan' => 1,
             ],
             [
-                'id' => (string) Str::uuid(),
                 'name' => 'Hotel',
                 'slug' => 'hotel',
                 'urutan' => 2,
             ],
         ];
 
-        ProdukCategory::insert($datas);
+        foreach ($categories as $category) {
+            ProdukCategory::updateOrCreate(
+                ['slug' => $category['slug']], // unique identifier
+                $category
+            );
+        }
     }
 }

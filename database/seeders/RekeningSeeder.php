@@ -13,6 +13,12 @@ class RekeningSeeder extends Seeder
 {
     public function run(): void
     {
+        // Buat folder jika belum ada
+        $rekeningDir = storage_path('app/public/images/rekening');
+        if (!File::exists($rekeningDir)) {
+            File::makeDirectory($rekeningDir, 0755, true);
+        }
+
         $banks = [
             ['bank' => 'BNI',     'name' => 'Sun Flower Hotel & Villa', 'no_rekening' => '1234567890', 'image' => 'bni.png'],
             ['bank' => 'BCA',     'name' => 'Sun Flower Hotel & Villa', 'no_rekening' => '2345678901', 'image' => 'bca.png'],
@@ -21,8 +27,6 @@ class RekeningSeeder extends Seeder
             ['bank' => 'Mandiri', 'name' => 'Sun Flower Hotel & Villa', 'no_rekening' => '5678901234', 'image' => 'mandiri.png'],
             ['bank' => 'Mega',    'name' => 'Sun Flower Hotel & Villa', 'no_rekening' => '6789012345', 'image' => 'mega.png'],
         ];
-
-        $datas = [];
 
         foreach ($banks as $bank) {
             $sourcePath      = public_path('template/rekening/' . $bank['image']);
@@ -33,15 +37,15 @@ class RekeningSeeder extends Seeder
                 File::copy($sourcePath, $destinationPath);
             }
 
-            $datas[] = [
-                'id'           => (string) Str::uuid(),
-                'bank'         => $bank['bank'],
-                'name'         => $bank['name'],
-                'no_rekening'  => $bank['no_rekening'],
-                'image'        => 'images/rekening/' . $bank['image'],
-            ];
+            // Gunakan updateOrCreate untuk menghindari duplikasi
+            Rekening::updateOrCreate(
+                ['no_rekening' => $bank['no_rekening']], // unique identifier
+                [
+                    'bank'         => $bank['bank'],
+                    'name'         => $bank['name'],
+                    'image'        => 'images/rekening/' . $bank['image'],
+                ]
+            );
         }
-
-        Rekening::insert($datas);
     }
 }

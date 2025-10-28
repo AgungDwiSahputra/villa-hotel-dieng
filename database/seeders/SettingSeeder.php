@@ -10,13 +10,27 @@ class SettingSeeder extends Seeder
 {
     public function run(): void
     {
+        // Buat folder jika belum ada
+        $settingDir = storage_path('app/public/images/setting');
+        if (!File::exists($settingDir)) {
+            File::makeDirectory($settingDir, 0755, true);
+        }
+
         $sourcePath      = public_path('template/icon.png');
         $destinationPath = storage_path('app/public/images/setting/icon.png');
-        File::copy($sourcePath, $destinationPath);
+        
+        // Salin file hanya jika belum ada di tujuan
+        if (!File::exists($destinationPath)) {
+            File::copy($sourcePath, $destinationPath);
+        }
 
         $sourcePath      = public_path('template/logo.png');
         $destinationPath = storage_path('app/public/images/setting/logo.png');
-        File::copy($sourcePath, $destinationPath);
+        
+        // Salin file hanya jika belum ada di tujuan
+        if (!File::exists($destinationPath)) {
+            File::copy($sourcePath, $destinationPath);
+        }
 
         $datas = [
             'name'          => 'Sun Flower Hotel & Villa',
