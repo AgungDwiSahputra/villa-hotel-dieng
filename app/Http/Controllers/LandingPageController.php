@@ -21,7 +21,20 @@ class LandingPageController extends Controller
         $categories = ProdukCategory::orderBy('urutan')->get();
         $activeCategory = $request->get('category') ?? $categories->first()->slug;
         $selectedCategory = ProdukCategory::with('produks.images')->where('slug', $activeCategory)->firstOrFail();
-        $produks = $selectedCategory->produks()->paginate(12);
+        
+        // Logika pencarian
+        $searchQuery = $request->get('search');
+        $produksQuery = $selectedCategory->produks();
+        
+        if ($searchQuery) {
+            $produksQuery->where(function($query) use ($searchQuery) {
+                $query->where('name', 'LIKE', '%' . $searchQuery . '%')
+                      ->orWhere('lokasi', 'LIKE', '%' . $searchQuery . '%')
+                      ->orWhere('label', 'LIKE', '%' . $searchQuery . '%');
+            });
+        }
+        
+        $produks = $produksQuery->paginate(12);
         return view('landing.index', compact('categories', 'selectedCategory', 'produks', 'activeCategory'));
     }
 
