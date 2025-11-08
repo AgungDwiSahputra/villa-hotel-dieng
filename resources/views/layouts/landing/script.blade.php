@@ -15,6 +15,7 @@
 <script src="{{ asset('landing/app/js/main.js')}}"></script>
 <script src="{{ asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
 <script src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js"></script>
+<script src="https://unpkg.com/flickity@2/dist/flickity.pkgd.min.js"></script>
 
 <script>
     @if (session('success'))

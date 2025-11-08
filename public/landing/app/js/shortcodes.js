@@ -142,11 +142,9 @@
     };
 
     var Preloader = function () {
-        setTimeout(function () {
-            $(".preload").fadeOut("slow", function () {
-                $(this).remove();
-            });
-        }, 400);
+        // Preloader is now handled by the inline script in preloader.blade.php
+        // This function is disabled to prevent conflicts
+        return;
     };
 
     var donatProgress = function () {

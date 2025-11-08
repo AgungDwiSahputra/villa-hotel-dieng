@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 
 Route::get('/', [App\Http\Controllers\LandingPageController::class, 'index'])->name('index');
+Route::get('/all-produk', [App\Http\Controllers\LandingPageController::class, 'allProducts'])->name('produk.all');
 Route::get('/produk/{slug}', [App\Http\Controllers\LandingPageController::class, 'produk'])->name('produk');
 Route::post('/booking', [App\Http\Controllers\LandingPageController::class, 'produkBooking'])->name('produk.booking');
 Route::get('/checkout', [App\Http\Controllers\LandingPageController::class, 'checkout'])->name('produk.checkout');
