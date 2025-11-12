@@ -2,6 +2,7 @@
 
 namespace App\Models\Produk;
 
+use App\Models\Promo\Promo;
 use App\Models\Transaksi\TransaksiDetail;
 use Haruncpi\LaravelUserActivity\Traits\Loggable;
 use Illuminate\Database\Eloquent\Model;
@@ -12,7 +13,7 @@ class Produk extends Model
 {
     use Loggable, SoftDeletes;
 
-    protected $fillable  = ['category_id', 'owner', 'name', 'slug', 'unit', 'kamar', 'orang', 'maks_orang', 'lokasi', 'harga_weekday', 'harga_weekend', 'label','urutan', 'status'];
+    protected $fillable  = ['category_id', 'owner', 'name', 'slug', 'unit', 'kamar', 'orang', 'maks_orang', 'lokasi', 'harga_weekday', 'harga_weekend', 'label','urutan', 'status', 'has_active_promo', 'promo_price_weekday', 'promo_price_weekend', 'promo_discount_percentage', 'promo_calculated_at'];
 
     public $incrementing = false;
     protected $keyType = 'string';
@@ -50,5 +51,159 @@ class Produk extends Model
     public function transaksi()
     {
         return $this->hasMany(TransaksiDetail::class, 'produk_id');
+    }
+
+    // Promo Relationships
+    public function promos()
+    {
+        return $this->belongsToMany(Promo::class, 'promo_products', 'produk_id', 'promo_id')
+                    ->withPivot(['discount_type', 'discount_value', 'enabled'])
+                    ->wherePivot('enabled', true);
+    }
+
+    // Scopes for Promo filtering
+    public function scopeWithPromo($query)
+    {
+        return $query->where('has_active_promo', true);
+    }
+
+    public function scopeHasActivePromo($query)
+    {
+        return $query->where('has_active_promo', true)
+                    ->where('status', 'publish');
+    }
+
+    // Promo Methods
+    public function getActivePromos()
+    {
+        return Promo::active()
+                   ->valid()
+                   ->notExpired()
+                   ->applicableToProduct($this)
+                   ->get();
+    }
+
+    public function getBestPromo()
+    {
+        $activePromos = $this->getActivePromos();
+
+        if ($activePromos->isEmpty()) {
+            return null;
+        }
+
+        return $activePromos->sortByDesc(function ($promo) {
+            $weekdayDiscount = $promo->calculateDiscount($this->harga_weekday);
+            $weekendDiscount = $promo->calculateDiscount($this->harga_weekend);
+            $totalDiscount = $weekdayDiscount + $weekendDiscount;
+            return $totalDiscount;
+        })->first();
+    }
+
+    public function hasActivePromo()
+    {
+        return $this->has_active_promo &&
+               $this->promo_calculated_at &&
+               \Carbon\Carbon::parse($this->promo_calculated_at)->gt(now()->subHours(1));
+    }
+
+    public function getPromoPriceWeekday()
+    {
+        if (!$this->hasActivePromo()) {
+            return $this->calculatePromoPriceWeekday();
+        }
+        return $this->promo_price_weekday;
+    }
+
+    public function getPromoPriceWeekend()
+    {
+        if (!$this->hasActivePromo()) {
+            return $this->calculatePromoPriceWeekend();
+        }
+        return $this->promo_price_weekend;
+    }
+
+    public function getPromoDiscountPercentage()
+    {
+        if (!$this->hasActivePromo()) {
+            return $this->calculatePromoDiscountPercentage();
+        }
+        return $this->promo_discount_percentage;
+    }
+
+    public function calculatePromoPriceWeekday()
+    {
+        $bestPromo = $this->getBestPromo();
+        if (!$bestPromo) {
+            return $this->harga_weekday;
+        }
+
+        $discountConfig = $bestPromo->getEffectiveDiscountForProduct($this);
+        if ($discountConfig['type'] === 'percentage') {
+            return $this->harga_weekday * (1 - $discountConfig['value'] / 100);
+        } else {
+            return max(0, $this->harga_weekday - $discountConfig['value']);
+        }
+    }
+
+    public function calculatePromoPriceWeekend()
+    {
+        $bestPromo = $this->getBestPromo();
+        if (!$bestPromo) {
+            return $this->harga_weekend;
+        }
+
+        $discountConfig = $bestPromo->getEffectiveDiscountForProduct($this);
+        if ($discountConfig['type'] === 'percentage') {
+            return $this->harga_weekend * (1 - $discountConfig['value'] / 100);
+        } else {
+            return max(0, $this->harga_weekend - $discountConfig['value']);
+        }
+    }
+
+    public function calculatePromoDiscountPercentage()
+    {
+        $bestPromo = $this->getBestPromo();
+        if (!$bestPromo) {
+            return 0;
+        }
+
+        $discountConfig = $bestPromo->getEffectiveDiscountForProduct($this);
+        if ($discountConfig['type'] === 'percentage') {
+            return $discountConfig['value'];
+        } else {
+            // Calculate average percentage from fixed amount
+            $avgPrice = ($this->harga_weekday + $this->harga_weekend) / 2;
+            return $avgPrice > 0 ? round(($discountConfig['value'] / $avgPrice) * 100, 2) : 0;
+        }
+    }
+
+    public function updatePromoCache()
+    {
+        $bestPromo = $this->getBestPromo();
+
+        if ($bestPromo) {
+            $this->update([
+                'has_active_promo' => true,
+                'promo_price_weekday' => $this->calculatePromoPriceWeekday(),
+                'promo_price_weekend' => $this->calculatePromoPriceWeekend(),
+                'promo_discount_percentage' => $this->calculatePromoDiscountPercentage(),
+                'promo_calculated_at' => now()
+            ]);
+        } else {
+            $this->update([
+                'has_active_promo' => false,
+                'promo_price_weekday' => null,
+                'promo_price_weekend' => null,
+                'promo_discount_percentage' => null,
+                'promo_calculated_at' => null
+            ]);
+        }
+    }
+
+    // Helper method to check if product has any active promo (legacy support)
+    public function isPromo()
+    {
+        return $this->hasActivePromo() ||
+               ($this->label && str_contains(strtolower($this->label), 'promo'));
     }
 }

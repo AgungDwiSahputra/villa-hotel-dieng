@@ -207,17 +207,33 @@ php artisan test --coverage
 - `User` - User management with role-based permissions
 - `Availability` - Property availability management
 - `Setting` - Application configuration management
+- `Promo` - Promotion and discount management with flexible targeting options
+- `PromoCategory` - Category-based promo assignments with override support
+- `PromoProduct` - Product-specific promo assignments with custom discounts
 
 **Frontend Architecture**:
 - Landing page with custom components (villa cards, testimonials, promo banners)
+- Admin panel with component-based layout system using Blade components
 - Tailwind CSS with custom color schemes (primary, accent, gray palettes)
-- Alpine.js for interactive components
+- Alpine.js for interactive components and form validation
 - Custom animations and transitions defined in Tailwind config
 - Responsive design with mobile-first approach
+- DataTables integration with server-side processing and export capabilities
+
+**Promo Management System**:
+- Dynamic discount configuration (percentage and fixed amount)
+- Flexible targeting options (all products, specific categories, individual products)
+- Category and product-level discount overrides
+- Schedule-based promo activation with automatic expiration
+- Usage tracking and limit management
+- Real-time promo status management
+- Advanced filtering and search capabilities
+- Export functionality for promo data (Excel, CSV, PDF)
 
 **Development Tools**:
 - Laravel Pint for code formatting
 - Laravel Debugbar for development debugging
 - Laravel Sail for Docker development environment
 - Custom helper functions for file and image storage
+- Component-based architecture for maintainable frontend code
 

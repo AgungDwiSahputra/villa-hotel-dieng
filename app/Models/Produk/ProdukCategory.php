@@ -27,4 +27,15 @@ class ProdukCategory extends Model
     public function produks(){
         return $this->hasMany(Produk::class,'category_id')->where('status', 'publish')->orderBy('urutan');
     }
+
+    public function getActivePromos()
+    {
+        $promoIds = \App\Models\Promo\PromoCategory::where('category_id', $this->id)
+            ->pluck('promo_id')
+            ->toArray();
+
+        return \App\Models\Promo\Promo::active()
+            ->whereIn('id', $promoIds)
+            ->get();
+    }
 }

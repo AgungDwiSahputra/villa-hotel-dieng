@@ -34,6 +34,13 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->as('admin.')->group(fu
         Route::resource('image', App\Http\Controllers\Admin\Produk\ProdukImageController::class)->only(['index', 'store', 'edit', 'destroy']);
     });
 
+    // Promo Management Routes
+    Route::prefix('promo')->as('promo.')->group(function () {
+        Route::resource('promo', App\Http\Controllers\Admin\Promo\PromoController::class);
+        Route::post('promo/{promo}/toggle-status', [App\Http\Controllers\Admin\Promo\PromoController::class, 'toggleStatus'])->name('promo.toggle-status');
+        Route::post('promo/{promo}/duplicate', [App\Http\Controllers\Admin\Promo\PromoController::class, 'duplicate'])->name('promo.duplicate');
+    });
+
     // Transaksi Routes
     Route::prefix('transaksi')->as('transaksi.')->group(function () {
         Route::resource('transaksi', App\Http\Controllers\Admin\Transaksi\TransaksiController::class);

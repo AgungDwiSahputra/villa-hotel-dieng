@@ -21,6 +21,10 @@
                     <li><a href="{{ route('admin.transaksi.transaksi.index') }}" class="waves-effect"><i class="bx bxs-report"></i><span key="t-transaksi">Transaksi</span></a></li>
                 @endcan
 
+                @canany(['promo view', 'promo create', 'promo edit', 'promo delete'])
+                    <li><a href="{{ route('admin.promo.promo.index') }}" class="waves-effect"><i class="bx bx-gift"></i><span key="t-promo">Promo Management</span></a></li>
+                @endcanany
+
                 @can('Rekening (Index)')
                     <li><a href="{{ route('admin.rekening.index') }}" class="waves-effect"><i class="bx bx-credit-card"></i><span key="t-rekening">Rekening</span></a></li>
                 @endcan

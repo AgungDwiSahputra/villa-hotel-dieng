@@ -137,12 +137,16 @@ class LandingPageController extends Controller
         }
 
         if ($isPromo) {
-            // Filter produk yang memiliki label promo atau diskon
+            // Filter produk yang memiliki active promo dari sistem baru
             $produksQuery->where(function ($query) {
-                $query->where('label', 'LIKE', '%promo%')
-                    ->orWhere('label', 'LIKE', '%diskon%')
-                    ->orWhere('label', 'LIKE', '%discount%')
-                    ->orWhere('label', 'LIKE', '%sale%');
+                $query->where('has_active_promo', true)
+                    // Fallback ke legacy label system
+                    ->orWhere(function ($subQuery) {
+                        $subQuery->where('label', 'LIKE', '%promo%')
+                            ->orWhere('label', 'LIKE', '%diskon%')
+                            ->orWhere('label', 'LIKE', '%discount%')
+                            ->orWhere('label', 'LIKE', '%sale%');
+                    });
             });
         }
 

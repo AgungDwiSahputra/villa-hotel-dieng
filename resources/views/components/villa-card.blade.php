@@ -16,13 +16,29 @@
 
 @if($villa)
 @php
-    // Calculate discount price (30% off)
-    $discountPercentage = 30;
-    $originalPrice = $villa->harga_weekday;
-    $discountedPrice = $originalPrice * (1 - $discountPercentage / 100);
-    
-    // Determine if this is a promo product
-    $isPromo = $villa->label && str_contains(strtolower($villa->label), 'promo');
+    // Get promo information from the new system
+    $isPromo = $villa->isPromo();
+
+    if ($isPromo) {
+        // Use dynamic promo pricing from the new system
+        $discountPercentage = $villa->getPromoDiscountPercentage();
+        $originalPrice = $villa->harga_weekday;
+        $promoPriceWeekday = $villa->getPromoPriceWeekday();
+        $promoPriceWeekend = $villa->getPromoPriceWeekend();
+
+        // Get the best promo for additional info
+        $bestPromo = $villa->getBestPromo();
+        $promoEndDate = $bestPromo?->end_date;
+        $isLimited = $bestPromo && $bestPromo->usage_limit && $bestPromo->usage_count >= $bestPromo->usage_limit - 5;
+    } else {
+        // Fallback for non-promo products
+        $discountPercentage = 0;
+        $originalPrice = $villa->harga_weekday;
+        $promoPriceWeekday = $villa->harga_weekday;
+        $promoPriceWeekend = $villa->harga_weekend;
+        $promoEndDate = null;
+        $isLimited = false;
+    }
 @endphp
 <article class="{{ $cardClass }}" data-villa-id="{{ $villa->id }}">
     <!-- Villa Image -->
@@ -50,12 +66,23 @@
 
                 <!-- Promo Badge -->
                 @if($isPromo)
-                <span class="inline-flex items-center px-2 py-1 bg-red-600 text-white text-xs font-bold rounded animate-pulse">
-                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41 1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                    </svg>
-                    Promo
-                </span>
+                <div class="flex flex-col gap-1">
+                    <span class="inline-flex items-center px-2 py-1 bg-red-600 text-white text-xs font-bold rounded animate-pulse">
+                        <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41 1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                        </svg>
+                        PROMO {{ $discountPercentage > 0 ? number_format($discountPercentage, 0) . '%' : '' }}
+                    </span>
+
+                    @if($isLimited)
+                    <span class="inline-flex items-center px-2 py-1 bg-orange-600 text-white text-xs font-semibold rounded">
+                        <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                        </svg>
+                        Terbatas!
+                    </span>
+                    @endif
+                </div>
                 @endif
             </div>
 
@@ -144,19 +171,30 @@
         @if($showPrice)
         <div class="flex items-center justify-between mb-3">
             @if($isPromo)
-            <!-- Promo Price -->
-            <div>
-                <p class="text-xs text-gray-500 line-through">Rp {{ number_format($villa->harga_weekday, 0, ',', '.') }}/malam</p>
-                <p class="text-lg font-bold text-red-600">Rp {{ number_format($discountedPrice, 0, ',', '.') }}/malam</p>
+            <!-- Dynamic Promo Price -->
+            <div class="flex-1">
+                <p class="text-xs text-gray-500 line-through">Rp {{ number_format($villa->harga_weekday, 0, ',', '.') }}</p>
+                <p class="text-lg font-bold text-red-600">Rp {{ number_format($promoPriceWeekday, 0, ',', '.') }}</p>
+                @if($villa->harga_weekend != $villa->harga_weekday)
+                <p class="text-xs text-gray-500">Weekend: Rp {{ number_format($promoPriceWeekend, 0, ',', '.') }}</p>
+                @endif
+                @if($promoEndDate)
+                <p class="text-xs text-orange-600">Berakhir: {{ $promoEndDate->format('d M Y') }}</p>
+                @endif
             </div>
-            <span class="bg-red-100 text-red-700 text-xs px-2 py-1 rounded font-semibold">
-                {{ $discountPercentage }}% OFF
-            </span>
+            {{-- <div class="text-right">
+                <span class="bg-red-100 text-red-700 text-xs px-2 py-1 rounded font-semibold">
+                    {{ $discountPercentage > 0 ? number_format($discountPercentage, 0) . '%' : '' }} OFF
+                </span>
+            </div> --}}
             @else
-            <!-- Regular Weekday Price -->
-            <div>
+            <!-- Regular Pricing -->
+            <div class="flex-1">
                 <p class="text-xs text-gray-500">Harga Weekday</p>
-                <p class="text-lg font-bold text-gray-900">Rp {{ number_format($villa->harga_weekday, 0, ',', '.') }}/malam</p>
+                <p class="text-lg font-bold text-gray-900">Rp {{ number_format($villa->harga_weekday, 0, ',', '.') }}</p>
+                @if($villa->harga_weekend != $villa->harga_weekday)
+                <p class="text-xs text-gray-500">Weekend: Rp {{ number_format($villa->harga_weekend, 0, ',', '.') }}</p>
+                @endif
             </div>
             @endif
         </div>
