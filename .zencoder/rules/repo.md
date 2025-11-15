@@ -50,6 +50,7 @@ Villa Hotel Dieng is a comprehensive hotel and villa management system built wit
   - `resources/views/auth/` - Authentication views (login, register, password reset)
   - `resources/views/profile/` - User profile views
   - `resources/views/components/` - Reusable Blade components
+    - `card-component.blade.php` - Reusable card component with DataTable support
   - `resources/views/layouts/` - Layout templates
   - `resources/views/errors/` - Error page templates
 - `resources/css/` - Stylesheets
@@ -445,12 +446,19 @@ php artisan test --coverage
 - Flexible targeting options (all products, specific categories, individual products)
 - Category and product-level discount overrides
 - Schedule-based promo activation with start/end dates
-- Automatic expiration and status management
+- Automatic expiration and status management (Active/Inactive/Scheduled)
 - Usage tracking and limit management (max usage per promo)
-- Real-time promo status management (active/inactive)
+- Real-time promo status management with calculated valid periods
+- Advanced DataTable integration with advanced column definitions
 - Advanced filtering and search capabilities via DataTables
 - Export functionality for promo data (Excel, CSV, PDF)
 - Promo code generation and validation
+- **Advanced PromoDataTable Features**:
+  - Smart status calculation (Active/Scheduled/Inactive based on dates and usage)
+  - Dynamic usage display with percentage calculation
+  - Applicable-to target display with product/category counts
+  - Created-by tracking for audit purposes
+  - Custom column rendering for complex data presentation
 
 **Transaction & Booking System**:
 - Real-time availability checking
@@ -574,3 +582,28 @@ php artisan test --coverage
   - **Active States**: Enhanced button feedback with active:bg-blue-800 for better user interaction
 - **Mobile Breakpoint Strategy**: Uses Tailwind's `sm:` breakpoint (640px) for responsive adjustments
 - **Benefits**: Improved mobile usability, better touch target accessibility, optimized content density, enhanced readability on small screens
+## Recent Updates (November 2025)
+
+### New Features Added:
+- **Card Component**: Reusable `card-component.blade.php` with DataTable support for consistent admin UI
+- **Enhanced PromoDataTable**: Advanced status calculation, usage tracking, and target display features
+- **Improved DatabaseSeeder**: Automated user folder creation and default admin user setup with avatar
+- **API Routes Documentation**: API routes currently commented out in `routes/web.php` (line 81)
+
+### DatabaseSeeder Enhancements:
+- Automatic folder creation for user images (`storage/app/public/images/user`)
+- Copy default admin avatar from template
+- `updateOrCreate` method for safe user creation
+### API Routes Configuration:
+- **File**: `routes/api.php` exists but not currently loaded
+- **Status**: Commented out in `routes/web.php` line 81
+- **Purpose**: RESTful API endpoints with Sanctum authentication (when enabled)
+- **Note**: To activate API routes, uncomment the require statement in web.php
+
+## Summary
+Dokumentasi ini telah diperbarui pada November 2025 untuk mencakup:
+- Komponen Blade baru (card-component.blade.php)
+- Fitur-fitur lanjutan PromoDataTable
+- Peningkatan DatabaseSeeder
+- Status konfigurasi API routes
+- Role assignment for Super Admin user
