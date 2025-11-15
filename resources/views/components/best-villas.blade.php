@@ -55,7 +55,7 @@
 </script> --}}
 
 <section class="py-16 lg:py-24 bg-gradient-to-br from-primary-50 to-accent-50" aria-labelledby="best-villas-heading">
-    <div class="max-w-5xl container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
+    <div class="max-w-5xl container mx-auto px-4 sm:px-6 lg:px-8">
         <header class="text-center mb-12">
             <div class="inline-flex items-center space-x-2 bg-accent-100 text-accent-800 px-4 py-2 rounded-full mb-4">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -72,7 +72,7 @@
             <div class="w-24 h-1 bg-gradient-to-r from-accent-600 to-primary-600 mx-auto mt-6 rounded-full"></div>
         </header>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12" role="list">
+        <div class="grid grid-cols-2 lg:grid-cols-2 gap-2 md:gap-8 lg:gap-12 px-2 md:px-0" role="list">
             @foreach($villas as $villa)
             <div class="group relative" role="listitem">
                 <!-- Header Card dengan Badge Premium -->

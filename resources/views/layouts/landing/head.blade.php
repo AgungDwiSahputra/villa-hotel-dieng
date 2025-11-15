@@ -465,7 +465,7 @@
         .popular-villas-carousel .carousel-cell {
             width: 100%;
             height: 100%;
-            padding-right: 1.5rem;
+            padding-right: 0.5rem;
             box-sizing: border-box;
         }
         

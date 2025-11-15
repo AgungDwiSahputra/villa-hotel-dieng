@@ -490,7 +490,7 @@
                 @endif
 
                 <!-- Villa Grid -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 max-w-4xl mx-auto" id="villaGrid">
+                <div class="grid grid-cols-2 lg:grid-cols-3 gap-2 md:gap-4 lg:gap-6 max-w-4xl mx-auto px-2 md:px-0" id="villaGrid">
                     @forelse ($produks as $produk)
                     <x-villa-card :villa="$produk" :availableUnits="$produk->unit" />
                     @empty
@@ -756,6 +756,237 @@
 
 .animate-pulse-gentle {
     animation: pulse-gentle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Villa Card Mobile Optimizations (< 768px) */
+@media (max-width: 767px) {
+    /* Adjust villa card content padding for 2-column layout */
+    #villaGrid article > div:last-child {
+        padding: 0.75rem !important; /* Reduce from p-4 (1rem) to 0.75rem */
+    }
+
+    /* Reduce image height slightly on mobile */
+    #villaGrid article .relative.overflow-hidden {
+        height: 10rem !important; /* 160px instead of 192px (h-48) */
+    }
+
+    /* Optimize title font size */
+    #villaGrid article h3 {
+        font-size: 0.875rem; /* text-sm instead of text-base */
+        line-height: 1.25rem;
+        margin-bottom: 0.5rem;
+    }
+
+    /* Reduce rating icon size */
+    #villaGrid article .flex.text-yellow-400 svg {
+        width: 0.875rem; /* 14px instead of 16px */
+        height: 0.875rem;
+    }
+
+    /* Optimize facility icons and text */
+    #villaGrid article .flex.items-center.gap-4 {
+        gap: 0.5rem;
+        font-size: 0.75rem; /* text-xs */
+    }
+
+    #villaGrid article .flex.items-center.gap-4 svg {
+        width: 0.875rem;
+        height: 0.875rem;
+    }
+
+    /* Reduce unit info text size */
+    #villaGrid article .text-sm {
+        font-size: 0.75rem; /* text-xs */
+    }
+
+    #villaGrid article .text-sm svg {
+        width: 0.875rem;
+        height: 0.875rem;
+    }
+
+    /* Optimize price section */
+    #villaGrid article .text-lg {
+        font-size: 1rem; /* text-base instead of text-lg */
+    }
+
+    #villaGrid article .text-xs {
+        font-size: 0.625rem; /* smaller text-xs */
+        line-height: 1rem;
+    }
+
+    /* Optimize button */
+    #villaGrid article a[href*="/produk/"] {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.75rem; /* text-xs */
+    }
+
+    /* Reduce badge sizes */
+    #villaGrid article .absolute.top-2.left-2 span {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.625rem;
+    }
+
+    #villaGrid article .absolute.top-2.left-2 svg {
+        width: 0.625rem;
+        height: 0.625rem;
+        margin-right: 0.25rem;
+    }
+
+    /* Adjust divider margin */
+    #villaGrid article .border-t {
+        margin-top: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    /* Reduce spacing between elements */
+    #villaGrid article .mb-3 {
+        margin-bottom: 0.5rem;
+    }
+
+    /* Ensure text doesn't overflow */
+    #villaGrid article p,
+    #villaGrid article span {
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    }
+}
+
+/* Best Villas Section Mobile Optimizations (< 768px) */
+@media (max-width: 767px) {
+    /* Adjust best-villas card padding */
+    section[aria-labelledby="best-villas-heading"] .group.relative > div:last-child article > div:last-child {
+        padding: 0.75rem !important;
+    }
+
+    /* Reduce image height for best-villas */
+    section[aria-labelledby="best-villas-heading"] .group.relative article .relative.overflow-hidden {
+        height: 12rem !important; /* 192px instead of 320px (h-80) */
+    }
+
+    /* Optimize header card with badges */
+    section[aria-labelledby="best-villas-heading"] .group.relative > div:first-child {
+        padding: 0.75rem !important;
+    }
+
+    section[aria-labelledby="best-villas-heading"] .group.relative > div:first-child span {
+        padding: 0.375rem 0.625rem !important;
+        font-size: 0.625rem !important;
+    }
+
+    section[aria-labelledby="best-villas-heading"] .group.relative > div:first-child svg {
+        width: 0.75rem !important;
+        height: 0.75rem !important;
+    }
+
+    section[aria-labelledby="best-villas-heading"] .group.relative > div:first-child button {
+        width: 1.75rem !important;
+        height: 1.75rem !important;
+    }
+
+    section[aria-labelledby="best-villas-heading"] .group.relative > div:first-child button svg {
+        width: 0.875rem !important;
+        height: 0.875rem !important;
+    }
+
+    /* Optimize thumbnail gallery overlay */
+    section[aria-labelledby="best-villas-heading"] .group.relative .absolute.top-28.right-4 > div {
+        width: 2rem !important;
+        height: 2rem !important;
+    }
+
+    /* Optimize premium features section */
+    section[aria-labelledby="best-villas-heading"] .group.relative .bg-white.rounded-b-3xl {
+        padding: 0.75rem !important;
+    }
+
+    /* Optimize text sizes in best-villas */
+    section[aria-labelledby="best-villas-heading"] article h3 {
+        font-size: 0.875rem !important;
+        line-height: 1.25rem !important;
+    }
+
+    section[aria-labelledby="best-villas-heading"] article .text-lg {
+        font-size: 1rem !important;
+    }
+
+    section[aria-labelledby="best-villas-heading"] article .text-sm {
+        font-size: 0.75rem !important;
+    }
+
+    /* Optimize buttons in premium features */
+    section[aria-labelledby="best-villas-heading"] .bg-white.rounded-b-3xl a {
+        padding: 0.5rem 0.75rem !important;
+        font-size: 0.75rem !important;
+    }
+
+    section[aria-labelledby="best-villas-heading"] .bg-white.rounded-b-3xl svg {
+        width: 0.875rem !important;
+        height: 0.875rem !important;
+    }
+}
+
+/* Popular Villas Carousel Mobile Optimizations (< 768px) */
+@media (max-width: 767px) {
+    /* Set carousel cell width to display 2 cards */
+    .popular-villas-carousel .carousel-cell {
+        width: calc(50% - 0.25rem) !important;
+    }
+
+    /* Adjust popular-villas card padding */
+    .popular-villas-carousel .carousel-cell article > div:last-child {
+        padding: 0.75rem !important;
+    }
+
+    /* Reduce image height for popular-villas */
+    .popular-villas-carousel .carousel-cell article .relative.overflow-hidden {
+        height: 10rem !important; /* 160px instead of 192px (h-48) */
+    }
+
+    /* Optimize text sizes in popular-villas */
+    .popular-villas-carousel .carousel-cell article h3 {
+        font-size: 0.875rem !important;
+        line-height: 1.25rem !important;
+    }
+
+    .popular-villas-carousel .carousel-cell article .text-lg {
+        font-size: 1rem !important;
+    }
+
+    .popular-villas-carousel .carousel-cell article .text-sm {
+        font-size: 0.75rem !important;
+    }
+
+    .popular-villas-carousel .carousel-cell article .text-xs {
+        font-size: 0.625rem !important;
+    }
+
+    /* Reduce badge sizes */
+    .popular-villas-carousel .carousel-cell article .absolute.top-2.left-2 span {
+        padding: 0.25rem 0.5rem !important;
+        font-size: 0.625rem !important;
+    }
+
+    .popular-villas-carousel .carousel-cell article .absolute.top-2.left-2 svg {
+        width: 0.625rem !important;
+        height: 0.625rem !important;
+        margin-right: 0.25rem !important;
+    }
+
+    /* Optimize button */
+    .popular-villas-carousel .carousel-cell article a[href*="/produk/"] {
+        padding: 0.5rem 0.75rem !important;
+        font-size: 0.75rem !important;
+    }
+
+    /* Reduce spacing */
+    .popular-villas-carousel .carousel-cell article .mb-3 {
+        margin-bottom: 0.5rem !important;
+    }
+
+    .popular-villas-carousel .carousel-cell article .border-t {
+        margin-top: 0.5rem !important;
+        margin-bottom: 0.5rem !important;
+    }
 }
 </style>
 
@@ -1778,7 +2009,7 @@ document.addEventListener('DOMContentLoaded', function() {
             wrapAround: false,
             prevNextButtons: true,
             pageDots: true,
-            groupCells: window.innerWidth > 767 ? 4 : true,
+            groupCells: window.innerWidth > 767 ? 4 : 2, // Show 2 cards on mobile, 4 on desktop
             // autoPlay: 5000,
             // pauseAutoPlayOnHover: true,
             // draggable: window.innerWidth > 767,

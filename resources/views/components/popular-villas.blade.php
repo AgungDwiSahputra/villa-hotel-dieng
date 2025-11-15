@@ -45,7 +45,7 @@
 </script> --}}
 
 <section class="py-16 lg:py-24 bg-gradient-to-br from-gray-50 to-white" aria-labelledby="popular-villas-heading">
-    <div class="max-w-5xl container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
+    <div class="max-w-5xl container mx-auto px-4 sm:px-6 lg:px-8">
         <header class="text-center mb-12">
             <div class="inline-flex items-center space-x-2 bg-primary-100 text-primary-800 px-4 py-2 rounded-full mb-4">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
