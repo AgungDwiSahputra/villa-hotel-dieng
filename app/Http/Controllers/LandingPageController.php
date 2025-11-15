@@ -191,27 +191,27 @@ class LandingPageController extends Controller
             }
         }
 
-        // Capacity filter
+        // Capacity filter (minimum requirement)
         if ($capacity) {
             if ($capacity === '1-2') {
-                $produksQuery->whereBetween('maks_orang', [1, 2]);
+                $produksQuery->where('maks_orang', '>=', 1);
             } elseif ($capacity === '3-4') {
-                $produksQuery->whereBetween('maks_orang', [3, 4]);
+                $produksQuery->where('maks_orang', '>=', 3);
             } elseif ($capacity === '5-8') {
-                $produksQuery->whereBetween('maks_orang', [5, 8]);
+                $produksQuery->where('maks_orang', '>=', 5);
             } elseif ($capacity === '9+') {
                 $produksQuery->where('maks_orang', '>=', 9);
             }
         }
 
-        // Rooms filter
+        // Rooms filter (minimum requirement)
         if ($rooms) {
             if ($rooms === '1') {
-                $produksQuery->where('kamar', 1);
+                $produksQuery->where('kamar', '>=', 1);
             } elseif ($rooms === '2') {
-                $produksQuery->where('kamar', 2);
+                $produksQuery->where('kamar', '>=', 2);
             } elseif ($rooms === '3') {
-                $produksQuery->where('kamar', 3);
+                $produksQuery->where('kamar', '>=', 3);
             } elseif ($rooms === '4+') {
                 $produksQuery->where('kamar', '>=', 4);
             }
