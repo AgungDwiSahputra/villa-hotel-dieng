@@ -55,7 +55,7 @@
 </script> --}}
 
 <section class="py-16 lg:py-24 bg-gradient-to-br from-primary-50 to-accent-50" aria-labelledby="best-villas-heading">
-    <div class="max-w-5xl container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
         <header class="text-center mb-12">
             <div class="inline-flex items-center space-x-2 bg-accent-100 text-accent-800 px-4 py-2 rounded-full mb-4">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

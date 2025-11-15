@@ -13,8 +13,8 @@
             <div class="absolute bottom-20 left-1/4 w-16 h-16 bg-white/10 rounded-full animate-float" style="animation-delay: 2s;"></div>
         </div>
 
-        <div class="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-24">
-            <!-- Hero Content - Full Width -->
+        <div class="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-24 max-w-5xl">
+            <!-- Hero Content - Centered with Max Width -->
             <div class="text-center space-y-6 lg:space-y-8 animate-fade-in-up mb-12 lg:mb-16">
                     {{-- <div class="inline-flex items-center space-x-2 bg-accent-500/20 backdrop-blur-sm px-4 py-2 sm:px-6 sm:py-3 rounded-full border border-accent-400/30">
                         <span class="relative flex h-3 w-3">
@@ -33,7 +33,7 @@
                     </h1>
 
                     <!-- Description -->
-                    <p class="block text-base sm:text-lg lg:text-xl xl:text-2xl text-gray-300 leading-relaxed mx-auto lg:mx-0 mb-6 lg:mb-8">
+                    <p class="block text-base sm:text-lg lg:text-xl text-gray-300 leading-relaxed max-w-3xl mx-auto mb-6 lg:mb-8">
                         Nikmati pengalaman menginap tak terlupakan dengan pemandangan alam yang memukau dan fasilitas premium di kawasan wisata Dieng.
                     </p>
 
@@ -162,7 +162,7 @@
 
             <!-- Booking Search Section -->
             <div class="relative z-10 animate-fade-in-up" style="animation-delay: 0.8s;">
-                <div class="bg-white/10 backdrop-blur-md rounded-2xl lg:rounded-3xl p-6 lg:p-8 border border-white/20 shadow-2xl max-w-4xl mx-auto hero-search-form">
+                <div class="bg-white/10 backdrop-blur-md rounded-2xl lg:rounded-3xl p-6 lg:p-8 border border-white/20 shadow-2xl mx-auto hero-search-form">
                     <div class="text-center mb-6 lg:mb-8">
                         <h3 class="text-xl lg:text-2xl font-bold text-white mb-2">Cari Penginapan Impian Anda</h3>
 
@@ -363,7 +363,7 @@
     </section>
 
     <!-- Main Content -->
-    <main id="main-content" role="main" class="bg-gray-50">
+    <main id="main-content" role="main" class="bg-gray-50 mx-auto">
         <!-- Popular Villas Section -->
         <x-popular-villas :villas="$popularVillas" />
 
@@ -372,7 +372,7 @@
 
         <!-- All Villas Section with Enhanced Design -->
         <section class="py-16 lg:py-24 bg-white" id="villas" aria-labelledby="all-villas-heading">
-            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="mx-auto px-4 sm:px-6 lg:px-8">
                 <!-- Section Header -->
                 <header class="text-center mb-12">
                     <div class="inline-flex items-center space-x-2 bg-primary-100 text-primary-800 px-4 py-2 rounded-full mb-4">
@@ -394,7 +394,7 @@
                 </header>
 
                 <!-- Advanced Filter Section -->
-                <div class="bg-gray-50 rounded-xl lg:rounded-2xl p-4 sm:p-6 mb-6 lg:mb-8">
+                <div class="bg-gray-50 rounded-xl lg:rounded-2xl p-4 sm:p-6 mb-6 lg:mb-8 max-w-4xl mx-auto">
                     <div class="flex items-center justify-between mb-4 lg:mb-6">
                         <h3 class="text-base lg:text-lg font-semibold text-gray-900 flex items-center">
                             <svg class="w-4 h-4 lg:w-5 lg:h-5 mr-2 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -474,7 +474,7 @@
 
                 <!-- Category Tabs -->
                 @if($categories->count() > 0)
-                <div class="mb-6 lg:mb-8">
+                <div class="mb-6 lg:mb-8 max-w-4xl mx-auto">
                     <div class="flex flex-wrap justify-center gap-2" role="tablist">
                         @foreach ($categories as $category)
                         <a href="{{ route('index', ['category' => $category->slug]) }}"
@@ -490,7 +490,7 @@
                 @endif
 
                 <!-- Villa Grid -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-6" id="villaGrid">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 max-w-4xl mx-auto" id="villaGrid">
                     @forelse ($produks as $produk)
                     <x-villa-card :villa="$produk" :availableUnits="$produk->unit" />
                     @empty

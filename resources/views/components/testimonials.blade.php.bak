@@ -28,18 +28,18 @@
 
 <section class="relative py-16 lg:py-24 bg-gradient-to-br from-primary-900 via-primary-800 to-primary-900 text-white overflow-hidden" aria-labelledby="testimonials-heading">
     <!-- Background Pattern -->
-    <div class="max-w-5xl absolute inset-0 opacity-10">
+    <div class="absolute inset-0 opacity-10">
         <div class="absolute inset-0" style="background-image: url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.4"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
     </div>
-
+    
     <!-- Floating Elements -->
-    <div class="max-w-5xl absolute inset-0 overflow-hidden pointer-events-none">
+    <div class="absolute inset-0 overflow-hidden pointer-events-none">
         <div class="absolute top-20 left-10 w-20 h-20 bg-white/10 rounded-full animate-float"></div>
         <div class="absolute top-40 right-20 w-32 h-32 bg-white/5 rounded-full animate-float" style="animation-delay: 1s;"></div>
         <div class="absolute bottom-20 left-1/4 w-16 h-16 bg-white/10 rounded-full animate-float" style="animation-delay: 2s;"></div>
     </div>
 
-    <div class="max-w-5xl relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
+    <div class="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
         <header class="text-center mb-12 lg:mb-16">
             <div class="inline-flex items-center space-x-2 bg-accent-500/20 backdrop-blur-sm px-4 py-2 sm:px-6 sm:py-3 rounded-full border border-accent-400/30 mb-6 lg:mb-8">
                 <span class="relative flex h-3 w-3">
@@ -48,15 +48,15 @@
                 </span>
                 <span class="text-accent-300 text-xs sm:text-sm font-medium">Testimonial Nyata</span>
             </div>
-
+            
             <h2 id="testimonials-heading" class="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold font-display text-white mb-4 lg:mb-6">
                 {{ $title }}
             </h2>
-
+            
             <p class="text-base sm:text-lg lg:text-xl xl:text-2xl text-gray-300 leading-relaxed max-w-3xl mx-auto mb-6 lg:mb-8">
                 Dengarkan pengalaman nyata dari tamu yang telah menginap di Villa kami
             </p>
-
+            
             <div class="w-24 h-1 bg-gradient-to-r from-accent-400 to-accent-600 mx-auto rounded-full"></div>
         </header>
 
@@ -86,7 +86,7 @@
             <div class="flex items-center justify-between mb-6 lg:mb-8">
                 <h3 class="text-xl lg:text-2xl font-semibold text-white">Ulasan Terbaru</h3>
             </div>
-
+            
             <div class="testimonial-slider testimonials-carousel flickity" role="region" aria-label="Testimonial carousel">
                 @foreach($testimonials as $testimonial)
                 <div class="testimonial-slide carousel-cell px-2 sm:px-3 lg:px-4" aria-label="Testimonial dari {{ $testimonial['name'] ?? 'Anonymous' }}">
@@ -134,7 +134,7 @@
                 </div>
                 @endforeach
             </div>
-
+            
         </div>
 
         <!-- Trust Badges -->
@@ -143,7 +143,7 @@
                 <h3 class="text-xl lg:text-2xl font-semibold text-white mb-3 lg:mb-4">Mengapa Memilih Kami</h3>
                 <p class="text-gray-300 text-sm sm:text-base lg:text-lg">Terpercaya oleh ribuan tamu dari seluruh Indonesia</p>
             </header>
-
+            
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
                 <div class="text-center p-4 lg:p-6 bg-white/5 backdrop-blur-sm rounded-xl lg:rounded-2xl border border-white/10 hover:bg-white/10 transition-all duration-300 group">
                     <div class="badge-icon mb-3 lg:mb-4 flex justify-center">
@@ -256,16 +256,16 @@
     .testimonial-slide {
         padding: 0 0.5rem;
     }
-
+    
     .testimonial-card {
         padding: 1.5rem;
     }
-
+    
     .trust-badges .grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 1rem;
     }
-
+    
     .badge-item {
         padding: 1rem;
     }
@@ -289,18 +289,18 @@ document.addEventListener('DOMContentLoaded', function() {
     const testimonialDots = document.querySelectorAll('.testimonial-dot');
     const prevBtn = document.getElementById('testimonial-prev');
     const nextBtn = document.getElementById('testimonial-next');
-
+    
     let currentSlide = 0;
     const totalSlides = testimonialDots.length;
-
+    
     function goToSlide(slideIndex) {
         if (slideIndex < 0) slideIndex = totalSlides - 1;
         if (slideIndex >= totalSlides) slideIndex = 0;
-
+        
         currentSlide = slideIndex;
         const offset = -slideIndex * 100;
         testimonialTrack.style.transform = `translateX(${offset}%)`;
-
+        
         // Update dots
         testimonialDots.forEach((dot, index) => {
             if (index === slideIndex) {
@@ -312,33 +312,33 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-
+    
     // Event listeners
     prevBtn.addEventListener('click', () => goToSlide(currentSlide - 1));
     nextBtn.addEventListener('click', () => goToSlide(currentSlide + 1));
-
+    
     testimonialDots.forEach((dot, index) => {
         dot.addEventListener('click', () => goToSlide(index));
     });
-
+    
     // Auto-play carousel
     setInterval(() => {
         goToSlide(currentSlide + 1);
     }, 5000);
-
+    
     // Touch/swipe support for mobile
     let touchStartX = 0;
     let touchEndX = 0;
-
+    
     testimonialTrack.addEventListener('touchstart', (e) => {
         touchStartX = e.changedTouches[0].screenX;
     });
-
+    
     testimonialTrack.addEventListener('touchend', (e) => {
         touchEndX = e.changedTouches[0].screenX;
         handleSwipe();
     });
-
+    
     function handleSwipe() {
         if (touchEndX < touchStartX - 50) {
             goToSlide(currentSlide + 1); // Swipe left, go to next

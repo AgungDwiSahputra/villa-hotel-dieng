@@ -1,6 +1,6 @@
 <!-- Modern Header Navigation -->
 <header class="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md shadow-sm transition-all duration-300" id="main-header">
-    <div class="container mx-auto px-3 sm:px-4 lg:px-8">
+    <div class="container mx-auto px-3 sm:px-4 lg:px-8 max-w-5xl">
         <div class="flex items-center justify-between h-14 sm:h-16 lg:h-20">
             <!-- Logo Section -->
             <div class="flex-shrink-0">
@@ -127,13 +127,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const mobileMenu = document.getElementById('mobile-menu');
     const header = document.getElementById('main-header');
     let lastScrollY = window.scrollY;
-    
+
     // Mobile menu toggle
     if (mobileMenuButton && mobileMenu) {
         mobileMenuButton.addEventListener('click', function() {
             const isExpanded = mobileMenuButton.getAttribute('aria-expanded') === 'true';
             mobileMenuButton.setAttribute('aria-expanded', !isExpanded);
-            
+
             if (isExpanded) {
                 mobileMenu.classList.add('hidden');
                 // Change icon to hamburger
@@ -155,17 +155,17 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-    
+
     // Header scroll behavior
     window.addEventListener('scroll', function() {
         const currentScrollY = window.scrollY;
-        
+
         if (currentScrollY > 100) {
             header.classList.add('shadow-lg');
         } else {
             header.classList.remove('shadow-lg');
         }
-        
+
         // Hide/show header on scroll
         if (currentScrollY > lastScrollY && currentScrollY > 300) {
             // Scrolling down
@@ -174,10 +174,10 @@ document.addEventListener('DOMContentLoaded', function() {
             // Scrolling up
             header.classList.remove('-translate-y-full');
         }
-        
+
         lastScrollY = currentScrollY;
     });
-    
+
     // Close mobile menu when clicking outside
     document.addEventListener('click', function(e) {
         if (mobileMenu && !mobileMenu.contains(e.target) && !mobileMenuButton.contains(e.target)) {
@@ -192,7 +192,7 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
         }
     });
-    
+
     // Keyboard navigation
     document.addEventListener('keydown', function(e) {
         // Escape key to close mobile menu
