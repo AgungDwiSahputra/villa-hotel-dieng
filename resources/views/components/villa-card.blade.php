@@ -11,7 +11,9 @@
     'showPopularBadge' => false,
     'showAvailabilityStatus' => false,
     'availabilityText' => 'Tersedia',
-    'availabilityClass' => 'bg-green-500'
+    'availabilityClass' => 'bg-green-500',
+    'showUnitInfo' => true,
+    'availableUnits' => null
 ])
 
 @if($villa)
@@ -89,17 +91,30 @@
             <!-- Availability Status - Bottom Left -->
             @if($showAvailabilityStatus)
             <div class="absolute bottom-2 left-2 z-20">
-                <span class="inline-flex items-center px-2 py-1 {{ $availabilityClass }} text-white text-xs font-medium rounded">
-                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-                    </svg>
+                <span class="inline-flex items-center px-2.5 py-1.5 {{ $availabilityClass }} text-white text-xs font-semibold rounded-lg shadow-lg backdrop-blur-sm {{ strpos($availabilityClass, 'bg-red') !== false ? 'animate-pulse' : '' }}">
+                    @if(strpos($availabilityClass, 'bg-green') !== false)
+                        <!-- Available Icon -->
+                        <svg class="w-3.5 h-3.5 mr-1" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                        </svg>
+                    @elseif(strpos($availabilityClass, 'bg-orange') !== false)
+                        <!-- Limited Icon -->
+                        <svg class="w-3.5 h-3.5 mr-1" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                        </svg>
+                    @else
+                        <!-- Sold Out Icon -->
+                        <svg class="w-3.5 h-3.5 mr-1" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                        </svg>
+                    @endif
                     {{ $availabilityText }}
                 </span>
             </div>
             @endif
         </a>
     </div>
-    
+
     <!-- Villa Content -->
     <div class="{{ $contentPadding }}">
         <!-- Title -->
@@ -111,13 +126,13 @@
         </h3>
 
         <!-- Location -->
-        <div class="flex items-center text-gray-600 text-sm mb-3">
+        <!--  <div class="flex items-center text-gray-600 text-sm mb-3">
             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314-9.894 8 8 0 01-1.314 9.894z"></path>
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
             </svg>
             {{ $villa->lokasi }}
-        </div>
+        </div> -->
 
         <!-- Rating -->
         @if($showRating)
@@ -150,12 +165,13 @@
         </div>
 
         <!-- Unit Availability -->
+        @if($showUnitInfo)
         <div class="flex items-center justify-between mb-3">
             <div class="flex items-center text-sm text-gray-600">
                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                 </svg>
-                <span class="font-medium">{{ rand(1, 5) }} Unit Tersedia</span>
+                <span class="font-medium">{{ $availableUnits ?? $villa->unit }} Unit Tersedia</span>
             </div>
             @if($isPromo)
             <span class="text-red-600 text-xs font-bold animate-pulse">
@@ -163,6 +179,7 @@
             </span>
             @endif
         </div>
+        @endif
 
         <!-- Divider -->
         <div class="border-t border-gray-100 my-3"></div>
@@ -217,7 +234,7 @@ function toggleFavorite(villaId, button) {
     // Toggle heart icon
     const svg = button.querySelector('svg');
     const isFavorited = svg.classList.contains('text-red-500');
-    
+
     if (isFavorited) {
         svg.classList.remove('text-red-500', 'fill-current');
         svg.classList.add('text-gray-700');
@@ -225,7 +242,7 @@ function toggleFavorite(villaId, button) {
         svg.classList.remove('text-gray-700');
         svg.classList.add('text-red-500', 'fill-current');
     }
-    
+
     // Here you can add AJAX call to save/remove favorite
     // For now, just toggle the visual state
     console.log('Toggle favorite for villa:', villaId);

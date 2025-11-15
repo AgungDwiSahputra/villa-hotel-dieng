@@ -5,7 +5,7 @@
         <div class="absolute inset-0 opacity-10">
             <div class="absolute inset-0" style="background-image: url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.4"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
         </div>
-        
+
         <!-- Floating Elements -->
         <div class="absolute inset-0 overflow-hidden pointer-events-none">
             <div class="absolute top-20 left-10 w-20 h-20 bg-white/10 rounded-full animate-float"></div>
@@ -23,7 +23,7 @@
                         </span>
                         <span class="text-accent-300 text-xs sm:text-sm font-medium">Promo Spesial Terbatas</span>
                     </div> --}}
-                    
+
                     <!-- Main Heading -->
                     <h1 class="text-3xl sm:text-4xl lg:text-5xl xl:text-7xl font-bold font-display leading-tight mb-4 lg:mb-6">
                         <span class="block text-white mb-1 lg:mb-2">Penginapan Mewah di</span>
@@ -31,12 +31,12 @@
                             Dieng
                         </span>
                     </h1>
-                    
+
                     <!-- Description -->
                     <p class="block text-base sm:text-lg lg:text-xl xl:text-2xl text-gray-300 leading-relaxed mx-auto lg:mx-0 mb-6 lg:mb-8">
                         Nikmati pengalaman menginap tak terlupakan dengan pemandangan alam yang memukau dan fasilitas premium di kawasan wisata Dieng.
                     </p>
-                    
+
                     {{-- <!-- CTA Buttons -->
                     <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mb-6 lg:mb-8">
                         <a href="#villas"
@@ -54,7 +54,7 @@
                             Hubungi Kami
                         </a>
                     </div> --}}
-                    
+
                     {{-- <!-- Trust Indicators -->
                     <div class="grid grid-cols-3 gap-3 lg:gap-6 xl:gap-8">
                         <div class="text-center p-3 lg:p-4 bg-white/5 backdrop-blur-sm rounded-lg lg:rounded-xl border border-white/10">
@@ -71,7 +71,7 @@
                         </div>
                     </div> --}}
             </div>
-            
+
             {{-- <!-- Hero Image with Slider - Full Width -->
             <div class="relative animate-fade-in-up mb-12 lg:mb-16" style="animation-delay: 0.4s;">
                     <div class="relative rounded-2xl lg:rounded-3xl overflow-hidden shadow-2xl border-2 border-white/10 max-w-4xl mx-auto">
@@ -82,10 +82,10 @@
                                 <img src="{{ asset('assets/images/vhd.webp') }}"
                                      alt="Villa mewah di Dieng dengan pemandangan indah"
                                      class="w-full h-auto max-h-[60vh] lg:max-h-[80vh] object-cover">
-                                
+
                                 <!-- Overlay Gradient -->
                                 <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent"></div>
-                                
+
                                 <!-- Floating Badge -->
                                 <div class="absolute top-4 right-4 lg:top-6 lg:right-6 bg-gradient-to-r from-accent-600 to-accent-700 text-white px-3 py-2 lg:px-6 lg:py-3 rounded-full font-semibold animate-bounce-gentle shadow-lg">
                                     <div class="flex items-center">
@@ -96,16 +96,16 @@
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <!-- Slide 2 -->
                             <div class="hero-slide relative">
                                 <img src="{{ asset('assets/images/vhd2.webp') }}"
                                      alt="Villa mewah di Dieng dengan fasilitas lengkap"
                                      class="w-full h-auto max-h-[60vh] lg:max-h-[80vh] object-cover">
-                                
+
                                 <!-- Overlay Gradient -->
                                 <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent"></div>
-                                
+
                                 <!-- Floating Badge -->
                                 <div class="absolute top-4 right-4 lg:top-6 lg:right-6 bg-gradient-to-r from-accent-600 to-accent-700 text-white px-3 py-2 lg:px-6 lg:py-3 rounded-full font-semibold animate-bounce-gentle shadow-lg">
                                     <div class="flex items-center">
@@ -116,16 +116,16 @@
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <!-- Slide 3 -->
                             <div class="hero-slide relative">
                                 <img src="{{ asset('assets/images/vhd3.webp') }}"
                                      alt="Villa mewah di Dieng dengan pemandangan sunrise"
                                      class="w-full h-auto max-h-[60vh] lg:max-h-[80vh] object-cover">
-                                
+
                                 <!-- Overlay Gradient -->
                                 <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent"></div>
-                                
+
                                 <!-- Floating Badge -->
                                 <div class="absolute top-4 right-4 lg:top-6 lg:right-6 bg-gradient-to-r from-accent-600 to-accent-700 text-white px-3 py-2 lg:px-6 lg:py-3 rounded-full font-semibold animate-bounce-gentle shadow-lg">
                                     <div class="flex items-center">
@@ -137,7 +137,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <!-- Slider Controls -->
                         <button id="prev-slide" class="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/80 backdrop-blur-sm text-gray-800 p-2 rounded-full shadow-lg hover:bg-white transition-colors duration-200 z-10">
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 lg:w-5 lg:h-5" viewBox="0 0 24 24" fill="none">
@@ -149,7 +149,7 @@
                                 <path fill-rule="evenodd" clip-rule="evenodd" d="M8.79289 6.29289C9.18342 5.90237 9.81658 5.90237 10.2071 6.29289L15.2071 11.2929C15.5976 11.6834 15.5976 12.3166 15.2071 12.7071L10.2071 17.7071C9.81658 18.0976 9.18342 18.0976 8.79289 17.7071C8.40237 17.3166 8.40237 16.6834 8.79289 16.2929L13.0858 12L8.79289 7.70711C8.40237 7.31658 8.40237 6.68342 8.79289 6.29289Z" fill="#000000"/>
                             </svg>
                         </button>
-                        
+
                         <!-- Image Gallery Indicators -->
                         <div class="absolute bottom-3 left-3 lg:bottom-4 lg:left-4 flex gap-2 z-10">
                             <button class="slider-dot w-2 h-2 bg-white rounded-full transition-all duration-200" data-slide="0"></button>
@@ -159,7 +159,7 @@
                     </div>
                 </div>
             </div> --}}
-            
+
             <!-- Booking Search Section -->
             <div class="relative z-10 animate-fade-in-up" style="animation-delay: 0.8s;">
                 <div class="bg-white/10 backdrop-blur-md rounded-2xl lg:rounded-3xl p-6 lg:p-8 border border-white/20 shadow-2xl max-w-4xl mx-auto hero-search-form">
@@ -181,7 +181,7 @@
                                     </a>
                                     @endforeach
                                 @endif
-                                
+
                                 <!-- Promo Button -->
                                 <a href="{{ route('produk.all', ['promo' => 'true']) }}"
                                 class="inline-flex items-center px-4 py-2.5 lg:px-6 lg:py-3 bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-white font-semibold rounded-full transition-all duration-200 border-0 text-sm lg:text-base transform hover:scale-105 shadow-lg hover:shadow-xl animate-pulse-gentle">
@@ -192,10 +192,10 @@
                                 </a>
                             </div>
                         </div>
-                        
+
                         <p class="text-gray-300 text-sm lg:text-base mt-4 lg:mt-6">Pilih tanggal booking dan durasi menginap untuk menemukan penginapan yang tersedia</p>
                     </div>
-                    
+
                     <form id="heroSearchForm" class="space-y-4 lg:space-y-6">
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
                             <!-- Tanggal Booking -->
@@ -213,7 +213,7 @@
                                        placeholder="Pilih tanggal booking"
                                        readonly>
                             </div>
-                            
+
                             <!-- Nights Selection -->
                             <div class="lg:col-span-1">
                                 <label for="nightsCount" class="block text-sm font-medium text-white mb-2">
@@ -237,7 +237,7 @@
                                 </select>
                             </div>
                         </div>
-                        
+
                         <!-- Search Button -->
                         <div class="flex justify-center mt-5">
                             <button type="submit"
@@ -250,7 +250,7 @@
                             </button>
                         </div>
                     </form>
-                    
+
                     <!-- Advanced Filter Section -->
                     <div class="mt-6 lg:mt-8">
                         <div class="flex items-center justify-center mb-4">
@@ -258,17 +258,17 @@
                                 <svg class="w-4 h-4 lg:w-5 lg:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
                                 </svg>
-                                <span id="filterToggleText">Permudah pencarian dengan filter</span>
-                                <svg class="w-4 h-4 lg:w-5 lg:h-5 ml-2 transform transition-transform" id="filterToggleIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <span id="advancedFilterToggleText">Permudah pencarian dengan filter</span>
+                                <svg class="w-4 h-4 lg:w-5 lg:h-5 ml-2 transform transition-transform" id="advancedFilterToggleIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                                 </svg>
                             </button>
                         </div>
-                        
-                        <div id="advancedFilterContent" class="hidden">
+
+                        <div id="advancedFilterContent" class="overflow-hidden transition-all duration-300" style="max-height: 0; opacity: 0;">
                             <div class="bg-white/5 backdrop-blur-sm rounded-xl lg:rounded-2xl p-4 lg:p-6 border border-white/10">
                                 <h4 class="text-white font-medium mb-4 lg:mb-6 text-center">Filter Pencarian</h4>
-                                
+
                                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
                                     <!-- Price Range Filter -->
                                     <div>
@@ -286,7 +286,7 @@
                                             <option value="2000000+">Di atas Rp 2.000.000</option>
                                         </select>
                                     </div>
-                                    
+
                                     <!-- Capacity Filter -->
                                     <div>
                                         <label for="capacityFilter" class="block text-sm font-medium text-white/90 mb-2">
@@ -303,7 +303,7 @@
                                             <option value="9+">9+ Orang</option>
                                         </select>
                                     </div>
-                                    
+
                                     <!-- Rooms Filter -->
                                     <div>
                                         <label for="roomsFilter" class="block text-sm font-medium text-white/90 mb-2">
@@ -320,7 +320,7 @@
                                             <option value="4+">4+ Kamar</option>
                                         </select>
                                     </div>
-                                    
+
                                     <!-- Near Attractions Filter -->
                                     <div>
                                         <label for="attractionsFilter" class="block text-sm font-medium text-white/90 mb-2">
@@ -330,17 +330,15 @@
                                             </svg>
                                             Dekat Wisata
                                         </label>
-                                        <select id="attractionsFilter" name="attractions" class="w-full px-3 py-2.5 lg:py-3 text-sm text-gray-900 bg-white/90 backdrop-blur-sm border border-white/20 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-accent-500 transition-all duration-200">
+                                        <select id="attractionsFilter" name="attractions" class="w-full px-3 py-2.5 lg:py-3 text-sm text-gray-900 bg-white/90 backdrop-blur-sm border border-white/20 rounded-lg focus:ring-2 ring:ring-accent-500 focus:border-accent-500 transition-all duration-200">
                                             <option value="">Semua Lokasi</option>
-                                            <option value="candi-arjuna">Candi Arjuna</option>
-                                            <option value="kawah-sikidang">Kawah Sikidang</option>
-                                            <option value="telaga-warna">Telaga Warna</option>
-                                            <option value="bukit-sikunir">Bukit Sikunir</option>
-                                            <option value="dieng-plateau">Dieng Plateau</option>
+                                            @foreach($wisataList as $wisata)
+                                                <option value="{{ Str::slug($wisata) }}">{{ $wisata }}</option>
+                                            @endforeach
                                         </select>
                                     </div>
                                 </div>
-                                
+
                                 <div class="flex flex-col sm:flex-row gap-3 mt-6">
                                     <button type="button" id="applyAdvancedFilter" class="flex-1 sm:flex-none inline-flex items-center justify-center px-6 py-3 bg-accent-600 hover:bg-accent-700 text-white font-medium rounded-lg transition-all duration-200 text-sm">
                                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -359,7 +357,7 @@
                         </div>
                     </div>
                 </div>
-                
+
             </div>
         </div>
     </section>
@@ -368,10 +366,10 @@
     <main id="main-content" role="main" class="bg-gray-50">
         <!-- Popular Villas Section -->
         <x-popular-villas :villas="$popularVillas" />
-        
+
         <!-- Best Villas Section -->
         <x-best-villas :villas="$bestVillas" />
-        
+
         <!-- All Villas Section with Enhanced Design -->
         <section class="py-16 lg:py-24 bg-white" id="villas" aria-labelledby="all-villas-heading">
             <div class="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -383,18 +381,18 @@
                         </svg>
                         <span class="text-sm font-medium">Semua Villa Tersedia</span>
                     </div>
-                    
+
                     <h2 id="all-villas-heading" class="text-3xl lg:text-4xl font-bold font-display text-gray-900 mb-4">
                         Temukan Villa Impian Anda
                     </h2>
-                    
+
                     <p class="text-lg text-gray-600 max-w-2xl mx-auto">
                         Jelajahi koleksi lengkap villa kami untuk liburan tak terlupakan di Dieng
                     </p>
-                    
+
                     <div class="w-24 h-1 bg-gradient-to-r from-primary-600 to-accent-600 mx-auto mt-6 rounded-full"></div>
                 </header>
-                
+
                 <!-- Advanced Filter Section -->
                 <div class="bg-gray-50 rounded-xl lg:rounded-2xl p-4 sm:p-6 mb-6 lg:mb-8">
                     <div class="flex items-center justify-between mb-4 lg:mb-6">
@@ -411,7 +409,7 @@
                             </svg>
                         </button>
                     </div>
-                    
+
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4" id="filterContent">
                         <div>
                             <label for="priceRange" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 lg:mb-2">Rentang Harga</label>
@@ -423,7 +421,7 @@
                                 <option value="2000000+">Di atas Rp 2.000.000</option>
                             </select>
                         </div>
-                        
+
                         <div>
                             <label for="guestCount" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 lg:mb-2">Jumlah Tamu</label>
                             <select class="w-full px-3 py-2 lg:px-4 lg:py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200" id="guestCount">
@@ -434,7 +432,7 @@
                                 <option value="9+">9+ Orang</option>
                             </select>
                         </div>
-                        
+
                         <div>
                             <label for="roomCount" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 lg:mb-2">Jumlah Kamar</label>
                             <select class="w-full px-3 py-2 lg:px-4 lg:py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200" id="roomCount">
@@ -445,7 +443,7 @@
                                 <option value="4+">4+ Kamar</option>
                             </select>
                         </div>
-                        
+
                         <div>
                             <label for="sortBy" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 lg:mb-2">Urutkan</label>
                             <select class="w-full px-3 py-2 lg:px-4 lg:py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200" id="sortBy">
@@ -457,7 +455,7 @@
                             </select>
                         </div>
                     </div>
-                    
+
                     <div class="flex flex-col sm:flex-row gap-2 lg:gap-3 mt-4 lg:mt-6">
                         <button class="flex-1 sm:flex-none inline-flex items-center justify-center px-4 py-2 lg:px-6 lg:py-3 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg transition-colors duration-200 text-sm" id="applyFilter">
                             <svg class="w-4 h-4 lg:w-5 lg:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -473,7 +471,7 @@
                         </button>
                     </div>
                 </div>
-                
+
                 <!-- Category Tabs -->
                 @if($categories->count() > 0)
                 <div class="mb-6 lg:mb-8">
@@ -490,11 +488,11 @@
                     </div>
                 </div>
                 @endif
-                
+
                 <!-- Villa Grid -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-6" id="villaGrid">
                     @forelse ($produks as $produk)
-                    <x-villa-card :villa="$produk" />
+                    <x-villa-card :villa="$produk" :availableUnits="$produk->unit" />
                     @empty
                         <div class="col-span-full">
                             <div class="text-center py-16">
@@ -573,11 +571,11 @@
                 @endif
             </div>
         </section>
-        
+
         <!-- Testimonials Section -->
         <x-testimonials :testimonials="$testimonials" />
     </main>
-    
+
     <!-- Install App Button -->
     <div id="installBtn" style="display: none;" role="button" tabindex="0" aria-label="Install application">
         <button class="fixed bottom-6 right-6 w-14 h-14 bg-primary-600 hover:bg-primary-700 text-white rounded-full shadow-lg hover:shadow-xl transform hover:scale-110 transition-all duration-200 flex items-center justify-center z-50">
@@ -698,12 +696,12 @@
         margin: 0 16px;
         border-radius: 16px;
     }
-    
+
     .hero-search-input {
         font-size: 16px; /* Prevent zoom on iOS */
         padding: 16px;
     }
-    
+
     .flatpickr-calendar {
         font-size: 14px;
     }
@@ -714,7 +712,7 @@
     .hero-search-input {
         min-height: 48px;
     }
-    
+
     .hero-search-button {
         min-height: 48px;
         padding: 12px 24px;
@@ -766,10 +764,10 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize Date Picker with Flatpickr
     initializeDatePicker();
-    
+
     // Initialize Search Form
     initializeSearchForm();
-    
+
     // Hero Slider Implementation
     const heroSlider = {
         currentSlide: 0,
@@ -778,7 +776,7 @@ document.addEventListener('DOMContentLoaded', function() {
         prevBtn: document.getElementById('prev-slide'),
         nextBtn: document.getElementById('next-slide'),
         slideInterval: null,
-        
+
         init() {
             if (this.slides.length > 0) {
                 // Set initial display for all slides
@@ -789,23 +787,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 this.startAutoSlide();
             }
         },
-        
+
         setupEventListeners() {
             // Previous button
             if (this.prevBtn) {
                 this.prevBtn.addEventListener('click', () => this.prevSlide());
             }
-            
+
             // Next button
             if (this.nextBtn) {
                 this.nextBtn.addEventListener('click', () => this.nextSlide());
             }
-            
+
             // Dot indicators
             this.dots.forEach((dot, index) => {
                 dot.addEventListener('click', () => this.goToSlide(index));
             });
-            
+
             // Pause on hover
             const sliderContainer = document.getElementById('hero-slider');
             if (sliderContainer) {
@@ -813,16 +811,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 sliderContainer.addEventListener('mouseleave', () => this.startAutoSlide());
             }
         },
-        
+
         showSlide(index) {
             // Hide all slides
             this.slides.forEach(slide => slide.style.display = 'none');
-            
+
             // Show current slide
             if (this.slides[index]) {
                 this.slides[index].style.display = 'block';
             }
-            
+
             // Update dots
             this.dots.forEach((dot, i) => {
                 if (i === index) {
@@ -833,42 +831,42 @@ document.addEventListener('DOMContentLoaded', function() {
                     dot.classList.add('bg-white/50');
                 }
             });
-            
+
             this.currentSlide = index;
         },
-        
+
         nextSlide() {
             const nextIndex = (this.currentSlide + 1) % this.slides.length;
             this.showSlide(nextIndex);
         },
-        
+
         prevSlide() {
             const prevIndex = (this.currentSlide - 1 + this.slides.length) % this.slides.length;
             this.showSlide(prevIndex);
         },
-        
+
         goToSlide(index) {
             this.showSlide(index);
         },
-        
+
         startAutoSlide() {
             this.stopAutoSlide();
             this.slideInterval = setInterval(() => this.nextSlide(), 5000);
         },
-        
+
         stopAutoSlide() {
             if (this.slideInterval) {
                 clearInterval(this.slideInterval);
             }
         }
     };
-    
+
     // Initialize hero slider
     heroSlider.init();
-    
+
     // Lazy Loading Implementation with Intersection Observer
     const lazyImages = document.querySelectorAll('.lazy-load');
-    
+
     if ('IntersectionObserver' in window) {
         const imageObserver = new IntersectionObserver((entries, observer) => {
             entries.forEach(entry => {
@@ -884,7 +882,7 @@ document.addEventListener('DOMContentLoaded', function() {
             rootMargin: '50px 0px',
             threshold: 0.01
         });
-        
+
         lazyImages.forEach(img => imageObserver.observe(img));
     } else {
         // Fallback for older browsers
@@ -894,7 +892,7 @@ document.addEventListener('DOMContentLoaded', function() {
             img.classList.add('loaded');
         });
     }
-    
+
     // Smooth Scroll Implementation
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
@@ -908,33 +906,33 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
-    
+
     // Advanced Filter Toggle (Mobile)
     const toggleFilter = document.getElementById('toggleFilter');
     const filterContent = document.getElementById('filterContent');
     const filterToggleText = document.getElementById('filterToggleText');
     const filterToggleIcon = document.getElementById('filterToggleIcon');
-    
+
     if (toggleFilter && filterContent) {
         // Hide filter on mobile by default
         if (window.innerWidth < 1024) {
             filterContent.style.display = 'none';
         }
-        
+
         toggleFilter.addEventListener('click', function() {
             const isHidden = filterContent.style.display === 'none';
             filterContent.style.display = isHidden ? 'grid' : 'none';
-            
+
             if (filterToggleText) {
                 filterToggleText.textContent = isHidden ? 'Sembunyikan Filter' : 'Tampilkan Filter';
             }
-            
+
             if (filterToggleIcon) {
                 filterToggleIcon.classList.toggle('rotate-180', isHidden);
             }
         });
     }
-    
+
     // Apply Filter Function
     const applyFilter = document.getElementById('applyFilter');
     if (applyFilter) {
@@ -943,14 +941,14 @@ document.addEventListener('DOMContentLoaded', function() {
             const guestCount = document.getElementById('guestCount').value;
             const roomCount = document.getElementById('roomCount').value;
             const sortBy = document.getElementById('sortBy').value;
-            
+
             // Build URL with filters
             const params = new URLSearchParams(window.location.search);
             if (priceRange) params.set('price', priceRange);
             if (guestCount) params.set('guests', guestCount);
             if (roomCount) params.set('rooms', roomCount);
             if (sortBy) params.set('sort', sortBy);
-            
+
             // Show loading state
             applyFilter.innerHTML = `
                 <svg class="animate-spin h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24">
@@ -960,14 +958,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 Mencari...
             `;
             applyFilter.disabled = true;
-            
+
             // Redirect with filters
             setTimeout(() => {
                 window.location.href = `${window.location.pathname}?${params.toString()}`;
             }, 500);
         });
     }
-    
+
     // Reset Filter Function
     const resetFilter = document.getElementById('resetFilter');
     if (resetFilter) {
@@ -977,7 +975,7 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('guestCount').value = '';
             document.getElementById('roomCount').value = '';
             document.getElementById('sortBy').value = 'relevance';
-            
+
             // Show loading state
             resetFilter.innerHTML = `
                 <svg class="animate-spin h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24">
@@ -987,38 +985,38 @@ document.addEventListener('DOMContentLoaded', function() {
                 Reset...
             `;
             resetFilter.disabled = true;
-            
+
             // Redirect without filters
             setTimeout(() => {
                 window.location.href = window.location.pathname;
             }, 500);
         });
     }
-    
+
     // Reset All Filters Function
     window.resetAllFilters = function() {
         window.location.href = window.location.pathname;
     };
-    
+
     // Parallax Effect for Hero Section
     window.addEventListener('scroll', function() {
         const scrolled = window.pageYOffset;
         const parallaxElements = document.querySelectorAll('.parallax');
-        
+
         parallaxElements.forEach(element => {
             const speed = element.dataset.speed || 0.5;
             const yPos = -(scrolled * speed);
             element.style.transform = `translateY(${yPos}px)`;
         });
     });
-    
+
     // Install App Prompt
     let deferredPrompt;
     window.addEventListener('beforeinstallprompt', (event) => {
         event.preventDefault();
         deferredPrompt = event;
         const installBtn = document.getElementById('installBtn');
-        
+
         if (installBtn) {
             installBtn.style.display = 'block';
             installBtn.addEventListener('click', () => {
@@ -1035,32 +1033,32 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     });
-    
+
     // Keyboard Navigation Support
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Tab') {
             document.body.classList.add('keyboard-nav');
         }
     });
-    
+
     document.addEventListener('mousedown', function() {
         document.body.classList.remove('keyboard-nav');
     });
-    
+
     // Animate elements on scroll
     const animateOnScroll = () => {
         const elements = document.querySelectorAll('.animate-fade-in-up');
-        
+
         elements.forEach(element => {
             const elementTop = element.getBoundingClientRect().top;
             const elementBottom = element.getBoundingClientRect().bottom;
-            
+
             if (elementTop < window.innerHeight && elementBottom > 0) {
                 element.classList.add('animate-fade-in-up-active');
             }
         });
     };
-    
+
     window.addEventListener('scroll', animateOnScroll);
     animateOnScroll(); // Initial check
 });
@@ -1071,7 +1069,7 @@ function performSearch(query, filters = {}) {
         search: query,
         ...filters
     });
-    
+
     // Show loading state
     const villaGrid = document.getElementById('villaGrid');
     if (villaGrid) {
@@ -1087,7 +1085,7 @@ function performSearch(query, filters = {}) {
             </div>
         `;
     }
-    
+
     fetch(`{{ route('index') }}?${params.toString()}`, {
         headers: {
             'X-Requested-With': 'XMLHttpRequest',
@@ -1099,10 +1097,10 @@ function performSearch(query, filters = {}) {
         const parser = new DOMParser();
         const doc = parser.parseFromString(html, 'text/html');
         const newGrid = doc.querySelector('#villaGrid');
-        
+
         if (newGrid && villaGrid) {
             villaGrid.innerHTML = newGrid.innerHTML;
-            
+
             // Re-initialize lazy loading for new content
             const newImages = villaGrid.querySelectorAll('.lazy-load');
             newImages.forEach(img => {
@@ -1110,7 +1108,7 @@ function performSearch(query, filters = {}) {
                 img.classList.remove('lazy-load');
                 img.classList.add('loaded');
             });
-            
+
             // Re-initialize animations
             const newElements = villaGrid.querySelectorAll('.animate-fade-in-up');
             newElements.forEach(element => {
@@ -1154,13 +1152,13 @@ const debouncedSearch = debounce(performSearch, 300);
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize favorite functionality
     initializeFavoriteButtons();
-    
+
     // Initialize lazy loading for villa cards
     initializeLazyLoading();
-    
+
     // Initialize card animations
     initializeCardAnimations();
-    
+
     // Initialize quick view functionality
     initializeQuickView();
 });
@@ -1168,7 +1166,7 @@ document.addEventListener('DOMContentLoaded', function() {
 // Initialize Favorite Buttons
 function initializeFavoriteButtons() {
     const favoriteButtons = document.querySelectorAll('button[onclick*="toggleFavorite"]');
-    
+
     favoriteButtons.forEach(button => {
         // Check if villa is already favorited (from localStorage)
         const villaId = button.getAttribute('data-villa-id');
@@ -1184,13 +1182,13 @@ function initializeFavoriteButtons() {
 function toggleFavorite(villaId, button) {
     const svg = button.querySelector('svg');
     const isFavorited = svg.classList.contains('text-red-500');
-    
+
     if (isFavorited) {
         // Remove from favorites
         svg.classList.remove('text-red-500', 'fill-current');
         svg.classList.add('text-gray-700');
         localStorage.removeItem(`favorite_${villaId}`);
-        
+
         // Show notification
         showNotification('Dihapus dari favorit', 'info');
     } else {
@@ -1198,15 +1196,15 @@ function toggleFavorite(villaId, button) {
         svg.classList.remove('text-gray-700');
         svg.classList.add('text-red-500', 'fill-current');
         localStorage.setItem(`favorite_${villaId}`, 'true');
-        
+
         // Add animation
         button.classList.add('active');
         setTimeout(() => button.classList.remove('active'), 600);
-        
+
         // Show notification
         showNotification('Ditambahkan ke favorit', 'success');
     }
-    
+
     // Update favorite count in header if exists
     updateFavoriteCount();
 }
@@ -1215,7 +1213,7 @@ function toggleFavorite(villaId, button) {
 function updateFavoriteCount() {
     const favoriteCount = Object.keys(localStorage).filter(key => key.startsWith('favorite_')).length;
     const countElement = document.getElementById('favoriteCount');
-    
+
     if (countElement) {
         countElement.textContent = favoriteCount;
         countElement.style.display = favoriteCount > 0 ? 'inline' : 'none';
@@ -1225,7 +1223,7 @@ function updateFavoriteCount() {
 // Initialize Lazy Loading
 function initializeLazyLoading() {
     const lazyImages = document.querySelectorAll('.lazy-load');
-    
+
     if ('IntersectionObserver' in window) {
         const imageObserver = new IntersectionObserver((entries, observer) => {
             entries.forEach(entry => {
@@ -1241,7 +1239,7 @@ function initializeLazyLoading() {
             rootMargin: '50px 0px',
             threshold: 0.01
         });
-        
+
         lazyImages.forEach(img => imageObserver.observe(img));
     } else {
         // Fallback for older browsers
@@ -1256,25 +1254,25 @@ function initializeLazyLoading() {
 // Initialize Card Animations
 function initializeCardAnimations() {
     const cards = document.querySelectorAll('.villa-card');
-    
+
     cards.forEach((card, index) => {
         // Add staggered animation on load
         setTimeout(() => {
             card.style.opacity = '0';
             card.style.transform = 'translateY(20px)';
             card.style.transition = 'all 0.5s ease';
-            
+
             setTimeout(() => {
                 card.style.opacity = '1';
                 card.style.transform = 'translateY(0)';
             }, 50);
         }, index * 100);
-        
+
         // Add hover effect listeners
         card.addEventListener('mouseenter', function() {
             this.style.zIndex = '10';
         });
-        
+
         card.addEventListener('mouseleave', function() {
             this.style.zIndex = '1';
         });
@@ -1284,7 +1282,7 @@ function initializeCardAnimations() {
 // Initialize Quick View
 function initializeQuickView() {
     const quickViewButtons = document.querySelectorAll('[data-quick-view]');
-    
+
     quickViewButtons.forEach(button => {
         button.addEventListener('click', function(e) {
             e.preventDefault();
@@ -1298,7 +1296,7 @@ function initializeQuickView() {
 function openQuickView(villaId) {
     const modal = document.getElementById('quickViewModal');
     if (!modal) return;
-    
+
     // Show loading state
     modal.classList.remove('hidden');
     modal.querySelector('.p-6').innerHTML = `
@@ -1308,7 +1306,7 @@ function openQuickView(villaId) {
             </div>
         </div>
     `;
-    
+
     // Load villa data (simulated)
     setTimeout(() => {
         modal.querySelector('.p-6').innerHTML = `
@@ -1349,7 +1347,7 @@ function closeQuickView() {
 function showNotification(message, type = 'info') {
     const notification = document.createElement('div');
     notification.className = `fixed top-4 right-4 z-50 px-4 py-3 rounded-lg shadow-lg transform translate-x-full transition-transform duration-300`;
-    
+
     // Set color based on type
     const colors = {
         success: 'bg-green-500 text-white',
@@ -1357,17 +1355,17 @@ function showNotification(message, type = 'info') {
         info: 'bg-blue-500 text-white',
         warning: 'bg-yellow-500 text-white'
     };
-    
+
     notification.className += ` ${colors[type] || colors.info}`;
     notification.textContent = message;
-    
+
     document.body.appendChild(notification);
-    
+
     // Animate in
     setTimeout(() => {
         notification.classList.remove('translate-x-full');
     }, 100);
-    
+
     // Remove after 3 seconds
     setTimeout(() => {
         notification.classList.add('translate-x-full');
@@ -1383,14 +1381,14 @@ function applyVillaFilters() {
     const guestCount = document.getElementById('guestCount')?.value;
     const roomCount = document.getElementById('roomCount')?.value;
     const sortBy = document.getElementById('sortBy')?.value;
-    
+
     // Show loading state
     const villaGrid = document.getElementById('villaGrid');
     if (villaGrid) {
         villaGrid.style.opacity = '0.5';
         villaGrid.style.pointerEvents = 'none';
     }
-    
+
     // Simulate filter application
     setTimeout(() => {
         if (villaGrid) {
@@ -1406,11 +1404,11 @@ document.addEventListener('keydown', function(e) {
     if (e.key === 'Tab') {
         const focusedElement = document.activeElement;
         const villaCard = focusedElement.closest('.villa-card');
-        
+
         if (villaCard) {
             villaCard.classList.add('ring-2', 'ring-primary-500', 'ring-offset-2');
         }
-        
+
         // Remove ring from other cards
         document.querySelectorAll('.villa-card').forEach(card => {
             if (card !== villaCard) {
@@ -1426,12 +1424,12 @@ window.addEventListener('scroll', function() {
     if (scrollTimeout) {
         window.cancelAnimationFrame(scrollTimeout);
     }
-    
+
     scrollTimeout = window.requestAnimationFrame(function() {
         // Parallax effects or other scroll-based animations
         const scrolled = window.pageYOffset;
         const parallaxElements = document.querySelectorAll('.parallax');
-        
+
         parallaxElements.forEach(element => {
             const speed = element.dataset.speed || 0.5;
             const yPos = -(scrolled * speed);
@@ -1444,13 +1442,13 @@ window.addEventListener('scroll', function() {
 function initializeDatePicker() {
     const bookingInput = document.getElementById('bookingDate');
     const nightsSelect = document.getElementById('nightsCount');
-    
+
     if (!bookingInput || !nightsSelect) return;
-    
+
     // Set minimum date to today
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    
+
     // Initialize booking date picker
     const bookingPicker = flatpickr(bookingInput, {
         minDate: today,
@@ -1484,23 +1482,23 @@ function initializeSearchForm() {
     const searchBtn = document.getElementById('searchVillasBtn');
     const bookingInput = document.getElementById('bookingDate');
     const nightsSelect = document.getElementById('nightsCount');
-    
+
     if (!searchForm || !searchBtn) return;
-    
+
     searchForm.addEventListener('submit', function(e) {
         e.preventDefault();
-        
+
         // Validate form
         if (!bookingInput.value) {
             showNotification('Silakan pilih tanggal booking terlebih dahulu', 'warning');
             return;
         }
-        
+
         if (!nightsSelect.value) {
             showNotification('Silakan pilih jumlah malam menginap', 'warning');
             return;
         }
-        
+
         // Show loading state
         const originalBtnContent = searchBtn.innerHTML;
         searchBtn.innerHTML = `
@@ -1511,13 +1509,13 @@ function initializeSearchForm() {
             Mencari Villa...
         `;
         searchBtn.disabled = true;
-        
+
         // Build search parameters
         const params = new URLSearchParams({
             booking_date: bookingInput.value,
             nights: nightsSelect.value
         });
-        
+
         // Redirect to all products page with search parameters
         setTimeout(() => {
             window.location.href = `/all-produk?${params.toString()}`;
@@ -1530,10 +1528,10 @@ function showNotification(message, type = 'info') {
     // Remove existing notifications
     const existingNotifications = document.querySelectorAll('.hero-notification');
     existingNotifications.forEach(notif => notif.remove());
-    
+
     const notification = document.createElement('div');
     notification.className = `hero-notification fixed top-4 right-4 z-50 px-6 py-4 rounded-xl shadow-2xl transform translate-x-full transition-all duration-300 max-w-sm`;
-    
+
     // Set color and icon based on type
     const configs = {
         success: {
@@ -1553,9 +1551,9 @@ function showNotification(message, type = 'info') {
             icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>'
         }
     };
-    
+
     const config = configs[type] || configs.info;
-    
+
     notification.innerHTML = `
         <div class="${config.bg} text-white rounded-xl p-4 flex items-start">
             <svg class="w-6 h-6 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1571,15 +1569,15 @@ function showNotification(message, type = 'info') {
             </button>
         </div>
     `;
-    
+
     document.body.appendChild(notification);
-    
+
     // Animate in
     setTimeout(() => {
         notification.classList.remove('translate-x-full');
         notification.classList.add('translate-x-0');
     }, 100);
-    
+
     // Auto remove after 5 seconds
     setTimeout(() => {
         notification.classList.add('translate-x-full');
@@ -1596,7 +1594,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Add smooth transitions for category and promo buttons
     const categoryButtons = document.querySelectorAll('a[href*="category"]');
     const promoButton = document.querySelector('a[href*="promo=true"]');
-    
+
     // Add loading state to category buttons
     categoryButtons.forEach(button => {
         button.addEventListener('click', function(e) {
@@ -1611,7 +1609,7 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
             this.classList.add('opacity-75', 'cursor-not-allowed');
             this.style.pointerEvents = 'none';
-            
+
             // Restore original content after a delay (in case navigation is slow)
             setTimeout(() => {
                 this.innerHTML = originalContent;
@@ -1620,7 +1618,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 3000);
         });
     });
-    
+
     // Add special handling for promo button
     if (promoButton) {
         promoButton.addEventListener('click', function(e) {
@@ -1635,10 +1633,10 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
             this.classList.add('opacity-75', 'cursor-not-allowed');
             this.style.pointerEvents = 'none';
-            
+
             // Add pulse effect while loading
             this.style.animation = 'pulse-gentle 1s cubic-bezier(0.4, 0, 0.6, 1) infinite';
-            
+
             // Restore original content after a delay
             setTimeout(() => {
                 this.innerHTML = originalContent;
@@ -1648,44 +1646,50 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 3000);
         });
     }
-    
+
     // Add hover effects for better UX
     const allButtons = document.querySelectorAll('a[href*="category"], a[href*="promo=true"]');
     allButtons.forEach(button => {
         button.addEventListener('mouseenter', function() {
             this.style.transform = 'translateY(-2px) scale(1.05)';
         });
-        
+
         button.addEventListener('mouseleave', function() {
             this.style.transform = 'translateY(0) scale(1)';
         });
     });
-    
+
     // Advanced Filter Toggle Functionality
     const toggleAdvancedFilter = document.getElementById('toggleAdvancedFilter');
     const advancedFilterContent = document.getElementById('advancedFilterContent');
-    const filterToggleText = document.getElementById('filterToggleText');
-    const filterToggleIcon = document.getElementById('filterToggleIcon');
-    
+    const advancedFilterToggleText = document.getElementById('advancedFilterToggleText');
+    const advancedFilterToggleIcon = document.getElementById('advancedFilterToggleIcon');
+
     if (toggleAdvancedFilter && advancedFilterContent) {
-        toggleAdvancedFilter.addEventListener('click', function() {
-            const isHidden = advancedFilterContent.classList.contains('hidden');
-            
+        toggleAdvancedFilter.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const isHidden = advancedFilterContent.style.maxHeight === '0px' || advancedFilterContent.style.maxHeight === '';
+
             if (isHidden) {
                 // Show filter
-                advancedFilterContent.classList.remove('hidden');
-                advancedFilterContent.classList.add('animate-fade-in-up');
-                filterToggleText.textContent = 'Sembunyikan filter';
-                filterToggleIcon.classList.add('rotate-180');
+                advancedFilterContent.style.maxHeight = '2000px';
+                advancedFilterContent.style.opacity = '1';
+
+                if (advancedFilterToggleText) advancedFilterToggleText.textContent = 'Sembunyikan filter';
+                if (advancedFilterToggleIcon) advancedFilterToggleIcon.classList.add('rotate-180');
             } else {
                 // Hide filter
-                advancedFilterContent.classList.add('hidden');
-                filterToggleText.textContent = 'Permudah pencarian dengan filter';
-                filterToggleIcon.classList.remove('rotate-180');
+                advancedFilterContent.style.maxHeight = '0';
+                advancedFilterContent.style.opacity = '0';
+
+                if (advancedFilterToggleText) advancedFilterToggleText.textContent = 'Permudah pencarian dengan filter';
+                if (advancedFilterToggleIcon) advancedFilterToggleIcon.classList.remove('rotate-180');
             }
         });
     }
-    
+
     // Apply Advanced Filter Function
     const applyAdvancedFilter = document.getElementById('applyAdvancedFilter');
     if (applyAdvancedFilter) {
@@ -1696,7 +1700,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const attractions = document.getElementById('attractionsFilter').value;
             const bookingDate = document.getElementById('bookingDate').value;
             const nightsCount = document.getElementById('nightsCount').value;
-            
+
             // Show loading state
             const originalBtnContent = this.innerHTML;
             this.innerHTML = `
@@ -1707,27 +1711,27 @@ document.addEventListener('DOMContentLoaded', function() {
                 Menerapkan Filter...
             `;
             this.disabled = true;
-            
+
             // Build search parameters
             const params = new URLSearchParams();
-            
+
             // Add basic search parameters
             if (bookingDate) params.set('booking_date', bookingDate);
             if (nightsCount) params.set('nights_count', nightsCount);
-            
+
             // Add advanced filter parameters
             if (priceRange) params.set('price_range', priceRange);
             if (capacity) params.set('capacity', capacity);
             if (rooms) params.set('rooms', rooms);
             if (attractions) params.set('attractions', attractions);
-            
+
             // Redirect to all products page with filters
             setTimeout(() => {
                 window.location.href = `/all-produk?${params.toString()}`;
             }, 800);
         });
     }
-    
+
     // Reset Advanced Filter Function
     const resetAdvancedFilter = document.getElementById('resetAdvancedFilter');
     if (resetAdvancedFilter) {
@@ -1737,7 +1741,7 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('capacityFilter').value = '';
             document.getElementById('roomsFilter').value = '';
             document.getElementById('attractionsFilter').value = '';
-            
+
             // Show loading state
             const originalBtnContent = this.innerHTML;
             this.innerHTML = `
@@ -1748,7 +1752,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 Reset...
             `;
             this.disabled = true;
-            
+
             // Redirect without filters
             setTimeout(() => {
                 window.location.href = '/all-produk';
@@ -1781,7 +1785,7 @@ document.addEventListener('DOMContentLoaded', function() {
             lazyLoad: 2
         });
     }
-    
+
     // Testimonials Carousel
     const testimonialsCarousel = document.querySelector('.testimonials-carousel');
     if (testimonialsCarousel) {
@@ -1797,7 +1801,7 @@ document.addEventListener('DOMContentLoaded', function() {
             lazyLoad: 1
         });
     }
-    
+
     // Fallback for browsers without Flickity
     if (typeof Flickity === 'undefined') {
         console.warn('Flickity not loaded. Using fallback scroll.');

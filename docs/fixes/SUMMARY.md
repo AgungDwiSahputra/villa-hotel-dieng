@@ -4,7 +4,10 @@
 **Status:** ✅ **SELESAI & BERHASIL**  
 **Developer:** System Update
 
-**Update:** Ditambahkan perbaikan UI - Simplifikasi tombol filter (1 tombol)
+**Update:** 
+- Ditambahkan perbaikan UI - Simplifikasi tombol filter (1 tombol)
+- Ditambahkan fitur badge ketersediaan produk berdasarkan filter tanggal
+- **Diperbaiki bug CRITICAL pada perhitungan availability calculation**
 
 ---
 
@@ -12,6 +15,8 @@
 
 1. Memperbaiki fitur **Filter Pencarian Lanjutan** pada Landing Page dan halaman All Products yang tidak berfungsi karena ketidaksesuaian antara Backend dan Database.
 2. Meningkatkan **User Experience** dengan menyederhanakan UI tombol filter.
+3. Menambahkan **Badge Ketersediaan** real-time yang menampilkan status availability produk berdasarkan tanggal booking.
+4. **Memperbaiki bug CRITICAL** pada perhitungan ketersediaan unit (availability calculation logic).
 
 ---
 
@@ -31,6 +36,15 @@
 - **Backend mencari:** kolom `rating`
 - **Database:** Kolom `rating` **TIDAK ADA**
 - **Dampak:** Sort by rating menyebabkan error SQL
+
+### 4. Bug Perhitungan Availability - CRITICAL ❌
+- **Logic salah:** Menggunakan SUM semua unit di semua tanggal dalam range
+- **Seharusnya:** Menggunakan MAX booking per tanggal dalam range
+- **Dampak:** 
+  - Availability bisa negatif
+  - Villa tersedia tidak muncul di hasil pencarian
+  - User tidak bisa booking padahal ada unit tersedia
+  - Revenue loss signifikan
 
 ---
 
@@ -83,6 +97,43 @@ Schema::table('produks', function (Blueprint $table) {
 - **Posisi:** Setelah kolom `urutan`
 
 **Status:** ✅ **MIGRATION BERHASIL DIJALANKAN**
+
+---
+
+### 🐛 4. Perbaikan Bug Availability Calculation
+
+**File:** `app/Http/Controllers/LandingPageController.php`
+
+**Problem:**
+```php
+// ❌ SALAH - SUM across all dates
+$bookedUnits = TransaksiDetail::where('produk_id', $produk->id)
+    ->whereBetween('date', [$startDate, $endDate])
+    ->sum('unit');  // BUG: Menjumlahkan SEMUA tanggal!
+
+// Contoh: Booking 2 unit untuk 3 malam = 6 unit (salah!)
+// Seharusnya: Max 2 unit per hari
+```
+
+**Solution:**
+```php
+// ✅ BENAR - MAX per date in range
+$bookingsPerDate = TransaksiDetail::where('produk_id', $produk->id)
+    ->whereBetween('date', [$startDate, $endDate])
+    ->select('date', DB::raw('SUM(unit) as daily_booked'))
+    ->groupBy('date')
+    ->get();
+
+$maxBookedInRange = $bookingsPerDate->max('daily_booked') ?? 0;
+$availableUnits = $produk->unit - $maxBookedInRange;
+```
+
+**Impact:**
+- Villa 5 unit dengan booking 2 unit untuk 3 malam:
+  - Before: 5 - 6 = **-1 unit** ❌ (Villa tidak muncul)
+  - After: 5 - 2 = **3 unit tersedia** ✅ (Villa muncul)
+
+**Status:** ✅ **LOGIC FIXED**
 
 ---
 
@@ -201,7 +252,7 @@ Mengisi rating default untuk semua produk yang sudah ada:
 ## 📁 FILE YANG DIUBAH
 
 ### 1. Backend
-- ✅ `app/Http/Controllers/LandingPageController.php` - Filter logic diperbaiki
+- ✅ `app/Http/Controllers/LandingPageController.php` - Filter logic diperbaiki + **availability calculation FIXED** + badge logic
 - ✅ `app/Models/Produk/Produk.php` - Tambah 'rating' ke fillable
 
 ### 2. Database
@@ -209,12 +260,16 @@ Mengisi rating default untuk semua produk yang sudah ada:
 - ✅ `database/seeders/UpdateProdukRatingSeeder.php` - **BARU**
 
 ### 3. Frontend/UI
-- ✅ `resources/views/landing/all-products.blade.php` - Simplifikasi tombol filter (2 tombol → 1 tombol)
+- ✅ `resources/views/landing/all-products.blade.php` - Simplifikasi tombol + availability badge logic + info banner
+- ✅ `resources/views/components/villa-card.blade.php` - Availability badge rendering + icons
 
 ### 4. Dokumentasi
 - ✅ `docs/fixes/filter-pencarian-lanjutan-fix.md` - **BARU**
 - ✅ `docs/fixes/test-filter-script.md` - **BARU**
 - ✅ `docs/fixes/ui-simplification-filter-button.md` - **BARU**
+- ✅ `docs/fixes/availability-badge-feature.md` - **BARU**
+- ✅ `docs/bugfix/availability-calculation-fix.md` - **BARU**
+- ✅ `docs/bugfix/BUGFIX-SUMMARY.md` - **BARU**
 - ✅ `docs/fixes/SUMMARY.md` - **BARU** (file ini)
 
 ---
@@ -319,6 +374,8 @@ php artisan db:seed --class=UpdateProdukRatingSeeder
 - Loading state indicator saat submit form
 - Filter count badge di tombol
 - Keyboard shortcuts (Ctrl+Enter untuk submit)
+- Real-time availability updates via WebSocket
+- Wishlist notification untuk availability alerts
 
 ---
 
@@ -400,6 +457,14 @@ Jika ada pertanyaan atau issue terkait perbaikan ini:
 ✅ Tombol Filter Disederhanakan - **2 tombol → 1 tombol**  
 ✅ Label lebih deskriptif - **"Cari & Terapkan Filter"**  
 ✅ Layout lebih clean - **Visual separator & better spacing**  
+✅ **Availability Badge** - **Real-time ketersediaan unit**  
+✅ **Badge Logic** - **Smart color coding (Hijau/Orange/Merah)**  
+✅ **Info Banner** - **Informasi filter tanggal yang aktif**
+
+### Bug Fix:
+✅ **Availability Calculation** - **FIXED critical bug** ⚠️  
+✅ **Product Filtering** - **Hanya hide yang fully booked**  
+✅ **Accurate Results** - **Villa tersedia sekarang muncul dengan benar**
 
 ### Dokumentasi:
 ✅ Dokumentasi Lengkap - **COMPLETE**

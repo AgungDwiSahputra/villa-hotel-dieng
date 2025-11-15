@@ -1,4 +1,4 @@
-{{-- 
+{{--
     Komponen untuk menampilkan Villa Populer
     Features: Rating, status ketersediaan, harga dinamis, pemesanan cepat
     Accessibility: WCAG 2.1 compliant
@@ -87,7 +87,7 @@
 
         <!-- View All Button -->
         <div class="text-center mt-20">
-            <a href="{{ route('index') }}"
+            <a href="{{ route('produk.all') }}"
                class="inline-flex items-center px-8 py-3 border-2 border-primary-600 text-primary-600 hover:bg-primary-600 hover:text-white font-semibold rounded-full transition-all duration-200 transform hover:scale-105"
                role="button">
                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

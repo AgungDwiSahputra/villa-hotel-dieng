@@ -6,6 +6,7 @@ use App\Http\Requests\Landing\ProdukFinalRequest;
 use App\Models\Availability;
 use App\Models\Produk\Produk;
 use App\Models\Produk\ProdukCategory;
+use App\Models\Produk\ProdukWisata;
 use App\Models\Rekening;
 use App\Models\Transaksi\Transaksi;
 use App\Models\Transaksi\TransaksiDetail;
@@ -115,7 +116,20 @@ class LandingPageController extends Controller
             ]
         ];
 
-        return view('landing.index', compact('categories', 'selectedCategory', 'produks', 'activeCategory', 'popularVillas', 'bestVillas', 'testimonials'));
+        // Get unique wisata list for filter dropdown
+        $wisataList = ProdukWisata::select('name')
+            ->distinct()
+            ->orderBy('name', 'asc')
+            ->pluck('name')
+            ->map(function ($name) {
+                // Remove pattern like "6 menit", "10 menit", etc from the end
+                return preg_replace('/\s+\d+\s+menit$/i', '', $name);
+            })
+            ->unique()
+            ->sort()
+            ->values();
+
+        return view('landing.index', compact('categories', 'selectedCategory', 'produks', 'activeCategory', 'popularVillas', 'bestVillas', 'testimonials', 'wisataList'));
     }
 
     public function allProducts(Request $request)
@@ -134,7 +148,7 @@ class LandingPageController extends Controller
         $attractions = $request->get('attractions');
         $sortBy = $request->get('sort');
 
-        $produksQuery = Produk::with('images', 'category')
+        $produksQuery = Produk::with('images', 'category', 'wisatas')
             ->where('status', 'publish');
 
         if ($activeCategory) {
@@ -203,25 +217,15 @@ class LandingPageController extends Controller
             }
         }
 
-        // Attractions filter (based on location or wisata field)
+        // Attractions filter (using produk_wisatas table relationship)
         if ($attractions) {
-            $attractionKeywords = [
-                'candi-arjuna' => ['candi', 'arjuna'],
-                'kawah-sikidang' => ['kawah', 'sikidang'],
-                'telaga-warna' => ['telaga', 'warna'],
-                'bukit-sikunir' => ['bukit', 'sikunir'],
-                'dieng-plateau' => ['dieng', 'plateau']
-            ];
+            // Convert slug back to title case for matching
+            $attractionName = str_replace('-', ' ', $attractions);
+            $attractionName = ucwords($attractionName);
 
-            if (isset($attractionKeywords[$attractions])) {
-                $keywords = $attractionKeywords[$attractions];
-                $produksQuery->where(function ($query) use ($keywords) {
-                    foreach ($keywords as $keyword) {
-                        $query->orWhere('lokasi', 'LIKE', '%' . $keyword . '%')
-                              ->orWhere('label', 'LIKE', '%' . $keyword . '%');
-                    }
-                });
-            }
+            $produksQuery->whereHas('wisatas', function ($query) use ($attractionName) {
+                $query->where('name', 'LIKE', '%' . $attractionName . '%');
+            });
         }
 
         // Sort by
@@ -242,6 +246,9 @@ class LandingPageController extends Controller
         }
 
         // Filter berdasarkan ketersediaan tanggal booking
+        $availability = [];
+        $fullyBookedProductIds = [];
+
         if ($bookingDate && $nightsCount) {
             $startDate = Carbon::parse($bookingDate);
 
@@ -249,19 +256,85 @@ class LandingPageController extends Controller
             $daysToAdd = $nightsCount === '8+' ? 8 : (int)$nightsCount;
             $endDate = $startDate->copy()->addDays($daysToAdd);
 
-            // Ambil ID produk yang tidak tersedia untuk tanggal yang dipilih
-            $unavailableProductIds = TransaksiDetail::where('status', '!=', 'REJECTED')
+            // Ambil semua produk yang ada booking di range tanggal
+            $productsWithBookings = TransaksiDetail::where('status', '!=', 'REJECTED')
                 ->whereBetween('date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
-                ->pluck('produk_id')
-                ->unique();
+                ->select('produk_id')
+                ->distinct()
+                ->pluck('produk_id');
 
-            // Filter produk yang tersedia
-            if ($unavailableProductIds->isNotEmpty()) {
-                $produksQuery->whereNotIn('id', $unavailableProductIds);
+            // Cek setiap produk apakah fully booked
+            foreach ($productsWithBookings as $produkId) {
+                $produk = Produk::find($produkId);
+                if (!$produk) continue;
+
+                // Hitung booking per tanggal untuk produk ini
+                $bookingsPerDate = TransaksiDetail::where('produk_id', $produkId)
+                    ->where('status', '!=', 'REJECTED')
+                    ->whereBetween('date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
+                    ->select('date', DB::raw('SUM(unit) as daily_booked'))
+                    ->groupBy('date')
+                    ->get();
+
+                // Cari hari dengan booking terbanyak
+                $maxBookedInRange = $bookingsPerDate->max('daily_booked') ?? 0;
+
+                // Jika max booking >= total unit, berarti fully booked
+                if ($maxBookedInRange >= $produk->unit) {
+                    $fullyBookedProductIds[] = $produkId;
+                }
+            }
+
+            // Filter hanya produk yang fully booked
+            if (!empty($fullyBookedProductIds)) {
+                $produksQuery->whereNotIn('id', $fullyBookedProductIds);
             }
         }
 
         $produks = $produksQuery->paginate(12)->withQueryString();
+
+        // Hitung ketersediaan untuk setiap produk jika ada filter tanggal
+        if ($bookingDate && $nightsCount) {
+            $startDate = Carbon::parse($bookingDate);
+            $daysToAdd = $nightsCount === '8+' ? 8 : (int)$nightsCount;
+            $endDate = $startDate->copy()->addDays($daysToAdd);
+
+            foreach ($produks as $produk) {
+                // Hitung booking per tanggal dalam range (group by date)
+                // Ambil tanggal dengan booking terbanyak (worst case scenario)
+                $bookingsPerDate = TransaksiDetail::where('produk_id', $produk->id)
+                    ->where('status', '!=', 'REJECTED')
+                    ->whereBetween('date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
+                    ->select('date', DB::raw('SUM(unit) as daily_booked'))
+                    ->groupBy('date')
+                    ->get();
+
+                // Cari hari dengan booking terbanyak dalam range
+                $maxBookedInRange = $bookingsPerDate->max('daily_booked') ?? 0;
+
+                $availableUnits = $produk->unit - $maxBookedInRange;
+
+                $availability[$produk->id] = [
+                    'total' => $produk->unit,
+                    'booked' => $maxBookedInRange,  // Max booking di salah satu tanggal
+                    'available' => max(0, $availableUnits),
+                    'percentage' => $produk->unit > 0 ? round(($availableUnits / $produk->unit) * 100) : 0
+                ];
+            }
+        }
+
+        // Get unique wisata list for filter dropdown
+        $wisataList = ProdukWisata::select('name')
+            ->distinct()
+            ->orderBy('name', 'asc')
+            ->pluck('name')
+            ->map(function ($name) {
+                // Remove pattern like "6 menit", "10 menit", etc from the end
+                return preg_replace('/\s+\d+\s+menit$/i', '', $name);
+            })
+            ->unique()
+            ->sort()
+            ->values();
 
         return view('landing.all-products', [
             'categories' => $categories,
@@ -276,6 +349,8 @@ class LandingPageController extends Controller
             'rooms' => $rooms,
             'attractions' => $attractions,
             'sortBy' => $sortBy,
+            'availability' => $availability,
+            'wisataList' => $wisataList,
         ]);
     }
 

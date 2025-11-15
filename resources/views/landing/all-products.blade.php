@@ -137,11 +137,9 @@
                                 <label for="attractions" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 lg:mb-2">Dekat Wisata</label>
                                 <select name="attractions" id="attractions" class="w-full px-3 py-2 lg:px-4 lg:py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200">
                                     <option value="">Semua Lokasi</option>
-                                    <option value="candi-arjuna" {{ ($attractions ?? '') == 'candi-arjuna' ? 'selected' : '' }}>Candi Arjuna</option>
-                                    <option value="kawah-sikidang" {{ ($attractions ?? '') == 'kawah-sikidang' ? 'selected' : '' }}>Kawah Sikidang</option>
-                                    <option value="telaga-warna" {{ ($attractions ?? '') == 'telaga-warna' ? 'selected' : '' }}>Telaga Warna</option>
-                                    <option value="bukit-sikunir" {{ ($attractions ?? '') == 'bukit-sikunir' ? 'selected' : '' }}>Bukit Sikunir</option>
-                                    <option value="dieng-plateau" {{ ($attractions ?? '') == 'dieng-plateau' ? 'selected' : '' }}>Dieng Plateau</option>
+                                    @foreach($wisataList as $wisata)
+                                        <option value="{{ Str::slug($wisata) }}" {{ ($attractions ?? '') == Str::slug($wisata) ? 'selected' : '' }}>{{ $wisata }}</option>
+                                    @endforeach
                                 </select>
                             </div>
                         </div>
@@ -189,6 +187,55 @@
                 </form>
             </div>
 
+            <!-- Availability Info Banner - Show when date filter is active -->
+            @if($bookingDate && $nightsCount)
+            <div class="bg-gradient-to-r from-blue-50 to-primary-50 border border-blue-200 rounded-xl p-4 mb-6 shadow-sm">
+                <div class="flex items-start gap-3">
+                    <div class="flex-shrink-0 mt-0.5">
+                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="text-sm font-semibold text-gray-900 mb-1">Menampilkan villa yang tersedia untuk tanggal yang dipilih</h4>
+                        <p class="text-sm text-gray-700">
+                            <span class="font-medium">Check-in:</span> {{ \Carbon\Carbon::parse($bookingDate)->format('d M Y') }} •
+                            <span class="font-medium">Durasi:</span> {{ $nightsCount === '8+' ? '8+' : $nightsCount }} malam
+                        </p>
+                        <div class="flex flex-wrap gap-2 mt-3">
+                            <span class="inline-flex items-center px-2.5 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-lg">
+                                <svg class="w-3.5 h-3.5 mr-1" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                                </svg>
+                                Banyak Unit
+                            </span>
+                            <span class="inline-flex items-center px-2.5 py-1 bg-orange-100 text-orange-800 text-xs font-medium rounded-lg">
+                                <svg class="w-3.5 h-3.5 mr-1" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                                </svg>
+                                Hampir Penuh
+                            </span>
+                            <span class="inline-flex items-center px-2.5 py-1 bg-red-100 text-red-800 text-xs font-medium rounded-lg">
+                                <svg class="w-3.5 h-3.5 mr-1" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                                </svg>
+                                Habis
+                            </span>
+                        </div>
+                    </div>
+                    <div class="flex-shrink-0">
+                        <a href="{{ route('produk.all', array_filter(['search' => $searchQuery, 'category' => $activeCategory, 'price_range' => $priceRange, 'capacity' => $capacity, 'rooms' => $rooms, 'attractions' => $attractions, 'sort' => $sortBy, 'promo' => $isPromo ? 'true' : null])) }}"
+                           class="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 font-medium">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                            Hapus Filter Tanggal
+                        </a>
+                    </div>
+                </div>
+            </div>
+            @endif
+
             <div class="flex items-center justify-between flex-wrap gap-3 mb-6">
                 <div>
                     <p class="text-sm sm:text-base text-gray-600">
@@ -196,6 +243,9 @@
                             Menampilkan {{ $produks->firstItem() ?? 0 }} - {{ $produks->lastItem() ?? 0 }} dari {{ $produks->total() }} villa promo
                         @else
                             Menampilkan {{ $produks->firstItem() ?? 0 }} - {{ $produks->lastItem() ?? 0 }} dari {{ $produks->total() }} villa
+                        @endif
+                        @if($bookingDate && $nightsCount)
+                            <span class="text-primary-600 font-medium">tersedia</span>
                         @endif
                     </p>
                 </div>
@@ -211,7 +261,36 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-6">
                 @forelse ($produks as $produk)
-                    <x-villa-card :villa="$produk" />
+                    @php
+                        $hasAvailabilityFilter = $bookingDate && $nightsCount;
+                        $availabilityData = $hasAvailabilityFilter && isset($availability[$produk->id]) ? $availability[$produk->id] : null;
+
+                        // Determine badge color based on available units
+                        $badgeClass = 'bg-green-600'; // Default: tersedia
+                        if ($availabilityData) {
+                            $available = $availabilityData['available'];
+                            if ($available == 0) {
+                                $badgeClass = 'bg-red-600'; // Habis
+                            } elseif ($available <= 2) {
+                                $badgeClass = 'bg-orange-600'; // Hampir penuh (1-2 unit)
+                            } elseif ($availabilityData['percentage'] <= 30) {
+                                $badgeClass = 'bg-orange-600'; // Hampir penuh (< 30%)
+                            }
+                        }
+
+                        $badgeText = $availabilityData
+                            ? ($availabilityData['available'] > 0
+                                ? 'Tersedia ' . $availabilityData['available'] . ' unit'
+                                : 'Habis')
+                            : 'Tersedia';
+                    @endphp
+                    <x-villa-card
+                        :villa="$produk"
+                        :showAvailabilityStatus="$hasAvailabilityFilter"
+                        :availabilityText="$badgeText"
+                        :availabilityClass="$badgeClass"
+                        :availableUnits="$availabilityData ? $availabilityData['available'] : $produk->unit"
+                    />
                 @empty
                     <div class="col-span-full">
                         <div class="text-center py-16 bg-white rounded-2xl shadow">
