@@ -51,21 +51,27 @@ class LandingPageController extends Controller
 
         $produks = $produksQuery->paginate(12);
 
-        // Get popular villas (based on rating, bookings, or views) - dengan cache
+        // Get popular villas (based on booking count and rating) - dengan cache
         $popularVillas = Cache::remember('landing_popular_villas', 3600, function () {
             return Produk::with('images', 'category')
+                ->withCount(['transaksi as booking_count' => function ($query) {
+                    $query->where('status', '!=', 'REJECTED'); // Exclude rejected bookings
+                }])
                 ->where('status', 'publish')
-                ->orderBy('harga_weekday', 'desc') // You can change this to actual popularity logic
+                ->orderBy('booking_count', 'desc') // Prioritize by booking count
+                ->orderBy('rating', 'desc') // Then by rating
+                ->orderBy('harga_weekday', 'desc') // Finally by price
                 ->limit(6)
                 ->get();
         });
 
-        // Get best villas (premium properties with high ratings) - dengan cache
+        // Get best villas (high-rated properties with rating >= 4.5) - dengan cache
         $bestVillas = Cache::remember('landing_best_villas', 3600, function () {
             return Produk::with('images', 'category', 'fasilitases')
                 ->where('status', 'publish')
-                ->where('label', 'LIKE', '%premium%') // or any other criteria for best villas
-                ->inRandomOrder()
+                ->where('rating', '>=', 4.5) // High rated products
+                ->orderBy('rating', 'desc')
+                ->orderBy('harga_weekday', 'desc') // Then by price
                 ->limit(4)
                 ->get();
         });

@@ -873,6 +873,195 @@
             50% { transform: scale(1); }
             75% { transform: scale(1.3); }
         }
+
+        /* Enhanced Best Villas Carousel Styles - Copy dari Popular Villas */
+        .best-villas-carousel {
+            margin-bottom: 2rem;
+        }
+
+        .best-villas-carousel .flickity-viewport {
+            overflow: hidden;
+            position: relative;
+            height: 600px !important;
+        }
+
+        .best-villas-carousel .flickity-slider {
+            display: flex;
+            align-items: stretch;
+            height: 100%;
+        }
+
+        .best-villas-carousel .carousel-cell {
+            width: 100%;
+            height: 100%;
+            padding-right: 0.5rem;
+            box-sizing: border-box;
+        }
+
+        /* Desktop: 4 cards */
+        @media (min-width: 1024px) {
+            .best-villas-carousel .carousel-cell {
+                width: 25%;
+            }
+
+            .best-villas-carousel .flickity-viewport {
+                height: 580px !important;
+            }
+        }
+
+        /* Tablet: 3 cards */
+        @media (min-width: 768px) and (max-width: 1023px) {
+            .best-villas-carousel .carousel-cell {
+                width: 33.333%;
+            }
+
+            .best-villas-carousel .flickity-viewport {
+                height: 550px !important;
+            }
+        }
+
+        /* Mobile: 2 cards */
+        @media (max-width: 767px) {
+            .best-villas-carousel .carousel-cell {
+                width: 50%;
+            }
+
+            .best-villas-carousel .flickity-viewport {
+                height: 520px !important;
+            }
+        }
+
+        /* Small Mobile: 1 card */
+        @media (max-width: 480px) {
+            .best-villas-carousel .carousel-cell {
+                width: 100%;
+            }
+
+            .best-villas-carousel .flickity-viewport {
+                height: 500px !important;
+            }
+        }
+
+        /* Enhanced Navigation Dots */
+        .best-villas-carousel .flickity-page-dots {
+            bottom: -40px;
+            text-align: center;
+            line-height: 1;
+        }
+
+        .best-villas-carousel .dot {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            margin: 0 6px;
+            background: #d1d5db;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            opacity: 0.7;
+        }
+
+        .best-villas-carousel .dot.is-selected {
+            background: #1e40af;
+            opacity: 1;
+            transform: scale(1.2);
+        }
+
+        /* Enhanced Navigation Arrows */
+        .best-villas-carousel .flickity-prev-next-button {
+            width: 48px;
+            height: 48px;
+            background: rgba(255, 255, 255, 0.95);
+            border: 2px solid #e5e7eb;
+            border-radius: 50%;
+            top: 50%;
+            transform: translateY(-50%);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .best-villas-carousel .flickity-prev-next-button:hover {
+            background: #1e40af;
+            border-color: #1e40af;
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .best-villas-carousel .flickity-prev-next-button:hover .arrow {
+            fill: white;
+        }
+
+        .best-villas-carousel .flickity-prev-next-button.previous {
+            left: -20px;
+        }
+
+        .best-villas-carousel .flickity-prev-next-button.next {
+            right: -20px;
+        }
+
+        .best-villas-carousel .flickity-prev-next-button .arrow {
+            fill: #374151;
+            transition: fill 0.3s ease;
+        }
+
+        .best-villas-carousel .flickity-prev-next-button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .best-villas-carousel .flickity-prev-next-button:disabled:hover {
+            background: rgba(255, 255, 255, 0.95);
+            border-color: #e5e7eb;
+            transform: translateY(-50%);
+        }
+
+        .best-villas-carousel .flickity-prev-next-button:disabled:hover .arrow {
+            fill: #374151;
+        }
+
+        /* Hide arrows on mobile for better UX */
+        @media (max-width: 767px) {
+            .best-villas-carousel .flickity-prev-next-button {
+                display: none;
+            }
+        }
+
+        /* Smooth transitions for carousel items */
+        .best-villas-carousel .carousel-cell .villa-card {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .best-villas-carousel .carousel-cell .villa-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        /* Ensure proper spacing and alignment */
+        .best-villas-carousel .flickity-slider > * {
+            flex-shrink: 0;
+        }
+
+        /* Loading state for carousel */
+        .best-villas-carousel.loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .best-villas-carousel.loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 32px;
+            height: 32px;
+            margin: -16px 0 0 -16px;
+            border: 3px solid #f3f4f6;
+            border-top: 3px solid #1e40af;
+            border-radius: 50%;
+            animation: flickity-spin 1s linear infinite;
+        }
         
         /* Responsive Enhancements */
         @media (max-width: 640px) {

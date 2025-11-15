@@ -31,7 +31,7 @@
 
         // Get additional promo info
         $promoEndDate = $bestPromo->end_date ?? null;
-        $isLimited = $bestPromo->usage_limit !== null && 
+        $isLimited = $bestPromo->usage_limit !== null &&
                      $bestPromo->usage_count >= ($bestPromo->usage_limit - 5);
     } else {
         // Fallback for non-promo products
@@ -43,18 +43,26 @@
         $isLimited = false;
         $bestPromo = null;
     }
+
+    // Prepare image path for better readability and maintainability
+    $imagePath = $villa->images?->first()?->image ?? 'images/produk/default.jpg';
+    $imageUrl = asset('storage/' . $imagePath);
+
+    // Prepare alt text with fallback for accessibility
+    $altText = trim(($villa->name ?? 'Villa') . ' - ' . ($villa->lokasi ?? 'Lokasi tidak tersedia'));
 @endphp
 <article class="{{ $cardClass }}" data-villa-id="{{ $villa->id }}">
     <!-- Villa Image -->
     <div class="relative overflow-hidden {{ $imageHeight }}">
         <a href="{{ route('produk', $villa->slug) }}"
            class="block w-full h-full"
-           aria-label="{{ $villa->name }} - {{ $villa->lokasi }}">
-            <img src="{{ asset('storage/'.$villa->images?->first()?->image ?? '') }}"
-                 data-src="{{ asset('storage/'.$villa->images?->first()?->image ?? '') }}"
-                 alt="{{ $villa->name }} - {{ $villa->lokasi }}"
+           aria-label="{{ $altText }}">
+            <img src="{{ $imageUrl }}"
+                 data-src="{{ $imageUrl }}"
+                 alt="{{ $altText }}"
                  class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 lazy-load"
-                 loading="lazy">
+                 loading="lazy"
+                 decoding="async">
 
             <!-- Badge System - Top Left -->
             <div class="absolute top-2 left-2 z-20 flex flex-col gap-1.5 sm:gap-1">

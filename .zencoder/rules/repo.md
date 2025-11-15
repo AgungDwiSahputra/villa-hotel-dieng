@@ -243,7 +243,6 @@ The ERD diagram provides visual representation of all tables, their fields, data
 - `phpunit/phpunit: ^11.0.1` - PHP unit testing framework
 - `laravel/breeze: ^2.2` - Lightweight scaffolding with authentication
 - `laravel/pail: ^1.1` - Real-time log monitoring
-- `laravel/pint: ^1.13` - PHP code style fixer
 - `laravel/sail: ^1.26` - Docker development environment
 - `barryvdh/laravel-debugbar: ^3.16` - Debugging toolbar
 - `fakerphp/faker: ^1.23` - Fake data generation
