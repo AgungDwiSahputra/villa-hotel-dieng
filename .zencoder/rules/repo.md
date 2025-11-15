@@ -73,6 +73,145 @@ Villa Hotel Dieng is a comprehensive hotel and villa management system built wit
 **Node.js Version**: 22 (specified in .nvmrc)
 **Supported Database**: MySQL 8.0+ or MariaDB
 
+## Database Structure
+
+**Database Engine**: MySQL 8.0+ / MariaDB  
+**ORM**: Eloquent ORM (Laravel)  
+**Migration System**: Laravel Migrations  
+**Seeder System**: Laravel Database Seeders
+
+**Entity Relationship Diagram (ERD)**:
+The database schema is visualized in the ERD diagram located at the project root. The diagram is manually updated when database structure changes occur.
+
+**Core Tables**:
+
+### Authentication & Authorization
+- **users** - User accounts with authentication credentials
+  - Fields: id, name, email, email_verified_at, password, no_hp, role, remember_token, timestamps, deleted_at
+  - Relations: Has many transaksis, availabilities, logs
+  - RBAC: Connected to roles via model_has_roles
+
+- **roles** - User role definitions (Super Admin, Admin, Customer)
+  - Fields: id, name, guard_name, timestamps
+  - Relations: Belongs to many permissions, users
+
+- **permissions** - Granular permission definitions
+  - Fields: id, name, guard_name, timestamps
+  - Relations: Belongs to many roles
+
+- **model_has_permissions** - Direct user permissions (polymorphic)
+  - Fields: permission_id, model_type, model_id
+
+- **model_has_roles** - User role assignments (polymorphic)
+  - Fields: role_id, model_type, model_id
+
+- **role_has_permissions** - Role permission mappings
+  - Fields: permission_id, role_id
+
+### Product Management (Villa/Property)
+- **produks** - Main product/villa table
+  - Fields: id, category_id, owner, name, slug, unit, orang, maks_orang, lokasi, fasilitas, kamar, gluten, rating, status, timestamps, deleted_at
+  - Additional: has_active_promo, promo_price_weekday, promo_price_weekend, promo_discount_type, promo_discount_percentage, promo_calculated_at
+  - Relations: Belongs to category, has many images, fasilitas, syarat, wisata, transaksi_details, availabilities, promo_products
+
+- **produk_categories** - Product categorization (Villa, Hotel Room, etc.)
+  - Fields: id, name, slug, urutan, timestamps
+
+- **produk_fasilitas** - Villa facilities (WiFi, AC, Kitchen, etc.)
+  - Fields: id, produk_id, name, timestamps
+
+- **produk_images** - Product image gallery
+  - Fields: id, produk_id, name, image, urutan, timestamps
+
+- **produk_syarat** - Terms and conditions for rental
+  - Fields: id, produk_id, name, timestamps
+
+- **produk_wisata** - Nearby tourist attractions
+  - Fields: id, produk_id, name, timestamps
+
+- **availabilities** - Product availability calendar
+  - Fields: id, produk_id, date, is_available, timestamps
+
+### Promotion Management
+- **promos** - Promotion and discount management
+  - Fields: id, name, description, discount_type, discount_value, start_date, end_date, is_active, usage_limit, usage_count, target_type, promo_code, metadata, timestamps, deleted_at
+  - Relations: Has many promo_categories, promo_products
+
+- **promo_categories** - Category-based promo assignments
+  - Fields: id, promo_id, category_id, discount_type, discount_value, embed, timestamps
+
+- **promo_products** - Product-specific promo assignments
+  - Fields: id, promo_id, produk_id, discount_type, discount_value, embed, timestamps
+
+### Transaction & Booking
+- **transaksis** - Booking and reservation records
+  - Fields: id, user_id, produk_id, start_date, end_date, night, total, email, no_wa, metadata, timestamps
+
+- **transaksi_details** - Transaction line items
+  - Fields: id, transaksi_id, produk_id, date, unit, status, timestamps
+
+### Payment & Financial
+- **rekenings** - Bank account information for payments
+  - Fields: id, name, image, timestamps
+
+### System Configuration
+- **settings** - Application settings and site configuration
+  - Fields: id, key, value, timestamps
+
+- **logs** - Activity logging and audit trail
+  - Fields: id, log_date, table_name, log_type, data, timestamps
+
+- **cache** - Laravel cache storage
+  - Fields: key, value, expiration
+
+- **cache_locks** - Cache locking mechanism
+  - Fields: key, owner, expiration
+
+- **migrations** - Database migration tracking
+  - Fields: id, migration, batch
+
+- **password_reset_tokens** - Password reset token storage
+  - Fields: email, token, timestamps
+
+- **sessions** - User session data
+  - Fields: id, user_id, ip_address, user_agent, payload, last_activity
+
+- **personal_access_tokens** - Laravel Sanctum API tokens
+  - Fields: id, tokenable_type, tokenable_id, name, token, abilities, timestamps
+
+- **job_batches** - Batch job tracking
+  - Fields: id, name, total_jobs, pending_jobs, failed_jobs, failed_job_ids, options, timestamps, finished_at
+
+- **failed_jobs** - Failed queue job records
+  - Fields: id, uuid, connection, queue, payload, exception, failed_at
+
+**Key Relationships**:
+- Users → Roles (many-to-many via model_has_roles)
+- Roles → Permissions (many-to-many via role_has_permissions)
+- Produks → Category (belongs to)
+- Produks → Images, Fasilitas, Syarat, Wisata (has many)
+- Produks → Availabilities (has many)
+- Produks → TransaksiDetails (has many)
+- Promos → PromoCategories, PromoProducts (has many)
+- Transaksis → User (belongs to)
+- Transaksis → TransaksiDetails (has many)
+- TransaksiDetails → Produk (belongs to)
+
+**Soft Deletes Enabled**:
+- users (deleted_at)
+- produks (deleted_at)
+- promos (deleted_at)
+
+**Timestamps**:
+All tables include `created_at` and `updated_at` columns for audit tracking.
+
+**Database Diagram**:
+The ERD diagram provides visual representation of all tables, their fields, data types, and relationships. This diagram should be manually updated whenever:
+- New tables are added
+- Table structures are modified
+- New relationships are established
+- Fields are added/removed/modified
+
 ## Dependencies
 
 **Core PHP Dependencies**:
@@ -269,11 +408,36 @@ php artisan test --coverage
   - Custom fonts: Inter (sans), Poppins (display)
   - Custom animations: fade-in, fade-in-up, slide-in-left/right, bounce-gentle, pulse-slow, float, shimmer
   - Extended spacing, max-width, and z-index utilities
+  - **Tablet-width centered layout** (max-width ~1024px) for optimal readability
 - Alpine.js for interactive components, form validation, and dynamic behavior
 - Custom animations and transitions defined in Tailwind config
 - Responsive design with mobile-first approach
 - DataTables integration with server-side processing and export capabilities (Excel, CSV, PDF)
 - Separate stylesheets for admin (app.css) and landing page (landing.css)
+
+**Landing Page Layout Design** (Updated 2025):
+- **Centered content layout** with maximum width of 1024px (tablet size) for improved readability
+- **Width hierarchy**:
+  - `max-w-5xl` (1024px) - Main sections (header, hero, popular villas, best villas, testimonials, footer)
+  - `max-w-4xl` (896px) - Narrower sections (villa grid, filters, category tabs)
+  - `max-w-3xl` (768px) - Long text content (descriptions)
+  - `max-w-2xl` (672px) - Subtitles and short descriptions
+- **Full-width backgrounds** with centered content for professional appearance
+- **Responsive behavior**:
+  - Mobile (< 640px): Full width with padding
+  - Tablet (640-1024px): Full width
+  - Desktop (> 1024px): Content max 1024px, centered with whitespace
+- Design reference: diengcool.com pattern
+- Components affected:
+  - Header navigation (`resources/views/layouts/landing/header.blade.php`)
+  - Hero section with booking form (`resources/views/landing/index.blade.php`)
+  - Popular villas carousel (`resources/views/components/popular-villas.blade.php`)
+  - Best villas grid (`resources/views/components/best-villas.blade.php`)
+  - All villas section with filters (`resources/views/landing/index.blade.php`)
+  - Testimonials section (`resources/views/components/testimonials.blade.php`)
+  - Footer section (`resources/views/layouts/landing/footer.blade.php`)
+- **Total implementations**: 19 max-width constraints across 6 files
+- **Benefits**: Better readability, reduced eye strain, improved focus, professional look, consistent alignment
 
 **Promo Management System**:
 - Dynamic discount configuration (percentage and fixed amount)
@@ -327,6 +491,11 @@ php artisan test --coverage
 - Contact information and location map
 - Responsive navigation with mobile menu
 - SEO-friendly structure
+- **Tablet-width centered design** for optimal viewing experience on all devices
+- **Advanced filtering system** with price range, capacity, room count, and nearby attractions
+- **Category-based navigation** with quick links to villa types
+- **Hero slider** with promotional badges and call-to-action
+- **Carousel-based components** for popular villas and testimonials using Flickity
 
 **Development Tools**:
 - Laravel Pint for PHP code formatting (PSR-12 standard)
@@ -369,3 +538,16 @@ php artisan test --coverage
 **Route Naming**: Routes use dot notation (e.g., `admin.produk.index`, `admin.promo.create`)
 
 **Middleware**: Custom middleware for role checking, activity logging, and feature access control
+
+**Responsive Layout Pattern**: Consistent use of Tailwind's container utilities with max-width constraints:
+```html
+<div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
+  <!-- Content with 1024px max width, centered -->
+</div>
+```
+
+**Design Consistency**: All public-facing pages follow tablet-width pattern (referencing diengcool.com) for:
+- Better readability (optimal line length 50-75 characters)
+- Visual balance on large screens
+- Professional centered appearance
+- Consistent alignment across all sections
