@@ -24,6 +24,7 @@ class ProdukFinalRequest extends FormRequest
             'name'       => ['required', 'string', 'max:255'],
             'email'      => ['required', 'email', 'max:255'],
             'no_wa'      => ['required', 'string', 'max:20'],
+            'promo_code' => ['nullable', 'string', 'max:20', 'exists:promos,promo_code'],
             // 'image'      => ['required', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
         ];
     }
@@ -66,6 +67,10 @@ class ProdukFinalRequest extends FormRequest
             'no_wa.required'          => 'Nomor WhatsApp harus diisi.',
             'no_wa.string'            => 'Nomor WhatsApp harus berupa teks.',
             'no_wa.max'               => 'Nomor WhatsApp maksimal 20 karakter.',
+
+            'promo_code.string'        => 'Kode promo harus berupa teks.',
+            'promo_code.max'          => 'Kode promo maksimal 20 karakter.',
+            'promo_code.exists'       => 'Kode promo tidak valid atau tidak tersedia.',
         ];
     }
 }

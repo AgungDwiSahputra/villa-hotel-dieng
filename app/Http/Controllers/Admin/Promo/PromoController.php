@@ -14,6 +14,7 @@ use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Carbon\Carbon;
 
@@ -177,7 +178,22 @@ class PromoController extends Controller implements HasMiddleware
             'description' => 'nullable|string',
             'discount_type' => 'required|in:percentage,fixed',
             'discount_value' => 'required|numeric|min:0',
-            'start_date' => 'nullable|date|after_or_equal:today',
+            'start_date' => [
+                'nullable',
+                'date',
+                function ($attribute, $value, $fail) use ($promo) {
+                    if ($value && $promo && $promo->start_date) {
+                        $newDate = Carbon::parse($value);
+                        $oldDate = Carbon::parse($promo->start_date);
+                        // Allow if promo hasn't started yet, or if changing to future date
+                        if ($oldDate->lte(now()) && $newDate->lt(now())) {
+                            $fail('Cannot change start date to past for active promo.');
+                        }
+                    } elseif ($value && Carbon::parse($value)->lt(now())) {
+                        $fail('Start date cannot be in the past.');
+                    }
+                },
+            ],
             'end_date' => 'nullable|date|after:start_date',
             'is_active' => 'boolean',
             'usage_limit' => 'nullable|integer|min:1',
@@ -332,6 +348,9 @@ class PromoController extends Controller implements HasMiddleware
                 ]);
             }
 
+            // Update promo cache for duplicated promo
+            $this->updatePromoCache($newPromo);
+
             return redirect()->route('admin.promo.promo.edit', $newPromo)
                            ->with('success', 'Promo duplicated successfully!');
 
@@ -342,7 +361,34 @@ class PromoController extends Controller implements HasMiddleware
 
     private function updatePromoCache(Promo $promo, bool $clear = false)
     {
-        // Note: Promo cache functionality to be implemented
-        // This is a placeholder for the cache update logic
+        try {
+            $affectedProducts = $this->getAffectedProducts($promo);
+            
+            foreach ($affectedProducts as $product) {
+                $product->updatePromoCache();
+            }
+        } catch (\Exception $e) {
+            Log::error('Failed to update promo cache: ' . $e->getMessage(), [
+                'promo_id' => $promo->id,
+                'clear' => $clear
+            ]);
+        }
+    }
+
+    private function getAffectedProducts(Promo $promo)
+    {
+        if ($promo->applicable_to === 'all') {
+            return Produk::where('status', 'publish')->get();
+        } elseif ($promo->applicable_to === 'category') {
+            $categoryIds = $promo->categories()->pluck('category_id');
+            return Produk::whereIn('category_id', $categoryIds)
+                         ->where('status', 'publish')
+                         ->get();
+        } else { // product
+            $productIds = $promo->products()->pluck('produk_id');
+            return Produk::whereIn('id', $productIds)
+                         ->where('status', 'publish')
+                         ->get();
+        }
     }
 }

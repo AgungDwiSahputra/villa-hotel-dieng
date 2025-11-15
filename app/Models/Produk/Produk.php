@@ -203,7 +203,18 @@ class Produk extends Model
     // Helper method to check if product has any active promo (legacy support)
     public function isPromo()
     {
-        return $this->hasActivePromo() ||
-               ($this->label && str_contains(strtolower($this->label), 'promo'));
+        // Check cache first (fast)
+        if ($this->hasActivePromo()) {
+            return true;
+        }
+        
+        // If cache not available or expired, check directly
+        $bestPromo = $this->getBestPromo();
+        if ($bestPromo) {
+            return true;
+        }
+        
+        // Fallback to label check (legacy support)
+        return $this->label && str_contains(strtolower($this->label), 'promo');
     }
 }

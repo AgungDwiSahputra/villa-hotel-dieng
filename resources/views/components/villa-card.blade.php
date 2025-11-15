@@ -18,19 +18,21 @@
 @if($villa)
 @php
     // Get promo information from the new system
-    $isPromo = $villa->isPromo();
+    // Check for best promo first to ensure we have promo data
+    $bestPromo = $villa->getBestPromo();
+    $isPromo = $bestPromo !== null;
 
-    if ($isPromo) {
+    if ($isPromo && $bestPromo) {
         // Use dynamic promo pricing from the new system
         $discountPercentage = $villa->getPromoDiscountPercentage();
         $originalPrice = $villa->harga_weekday;
         $promoPriceWeekday = $villa->getPromoPriceWeekday();
         $promoPriceWeekend = $villa->getPromoPriceWeekend();
 
-        // Get the best promo for additional info
-        $bestPromo = $villa->getBestPromo();
-        $promoEndDate = $bestPromo?->end_date;
-        $isLimited = $bestPromo && $bestPromo->usage_limit && $bestPromo->usage_count >= $bestPromo->usage_limit - 5;
+        // Get additional promo info
+        $promoEndDate = $bestPromo->end_date ?? null;
+        $isLimited = $bestPromo->usage_limit !== null && 
+                     $bestPromo->usage_count >= ($bestPromo->usage_limit - 5);
     } else {
         // Fallback for non-promo products
         $discountPercentage = 0;
@@ -39,6 +41,7 @@
         $promoPriceWeekend = $villa->harga_weekend;
         $promoEndDate = null;
         $isLimited = false;
+        $bestPromo = null;
     }
 @endphp
 <article class="{{ $cardClass }}" data-villa-id="{{ $villa->id }}">
@@ -169,7 +172,7 @@
                 @if($villa->harga_weekend != $villa->harga_weekday)
                 <p class="text-xs text-gray-500 truncate">Weekend: Rp {{ number_format($promoPriceWeekend, 0, ',', '.') }}</p>
                 @endif
-                @if($promoEndDate)
+                @if($promoEndDate && $promoEndDate instanceof \Carbon\Carbon)
                 <p class="text-xs text-orange-600 truncate">Berakhir: {{ $promoEndDate->format('d M Y') }}</p>
                 @endif
             </div>

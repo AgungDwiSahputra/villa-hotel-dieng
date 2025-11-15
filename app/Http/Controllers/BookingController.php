@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Landing\ProdukFinalRequest;
+use App\Models\Promo\Promo;
+use App\Models\Produk\Produk;
 use App\Models\Transaksi\Transaksi;
 use App\Models\Transaksi\TransaksiDetail;
 use Carbon\Carbon;
@@ -26,12 +28,66 @@ class BookingController extends Controller
     {
         $datas = $request->validated();
 
-        // dd($datas);
-
         try {
             DB::beginTransaction();
 
-            $orderId =  uniqid();
+            $produk = Produk::findOrFail($datas['produk_id']);
+            $promo = null;
+            $discountAmount = 0;
+            $originalTotal = $datas['total'];
+            $finalTotal = $datas['total'];
+            $finalDp = $datas['dp'];
+
+            // Validate and apply promo code if provided
+            if (!empty($datas['promo_code'])) {
+                $promo = Promo::where('promo_code', $datas['promo_code'])
+                    ->where('is_active', true)
+                    ->first();
+
+                if (!$promo) {
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => 'Kode promo tidak valid atau tidak aktif.'
+                    ], 422);
+                }
+
+                // Validate promo
+                if (!$promo->isValid()) {
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => 'Kode promo sudah tidak berlaku atau sudah mencapai batas penggunaan.'
+                    ], 422);
+                }
+
+                // Check if promo is applicable to this product
+                if (!$promo->isApplicableToProduct($produk)) {
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => 'Kode promo tidak berlaku untuk produk ini.'
+                    ], 422);
+                }
+
+                // Calculate discount
+                $discountConfig = $promo->getEffectiveDiscountForProduct($produk);
+                
+                // Calculate price per night (simplified - using average of weekday/weekend)
+                $avgPricePerNight = ($produk->harga_weekday + $produk->harga_weekend) / 2;
+                $totalPrice = $avgPricePerNight * $datas['night'] * $datas['unit'];
+
+                if ($discountConfig['type'] === 'percentage') {
+                    $discountAmount = $totalPrice * ($discountConfig['value'] / 100);
+                } else {
+                    $discountAmount = min($discountConfig['value'], $totalPrice);
+                }
+
+                $finalTotal = max(0, $totalPrice - $discountAmount);
+                
+                // Recalculate DP based on discount
+                $dpPercentage = $datas['dp'] / $originalTotal;
+                $finalDp = $finalTotal * $dpPercentage;
+            }
+
+            $orderId = uniqid();
 
             $transaksi = Transaksi::create([
                 'produk_id' => $datas['produk_id'],
@@ -40,7 +96,11 @@ class BookingController extends Controller
                 'end_date' => $datas['end_date'],
                 'night' => $datas['night'],
                 'unit' => $datas['unit'],
-                'total' => $datas['dp'],
+                'total' => $finalDp,
+                'original_total' => $originalTotal,
+                'discount_amount' => $discountAmount,
+                'promo_id' => $promo ? $promo->id : null,
+                'promo_code' => $promo ? $promo->promo_code : null,
                 'name' => $datas['name'],
                 'email' => $datas['email'],
                 'no_wa' => $datas['no_wa'],
@@ -60,31 +120,55 @@ class BookingController extends Controller
 
             $transaction = Transaksi::with('produk')->find($transaksi->id);
 
+            $itemDetails = [
+                [
+                    'id' => $datas['produk_id'],
+                    'price' => (int) $finalDp,
+                    'quantity' => 1,
+                    'name' => $transaction->produk->name . ', ' . $datas['night'] . ' malam, ' . $datas['unit'] . ' unit',
+                ],
+            ];
+
+            // Add discount as item if promo applied
+            if ($promo && $discountAmount > 0) {
+                $itemDetails[] = [
+                    'id' => 'DISCOUNT-' . $promo->promo_code,
+                    'price' => (int) -$discountAmount,
+                    'quantity' => 1,
+                    'name' => 'Diskon Promo: ' . $promo->name,
+                ];
+            }
+
             $params = [
                 'transaction_details' => [
                     'order_id' => $orderId,
-                    'gross_amount' => $datas['dp'],
+                    'gross_amount' => (int) $finalDp,
                 ],
                 'customer_details' => [
                     'first_name' => $datas['name'],
                     'email' => $datas['email'],
                     'phone' => $datas['no_wa'],
                 ],
-                'item_details' => [
-                    [
-                        'id' => $datas['produk_id'],
-                        'price' => $datas['dp'],
-                        'quantity' => 1,
-                        'name' => $transaction->produk->name . ', ' . $datas['night'] . ' malam, ' . $datas['unit'] . ' unit',
-                    ],
-                ],
+                'item_details' => $itemDetails,
                 'enabled_payments' => ['gopay', 'bank_transfer'],
             ];
 
             $snapToken = \Midtrans\Snap::getSnapToken($params);
 
+            // Increment promo usage count if promo was applied
+            if ($promo) {
+                $promo->incrementUsage();
+            }
+
             Log::info('Snap Params:', $params);
             Log::info('Order ID:', ['order_id' => $orderId]);
+            if ($promo) {
+                Log::info('Promo Applied:', [
+                    'promo_id' => $promo->id,
+                    'promo_code' => $promo->promo_code,
+                    'discount_amount' => $discountAmount
+                ]);
+            }
 
             DB::commit();
 
