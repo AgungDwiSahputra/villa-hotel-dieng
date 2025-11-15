@@ -21,13 +21,18 @@
 <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
 
-<!-- Buttons examples -->
+<!-- Buttons examples - ensure correct loading order -->
 <script src="{{ asset('assets/libs/datatables.net-buttons/js/dataTables.buttons.min.js')}}"></script>
+<script src="{{ asset('assets/libs/datatables.net-buttons/js/buttons.print.min.js')}}"></script>
+<script src="{{ asset('assets/libs/datatables.net-buttons/js/buttons.html5.min.js')}}"></script>
+<script src="{{ asset('assets/libs/datatables.net-buttons/js/buttons.flash.min.js')}}"></script>
+<script src="{{ asset('assets/libs/datatables.net-buttons/js/buttons.colVis.min.js')}}"></script>
 <script src="{{ asset('assets/libs/datatables.net-buttons-bs4/js/buttons.bootstrap4.min.js')}}"></script>
+
+<!-- Export dependencies -->
 <script src="{{ asset('assets/libs/jszip/jszip.min.js')}}"></script>
 <script src="{{ asset('assets/libs/pdfmake/build/pdfmake.min.js')}}"></script>
 <script src="{{ asset('assets/libs/pdfmake/build/vfs_fonts.js')}}"></script>
-<script src="{{ asset('assets/libs/datatables.net-buttons/js/buttons.html5.min.js')}}"></script>
 
 <script src="{{ asset('assets/libs/leaflet/leaflet.js')}}"></script>
 <script src="{{ asset('assets/js/pages/leaflet-us-states.js')}}"></script>
@@ -42,3 +47,28 @@
 @include('layouts.admin.custom-script')
 
 @stack('js')
+
+<!-- Ensure all DataTables extensions are properly initialized -->
+<script>
+// Wait for all DataTables components to be loaded
+document.addEventListener('DOMContentLoaded', function() {
+    // Check if DataTables and buttons are loaded
+    if (typeof jQuery !== 'undefined' && jQuery.fn.DataTable && jQuery.fn.DataTable.Buttons) {
+        // Ensure print button type is available
+        if (jQuery.fn.DataTable.Buttons.type) {
+            jQuery.fn.DataTable.Buttons.type('print', 'print');
+        }
+        
+        // Reinitialize DataTables with proper button extensions
+        if (window.promoDataTableInitialized) {
+            // Refresh any existing DataTables instances
+            jQuery('.dataTable').each(function() {
+                if (jQuery(this).DataTable().initialized) {
+                    const api = jQuery(this).DataTable();
+                    api.rows().invalidate().draw();
+                }
+            });
+        }
+    }
+});
+</script>
