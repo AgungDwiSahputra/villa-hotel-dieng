@@ -250,6 +250,114 @@
                             </button>
                         </div>
                     </form>
+                    
+                    <!-- Advanced Filter Section -->
+                    <div class="mt-6 lg:mt-8">
+                        <div class="flex items-center justify-center mb-4">
+                            <button id="toggleAdvancedFilter" class="inline-flex items-center text-white/90 hover:text-white font-medium text-sm lg:text-base transition-colors duration-200">
+                                <svg class="w-4 h-4 lg:w-5 lg:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
+                                </svg>
+                                <span id="filterToggleText">Permudah pencarian dengan filter</span>
+                                <svg class="w-4 h-4 lg:w-5 lg:h-5 ml-2 transform transition-transform" id="filterToggleIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        
+                        <div id="advancedFilterContent" class="hidden">
+                            <div class="bg-white/5 backdrop-blur-sm rounded-xl lg:rounded-2xl p-4 lg:p-6 border border-white/10">
+                                <h4 class="text-white font-medium mb-4 lg:mb-6 text-center">Filter Pencarian</h4>
+                                
+                                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+                                    <!-- Price Range Filter -->
+                                    <div>
+                                        <label for="priceRangeFilter" class="block text-sm font-medium text-white/90 mb-2">
+                                            <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-3 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                            </svg>
+                                            Rentang Harga
+                                        </label>
+                                        <select id="priceRangeFilter" name="price_range" class="w-full px-3 py-2.5 lg:py-3 text-sm text-gray-900 bg-white/90 backdrop-blur-sm border border-white/20 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-accent-500 transition-all duration-200">
+                                            <option value="">Semua Harga</option>
+                                            <option value="0-500000">Rp 0 - 500.000</option>
+                                            <option value="500000-1000000">Rp 500.000 - 1.000.000</option>
+                                            <option value="1000000-2000000">Rp 1.000.000 - 2.000.000</option>
+                                            <option value="2000000+">Di atas Rp 2.000.000</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <!-- Capacity Filter -->
+                                    <div>
+                                        <label for="capacityFilter" class="block text-sm font-medium text-white/90 mb-2">
+                                            <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                            </svg>
+                                            Kapasitas
+                                        </label>
+                                        <select id="capacityFilter" name="capacity" class="w-full px-3 py-2.5 lg:py-3 text-sm text-gray-900 bg-white/90 backdrop-blur-sm border border-white/20 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-accent-500 transition-all duration-200">
+                                            <option value="">Semua Kapasitas</option>
+                                            <option value="1-2">1-2 Orang</option>
+                                            <option value="3-4">3-4 Orang</option>
+                                            <option value="5-8">5-8 Orang</option>
+                                            <option value="9+">9+ Orang</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <!-- Rooms Filter -->
+                                    <div>
+                                        <label for="roomsFilter" class="block text-sm font-medium text-white/90 mb-2">
+                                            <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                            </svg>
+                                            Jumlah Kamar
+                                        </label>
+                                        <select id="roomsFilter" name="rooms" class="w-full px-3 py-2.5 lg:py-3 text-sm text-gray-900 bg-white/90 backdrop-blur-sm border border-white/20 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-accent-500 transition-all duration-200">
+                                            <option value="">Semua Kamar</option>
+                                            <option value="1">1 Kamar</option>
+                                            <option value="2">2 Kamar</option>
+                                            <option value="3">3 Kamar</option>
+                                            <option value="4+">4+ Kamar</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <!-- Near Attractions Filter -->
+                                    <div>
+                                        <label for="attractionsFilter" class="block text-sm font-medium text-white/90 mb-2">
+                                            <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                            </svg>
+                                            Dekat Wisata
+                                        </label>
+                                        <select id="attractionsFilter" name="attractions" class="w-full px-3 py-2.5 lg:py-3 text-sm text-gray-900 bg-white/90 backdrop-blur-sm border border-white/20 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-accent-500 transition-all duration-200">
+                                            <option value="">Semua Lokasi</option>
+                                            <option value="candi-arjuna">Candi Arjuna</option>
+                                            <option value="kawah-sikidang">Kawah Sikidang</option>
+                                            <option value="telaga-warna">Telaga Warna</option>
+                                            <option value="bukit-sikunir">Bukit Sikunir</option>
+                                            <option value="dieng-plateau">Dieng Plateau</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex flex-col sm:flex-row gap-3 mt-6">
+                                    <button type="button" id="applyAdvancedFilter" class="flex-1 sm:flex-none inline-flex items-center justify-center px-6 py-3 bg-accent-600 hover:bg-accent-700 text-white font-medium rounded-lg transition-all duration-200 text-sm">
+                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                        </svg>
+                                        Terapkan Filter
+                                    </button>
+                                    <button type="button" id="resetAdvancedFilter" class="flex-1 sm:flex-none inline-flex items-center justify-center px-6 py-3 bg-white/10 hover:bg-white/20 text-white font-medium rounded-lg transition-all duration-200 text-sm border border-white/20">
+                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                        </svg>
+                                        Reset
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 
             </div>
@@ -1552,6 +1660,101 @@ document.addEventListener('DOMContentLoaded', function() {
             this.style.transform = 'translateY(0) scale(1)';
         });
     });
+    
+    // Advanced Filter Toggle Functionality
+    const toggleAdvancedFilter = document.getElementById('toggleAdvancedFilter');
+    const advancedFilterContent = document.getElementById('advancedFilterContent');
+    const filterToggleText = document.getElementById('filterToggleText');
+    const filterToggleIcon = document.getElementById('filterToggleIcon');
+    
+    if (toggleAdvancedFilter && advancedFilterContent) {
+        toggleAdvancedFilter.addEventListener('click', function() {
+            const isHidden = advancedFilterContent.classList.contains('hidden');
+            
+            if (isHidden) {
+                // Show filter
+                advancedFilterContent.classList.remove('hidden');
+                advancedFilterContent.classList.add('animate-fade-in-up');
+                filterToggleText.textContent = 'Sembunyikan filter';
+                filterToggleIcon.classList.add('rotate-180');
+            } else {
+                // Hide filter
+                advancedFilterContent.classList.add('hidden');
+                filterToggleText.textContent = 'Permudah pencarian dengan filter';
+                filterToggleIcon.classList.remove('rotate-180');
+            }
+        });
+    }
+    
+    // Apply Advanced Filter Function
+    const applyAdvancedFilter = document.getElementById('applyAdvancedFilter');
+    if (applyAdvancedFilter) {
+        applyAdvancedFilter.addEventListener('click', function() {
+            const priceRange = document.getElementById('priceRangeFilter').value;
+            const capacity = document.getElementById('capacityFilter').value;
+            const rooms = document.getElementById('roomsFilter').value;
+            const attractions = document.getElementById('attractionsFilter').value;
+            const bookingDate = document.getElementById('bookingDate').value;
+            const nightsCount = document.getElementById('nightsCount').value;
+            
+            // Show loading state
+            const originalBtnContent = this.innerHTML;
+            this.innerHTML = `
+                <svg class="animate-spin w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Menerapkan Filter...
+            `;
+            this.disabled = true;
+            
+            // Build search parameters
+            const params = new URLSearchParams();
+            
+            // Add basic search parameters
+            if (bookingDate) params.set('booking_date', bookingDate);
+            if (nightsCount) params.set('nights_count', nightsCount);
+            
+            // Add advanced filter parameters
+            if (priceRange) params.set('price_range', priceRange);
+            if (capacity) params.set('capacity', capacity);
+            if (rooms) params.set('rooms', rooms);
+            if (attractions) params.set('attractions', attractions);
+            
+            // Redirect to all products page with filters
+            setTimeout(() => {
+                window.location.href = `/all-produk?${params.toString()}`;
+            }, 800);
+        });
+    }
+    
+    // Reset Advanced Filter Function
+    const resetAdvancedFilter = document.getElementById('resetAdvancedFilter');
+    if (resetAdvancedFilter) {
+        resetAdvancedFilter.addEventListener('click', function() {
+            // Reset all filter values
+            document.getElementById('priceRangeFilter').value = '';
+            document.getElementById('capacityFilter').value = '';
+            document.getElementById('roomsFilter').value = '';
+            document.getElementById('attractionsFilter').value = '';
+            
+            // Show loading state
+            const originalBtnContent = this.innerHTML;
+            this.innerHTML = `
+                <svg class="animate-spin w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Reset...
+            `;
+            this.disabled = true;
+            
+            // Redirect without filters
+            setTimeout(() => {
+                window.location.href = '/all-produk';
+            }, 500);
+        });
+    }
 });
 </script>
 

@@ -13,7 +13,7 @@ class Produk extends Model
 {
     use Loggable, SoftDeletes;
 
-    protected $fillable  = ['category_id', 'owner', 'name', 'slug', 'unit', 'kamar', 'orang', 'maks_orang', 'lokasi', 'harga_weekday', 'harga_weekend', 'label','urutan', 'status', 'has_active_promo', 'promo_price_weekday', 'promo_price_weekend', 'promo_discount_percentage', 'promo_calculated_at'];
+    protected $fillable  = ['category_id', 'owner', 'name', 'slug', 'unit', 'kamar', 'orang', 'maks_orang', 'lokasi', 'harga_weekday', 'harga_weekend', 'label','urutan', 'rating', 'status', 'has_active_promo', 'promo_price_weekday', 'promo_price_weekend', 'promo_discount_percentage', 'promo_calculated_at'];
 
     public $incrementing = false;
     protected $keyType = 'string';

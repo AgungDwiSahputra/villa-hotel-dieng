@@ -47,14 +47,14 @@ class LandingPageController extends Controller
         }
 
         $produks = $produksQuery->paginate(12);
-        
+
         // Get popular villas (based on rating, bookings, or views)
         $popularVillas = Produk::with('images', 'category')
             ->where('status', 'publish')
             ->orderBy('harga_weekday', 'desc') // You can change this to actual popularity logic
             ->limit(6)
             ->get();
-            
+
         // Get best villas (premium properties with high ratings)
         $bestVillas = Produk::with('images', 'category', 'fasilitases')
             ->where('status', 'publish')
@@ -62,7 +62,7 @@ class LandingPageController extends Controller
             ->inRandomOrder()
             ->limit(4)
             ->get();
-            
+
         // Get testimonials data
         $testimonials = [
             [
@@ -114,7 +114,7 @@ class LandingPageController extends Controller
                 'villa' => 'Villa Cozy'
             ]
         ];
-        
+
         return view('landing.index', compact('categories', 'selectedCategory', 'produks', 'activeCategory', 'popularVillas', 'bestVillas', 'testimonials'));
     }
 
@@ -125,11 +125,17 @@ class LandingPageController extends Controller
         $activeCategory = $request->get('category');
         $isPromo = $request->get('promo') === 'true';
         $bookingDate = $request->get('booking_date');
-        $nightsCount = $request->get('nights');
+        $nightsCount = $request->get('nights_count');
+
+        // Advanced filter parameters
+        $priceRange = $request->get('price_range');
+        $capacity = $request->get('capacity');
+        $rooms = $request->get('rooms');
+        $attractions = $request->get('attractions');
+        $sortBy = $request->get('sort');
 
         $produksQuery = Produk::with('images', 'category')
-            ->where('status', 'publish')
-            ->orderBy('urutan');
+            ->where('status', 'publish');
 
         if ($activeCategory) {
             $selectedCategory = ProdukCategory::where('slug', $activeCategory)->firstOrFail();
@@ -158,20 +164,97 @@ class LandingPageController extends Controller
             });
         }
 
+        // Price range filter
+        if ($priceRange) {
+            if ($priceRange === '0-500000') {
+                $produksQuery->whereBetween('harga_weekday', [0, 500000]);
+            } elseif ($priceRange === '500000-1000000') {
+                $produksQuery->whereBetween('harga_weekday', [500000, 1000000]);
+            } elseif ($priceRange === '1000000-2000000') {
+                $produksQuery->whereBetween('harga_weekday', [1000000, 2000000]);
+            } elseif ($priceRange === '2000000+') {
+                $produksQuery->where('harga_weekday', '>', 2000000);
+            }
+        }
+
+        // Capacity filter
+        if ($capacity) {
+            if ($capacity === '1-2') {
+                $produksQuery->whereBetween('maks_orang', [1, 2]);
+            } elseif ($capacity === '3-4') {
+                $produksQuery->whereBetween('maks_orang', [3, 4]);
+            } elseif ($capacity === '5-8') {
+                $produksQuery->whereBetween('maks_orang', [5, 8]);
+            } elseif ($capacity === '9+') {
+                $produksQuery->where('maks_orang', '>=', 9);
+            }
+        }
+
+        // Rooms filter
+        if ($rooms) {
+            if ($rooms === '1') {
+                $produksQuery->where('kamar', 1);
+            } elseif ($rooms === '2') {
+                $produksQuery->where('kamar', 2);
+            } elseif ($rooms === '3') {
+                $produksQuery->where('kamar', 3);
+            } elseif ($rooms === '4+') {
+                $produksQuery->where('kamar', '>=', 4);
+            }
+        }
+
+        // Attractions filter (based on location or wisata field)
+        if ($attractions) {
+            $attractionKeywords = [
+                'candi-arjuna' => ['candi', 'arjuna'],
+                'kawah-sikidang' => ['kawah', 'sikidang'],
+                'telaga-warna' => ['telaga', 'warna'],
+                'bukit-sikunir' => ['bukit', 'sikunir'],
+                'dieng-plateau' => ['dieng', 'plateau']
+            ];
+
+            if (isset($attractionKeywords[$attractions])) {
+                $keywords = $attractionKeywords[$attractions];
+                $produksQuery->where(function ($query) use ($keywords) {
+                    foreach ($keywords as $keyword) {
+                        $query->orWhere('lokasi', 'LIKE', '%' . $keyword . '%')
+                              ->orWhere('label', 'LIKE', '%' . $keyword . '%');
+                    }
+                });
+            }
+        }
+
+        // Sort by
+        if ($sortBy) {
+            if ($sortBy === 'price-low') {
+                $produksQuery->orderBy('harga_weekday', 'asc');
+            } elseif ($sortBy === 'price-high') {
+                $produksQuery->orderBy('harga_weekday', 'desc');
+            } elseif ($sortBy === 'rating') {
+                $produksQuery->orderBy('rating', 'desc');
+            } elseif ($sortBy === 'name') {
+                $produksQuery->orderBy('name', 'asc');
+            } else {
+                $produksQuery->orderBy('urutan');
+            }
+        } else {
+            $produksQuery->orderBy('urutan');
+        }
+
         // Filter berdasarkan ketersediaan tanggal booking
         if ($bookingDate && $nightsCount) {
             $startDate = Carbon::parse($bookingDate);
-            
+
             // Handle nilai "8+" menjadi 8 hari
             $daysToAdd = $nightsCount === '8+' ? 8 : (int)$nightsCount;
             $endDate = $startDate->copy()->addDays($daysToAdd);
-            
+
             // Ambil ID produk yang tidak tersedia untuk tanggal yang dipilih
             $unavailableProductIds = TransaksiDetail::where('status', '!=', 'REJECTED')
                 ->whereBetween('date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
                 ->pluck('produk_id')
                 ->unique();
-            
+
             // Filter produk yang tersedia
             if ($unavailableProductIds->isNotEmpty()) {
                 $produksQuery->whereNotIn('id', $unavailableProductIds);
@@ -188,6 +271,11 @@ class LandingPageController extends Controller
             'searchQuery' => $searchQuery,
             'bookingDate' => $bookingDate,
             'nightsCount' => $nightsCount,
+            'priceRange' => $priceRange,
+            'capacity' => $capacity,
+            'rooms' => $rooms,
+            'attractions' => $attractions,
+            'sortBy' => $sortBy,
         ]);
     }
 
@@ -200,7 +288,7 @@ class LandingPageController extends Controller
         // menghitung total unit yang sudah dibooking per tanggal
         // berdasarkan status yang tidak sama dengan "REJECTED"
         $booked = TransaksiDetail::where('produk_id', $produk->id)->where('status', '!=', 'REJECTED')->select('date', DB::raw('SUM(unit) as total'))->groupBy('date')->pluck('total', 'date');
-        
+
         // if ($availableProduk) {
         //     $booked = $booked->merge($availableProduk);
         // }

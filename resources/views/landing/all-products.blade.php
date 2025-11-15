@@ -60,7 +60,7 @@
                             </select>
                         </div>
                     </div>
-                    
+
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
                         <div>
                             <label for="booking_date" class="block text-sm font-medium text-gray-700 mb-2">Tanggal Booking</label>
@@ -81,9 +81,85 @@
                             </select>
                         </div>
                     </div>
-                    
-                    <div class="flex items-center justify-between">
-                        <div class="flex gap-3">
+
+                    <!-- Advanced Filter Section -->
+                    <div class="mt-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-base lg:text-lg font-semibold text-gray-900 flex items-center">
+                                <svg class="w-4 h-4 lg:w-5 lg:h-5 mr-2 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
+                                </svg>
+                                Filter Pencarian Lanjutan
+                            </h3>
+                            <button class="lg:hidden flex items-center text-primary-600 hover:text-primary-700 font-medium" id="toggleAdvancedFilterMobile">
+                                <span id="filterToggleTextMobile">Tampilkan Filter</span>
+                                <svg class="w-5 h-5 ml-2 transform transition-transform" id="filterToggleIconMobile" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4" id="advancedFilterContentMobile">
+                            <div>
+                                <label for="price_range" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 lg:mb-2">Rentang Harga</label>
+                                <select name="price_range" id="price_range" class="w-full px-3 py-2 lg:px-4 lg:py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200">
+                                    <option value="">Semua Harga</option>
+                                    <option value="0-500000" {{ ($priceRange ?? '') == '0-500000' ? 'selected' : '' }}>Rp 0 - 500.000</option>
+                                    <option value="500000-1000000" {{ ($priceRange ?? '') == '500000-1000000' ? 'selected' : '' }}>Rp 500.000 - 1.000.000</option>
+                                    <option value="1000000-2000000" {{ ($priceRange ?? '') == '1000000-2000000' ? 'selected' : '' }}>Rp 1.000.000 - 2.000.000</option>
+                                    <option value="2000000+" {{ ($priceRange ?? '') == '2000000+' ? 'selected' : '' }}>Di atas Rp 2.000.000</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label for="capacity" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 lg:mb-2">Kapasitas</label>
+                                <select name="capacity" id="capacity" class="w-full px-3 py-2 lg:px-4 lg:py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200">
+                                    <option value="">Semua Kapasitas</option>
+                                    <option value="1-2" {{ ($capacity ?? '') == '1-2' ? 'selected' : '' }}>1-2 Orang</option>
+                                    <option value="3-4" {{ ($capacity ?? '') == '3-4' ? 'selected' : '' }}>3-4 Orang</option>
+                                    <option value="5-8" {{ ($capacity ?? '') == '5-8' ? 'selected' : '' }}>5-8 Orang</option>
+                                    <option value="9+" {{ ($capacity ?? '') == '9+' ? 'selected' : '' }}>9+ Orang</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label for="rooms" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 lg:mb-2">Jumlah Kamar</label>
+                                <select name="rooms" id="rooms" class="w-full px-3 py-2 lg:px-4 lg:py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200">
+                                    <option value="">Semua Kamar</option>
+                                    <option value="1" {{ ($rooms ?? '') == '1' ? 'selected' : '' }}>1 Kamar</option>
+                                    <option value="2" {{ ($rooms ?? '') == '2' ? 'selected' : '' }}>2 Kamar</option>
+                                    <option value="3" {{ ($rooms ?? '') == '3' ? 'selected' : '' }}>3 Kamar</option>
+                                    <option value="4+" {{ ($rooms ?? '') == '4+' ? 'selected' : '' }}>4+ Kamar</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label for="attractions" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 lg:mb-2">Dekat Wisata</label>
+                                <select name="attractions" id="attractions" class="w-full px-3 py-2 lg:px-4 lg:py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200">
+                                    <option value="">Semua Lokasi</option>
+                                    <option value="candi-arjuna" {{ ($attractions ?? '') == 'candi-arjuna' ? 'selected' : '' }}>Candi Arjuna</option>
+                                    <option value="kawah-sikidang" {{ ($attractions ?? '') == 'kawah-sikidang' ? 'selected' : '' }}>Kawah Sikidang</option>
+                                    <option value="telaga-warna" {{ ($attractions ?? '') == 'telaga-warna' ? 'selected' : '' }}>Telaga Warna</option>
+                                    <option value="bukit-sikunir" {{ ($attractions ?? '') == 'bukit-sikunir' ? 'selected' : '' }}>Bukit Sikunir</option>
+                                    <option value="dieng-plateau" {{ ($attractions ?? '') == 'dieng-plateau' ? 'selected' : '' }}>Dieng Plateau</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-2 mt-4 lg:mt-6">
+                            <label for="sort" class="text-xs sm:text-sm font-medium text-gray-700">Urutkan:</label>
+                            <select name="sort" id="sort" class="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200">
+                                <option value="relevance" {{ ($sortBy ?? '') == 'relevance' ? 'selected' : '' }}>Relevansi</option>
+                                <option value="price-low" {{ ($sortBy ?? '') == 'price-low' ? 'selected' : '' }}>Harga Terendah</option>
+                                <option value="price-high" {{ ($sortBy ?? '') == 'price-high' ? 'selected' : '' }}>Harga Tertinggi</option>
+                                <option value="rating" {{ ($sortBy ?? '') == 'rating' ? 'selected' : '' }}>Rating Tertinggi</option>
+                                <option value="name" {{ ($sortBy ?? '') == 'name' ? 'selected' : '' }}>Nama A-Z</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mt-6 pt-6 border-t border-gray-200">
+                        <div class="flex flex-wrap gap-3">
                             @if($searchQuery || $activeCategory || $bookingDate || $nightsCount || $isPromo)
                                 <a href="{{ route('produk.all') }}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
                                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -92,7 +168,7 @@
                                     Reset Semua
                                 </a>
                             @endif
-                            
+
                             <!-- Quick Promo Button -->
                             @if(!$isPromo)
                                 <a href="{{ route('produk.all', array_filter(['search' => $searchQuery, 'category' => $activeCategory, 'booking_date' => $bookingDate, 'nights' => $nightsCount, 'promo' => 'true'])) }}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-red-600 hover:text-red-700 transition-colors">
@@ -103,11 +179,11 @@
                                 </a>
                             @endif
                         </div>
-                        <button type="submit" class="inline-flex items-center justify-center px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white font-semibold rounded-xl transition-colors duration-200">
+                        <button type="submit" class="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white font-semibold rounded-xl transition-colors duration-200 shadow-lg hover:shadow-xl">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                             </svg>
-                            Telusuri
+                            Cari & Terapkan Filter
                         </button>
                     </div>
                 </form>
@@ -200,4 +276,34 @@
             @endif
         </div>
     </section>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Advanced Filter Toggle (Mobile)
+        const toggleAdvancedFilterMobile = document.getElementById('toggleAdvancedFilterMobile');
+        const advancedFilterContentMobile = document.getElementById('advancedFilterContentMobile');
+        const filterToggleTextMobile = document.getElementById('filterToggleTextMobile');
+        const filterToggleIconMobile = document.getElementById('filterToggleIconMobile');
+
+        if (toggleAdvancedFilterMobile && advancedFilterContentMobile) {
+            // Hide filter on mobile by default
+            if (window.innerWidth < 1024) {
+                advancedFilterContentMobile.style.display = 'none';
+            }
+
+            toggleAdvancedFilterMobile.addEventListener('click', function() {
+                const isHidden = advancedFilterContentMobile.style.display === 'none';
+                advancedFilterContentMobile.style.display = isHidden ? 'grid' : 'none';
+
+                if (filterToggleTextMobile) {
+                    filterToggleTextMobile.textContent = isHidden ? 'Sembunyikan Filter' : 'Tampilkan Filter';
+                }
+
+                if (filterToggleIconMobile) {
+                    filterToggleIconMobile.classList.toggle('rotate-180', isHidden);
+                }
+            });
+        }
+    });
+    </script>
 </x-app-landing-layout>
