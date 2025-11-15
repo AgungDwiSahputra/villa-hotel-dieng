@@ -43,7 +43,7 @@
 @import "animate.css";
 @import "jquery.fancybox.min.css";
 @import "magnific-popup.css";
-/* @import "swiper-bundle.min.css"; */
+@import "swiper-bundle.min.css";
 @import "nice-select.css";
 @import "../../assets/fonts/style.css";
 @import url("https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Yesteryear&display=swap");

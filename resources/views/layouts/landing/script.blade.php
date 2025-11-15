@@ -2,7 +2,7 @@
 <script src="{{ asset('landing/app/js/jquery.nice-select.min.js')}}"></script>
 <script src="{{ asset('landing/app/js/bootstrap.min.js')}}"></script>
 {{-- <script src="{{ asset('landing/app/js/swiper-bundle.min.js')}}"></script> --}}
-<script src="{{ asset('landing/app/js/swiper.js')}}"></script>
+{{-- Swiper.js sudah dihapus, menggunakan Flickity instead --}}
 <script src="{{ asset('landing/app/js/plugin.js')}}"></script>
 <script src="{{ asset('landing/app/js/count-down.js')}}"></script>
 <script src="{{ asset('landing/app/js/countto.js')}}"></script>

@@ -33,7 +33,7 @@
 @import "animate.css";
 @import "jquery.fancybox.min.css";
 @import "magnific-popup.css";
-@import "swiper-bundle.min.css";
+/* @import "swiper-bundle.min.css"; */ /* Swiper sudah dihapus, menggunakan Flickity */
 @import "nice-select.css";
 @import "../../assets/fonts/style.css";
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Yesteryear&display=swap');
@@ -494,7 +494,7 @@ label.error {
 }
 
 .justify-end {
-    justify-content: end;
+    text-align: end;
 }
 
 .justify-space {
@@ -893,7 +893,7 @@ input[type="checkbox"]+label {
         margin-right: 14px;
         position: absolute;
         top: 0px;
-        left: 0;
+        left: 0px;
         border: 1px solid $text3;
     }
 }
