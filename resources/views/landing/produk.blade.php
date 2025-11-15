@@ -5,7 +5,7 @@
                 <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100 animate-fade-in-up">
                     <div class="relative mb-8">
                         <div class="main-carousel rounded-2xl overflow-hidden shadow-2xl" data-flickity='{ "cellAlign": "center", "contain": true, "prevNextButtons": true, "pageDots": true, "autoPlay": 5000, "pauseAutoPlayOnHover": false, "wrapAround": true, "adaptiveHeight": false, "imagesLoaded": true }'>
-                            @foreach ($produk->images as $image)
+                            @forelse ($produk->images as $image)
                                 <div class="carousel-cell relative">
                                     <div class="relative aspect-[4/3]">
                                         @if($produk->isPromo())
@@ -22,7 +22,24 @@
                                         </a>
                                     </div>
                                 </div>
-                            @endforeach
+                            @empty
+                                <div class="carousel-cell relative">
+                                    <div class="relative aspect-[4/3]">
+                                        @if($produk->isPromo())
+                                            <div class="absolute top-3 left-3 z-20">
+                                                <span class="bg-gradient-to-r from-red-500 to-red-600 text-white text-sm font-bold px-4 py-2 rounded-full shadow-xl animate-pulse">
+                                                    {{ $produk->getPromoDiscountPercentage() > 0 ? 'PROMO ' . $produk->getPromoDiscountPercentage() . '%' : 'PROMO' }}
+                                                </span>
+                                            </div>
+                                        @endif
+                                        <a href="{{ asset('images/produk/default.jpg') }}" class="glightbox block group" data-gallery="gallery1">
+                                            <img src="{{ asset('images/produk/default.jpg') }}" alt="Gambar Default Produk"
+                                                class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                                            <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                        </a>
+                                    </div>
+                                </div>
+                            @endforelse
                         </div>
                     </div>
                     

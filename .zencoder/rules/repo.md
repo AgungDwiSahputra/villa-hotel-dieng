@@ -618,6 +618,10 @@ php artisan test --coverage
   - Enhanced CSS for proper carousel-cell layout with flex centering
   - Added `imagesLoaded: true` option for better image loading handling
   - Removed duplicate CSS definitions and improved responsive behavior
+- **Default Product Image Implementation**: Added fallback default image "images/produk/default.jpg" for products without images in carousel
+  - Modified carousel loop to use `@forelse` with `@empty` directive
+  - Ensures consistent UI display even when products have no uploaded images
+  - Maintains promo badge functionality for default images
 - **Mobile-Optimized Floating Price Section**: Redesigned bottom sticky price bar for better mobile experience
   - Responsive layout: vertical stack on mobile, horizontal on desktop
   - Simplified content on mobile (hidden weekday/weekend details)
