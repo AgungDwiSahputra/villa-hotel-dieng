@@ -96,7 +96,7 @@
                             </div>
                             <div>
                                 <p class="font-semibold text-gray-900">{{ $produk->rating }}/5</p>
-                                <p class="text-sm text-gray-600">{{ $produk->review_count ?? 0 }} ulasan</p>
+                                {{-- <p class="text-sm text-gray-600">{{ $produk->review_count ?? 0 }} ulasan</p> --}}
                             </div>
                         </div>
 

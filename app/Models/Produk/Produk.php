@@ -7,6 +7,7 @@ use App\Models\Transaksi\TransaksiDetail;
 use Haruncpi\LaravelUserActivity\Traits\Loggable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class Produk extends Model
@@ -207,14 +208,50 @@ class Produk extends Model
         if ($this->hasActivePromo()) {
             return true;
         }
-        
+
         // If cache not available or expired, check directly
         $bestPromo = $this->getBestPromo();
         if ($bestPromo) {
             return true;
         }
-        
+
         // Fallback to label check (legacy support)
         return $this->label && str_contains(strtolower($this->label), 'promo');
+    }
+
+    // Availability Methods - Konsisten untuk semua controller
+    public function getBookedDates()
+    {
+        return TransaksiDetail::where('produk_id', $this->id)
+            ->where('status', '!=', 'REJECTED')
+            ->select('date', DB::raw('SUM(unit) as total'))
+            ->groupBy('date')
+            ->pluck('total', 'date');
+    }
+
+    public function isFullyBookedForRange($startDate, $endDate)
+    {
+        $bookingsPerDate = TransaksiDetail::where('produk_id', $this->id)
+            ->where('status', '!=', 'REJECTED')
+            ->whereBetween('date', [$startDate, $endDate])
+            ->select('date', DB::raw('SUM(unit) as daily_booked'))
+            ->groupBy('date')
+            ->get();
+
+        $maxBookedInRange = $bookingsPerDate->max('daily_booked') ?? 0;
+        return $maxBookedInRange >= $this->unit;
+    }
+
+    public function getAvailableUnitsForRange($startDate, $endDate)
+    {
+        $bookingsPerDate = TransaksiDetail::where('produk_id', $this->id)
+            ->where('status', '!=', 'REJECTED')
+            ->whereBetween('date', [$startDate, $endDate])
+            ->select('date', DB::raw('SUM(unit) as daily_booked'))
+            ->groupBy('date')
+            ->get();
+
+        $maxBookedInRange = $bookingsPerDate->max('daily_booked') ?? 0;
+        return max(0, $this->unit - $maxBookedInRange);
     }
 }

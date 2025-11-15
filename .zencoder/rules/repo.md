@@ -376,7 +376,9 @@ php artisan test --coverage
 **Core Models** (Organized by Domain):
 
 *Product Management*:
-- `Produk` - Villa/property management with categories, facilities, images, and terms
+- `Produk` - Villa/property management with categories, facilities, images, terms, and availability methods
+  - Availability Methods: `getBookedDates()`, `isFullyBookedForRange()`, `getAvailableUnitsForRange()` for consistent availability checking across controllers
+  - Promo Methods: `isPromo()`, `getPromoPriceWeekday()`, `getPromoPriceWeekend()`, `getPromoDiscountPercentage()` with caching support
 - `ProdukCategory` - Product categorization (Villa, Hotel Room, etc.)
 - `ProdukFasilitas` - Facility management (WiFi, AC, TV, Kitchen, etc.)
 - `ProdukImage` - Product image gallery with multiple photos per product
@@ -584,6 +586,27 @@ php artisan test --coverage
 - **Benefits**: Improved mobile usability, better touch target accessibility, optimized content density, enhanced readability on small screens
 ## Recent Updates (November 2025)
 
+### Data Consistency & Bug Fixes:
+- **Rating Data Consistency Fix**: Resolved critical inconsistency in villa card component where ratings were hardcoded to 4 stars instead of using actual database values
+  - **Issue**: `resources/views/components/villa-card.blade.php` displayed fake ratings (`$i <= 4`) and random review counts (`rand(10, 50)`)
+  - **Fix**: Updated to use real database rating (`$villa->rating`) and display as "({rating}/5)"
+  - **Impact**: Ensures consistent rating display across index and detail pages
+- **Availability Method Standardization**: Added consistent availability checking methods to `Produk` model
+  - `getBookedDates()`: Returns array of booked dates for calendar display
+  - `isFullyBookedForRange($startDate, $endDate)`: Checks if property is fully booked in date range
+  - `getAvailableUnitsForRange($startDate, $endDate)`: Calculates available units for booking
+  - **Usage**: Synchronized availability queries between `LandingPageController` and `ProdukController`
+- **Caching Implementation**: Added Laravel Cache for popular villas data (1-hour TTL)
+  - **Methods**: `Cache::remember()` for `popularVillas` and `bestVillas` in `LandingPageController`
+  - **Benefits**: Reduced database queries, improved performance for frequently accessed data
+- **Booking Validation Enhancement**: Added comprehensive validation in booking process
+  - **Method**: `calculateExpectedTotal()` in `ProdukController` for price verification
+  - **Validation**: Checks availability, unit limits, and price consistency before booking
+  - **Logging**: ActivityLog integration to track booking inconsistencies
+- **Data Integrity Monitoring**: Implemented logging system for data inconsistency detection
+  - **Location**: `ActivityLog` entries for availability and pricing discrepancies
+  - **Purpose**: Audit trail for debugging data consistency issues
+
 ### New Features Added:
 - **Card Component**: Reusable `card-component.blade.php` with DataTable support for consistent admin UI
 - **Enhanced PromoDataTable**: Advanced status calculation, usage tracking, and target display features
@@ -675,6 +698,7 @@ php artisan test --coverage
 
 ## Summary
 Dokumentasi ini telah diperbarui pada November 2025 untuk mencakup:
+- **Data Consistency Fixes**: Rating consistency, availability standardization, caching, validation, and monitoring
 - Komponen Blade baru (card-component.blade.php)
 - Fitur-fitur lanjutan PromoDataTable
 - Peningkatan DatabaseSeeder

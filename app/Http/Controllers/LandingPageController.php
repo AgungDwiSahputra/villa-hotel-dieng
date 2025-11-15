@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Landing\ProdukFinalRequest;
+use App\Models\ActivityLog;
 use App\Models\Availability;
 use App\Models\Produk\Produk;
 use App\Models\Produk\ProdukCategory;
@@ -13,6 +14,7 @@ use App\Models\Transaksi\TransaksiDetail;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class LandingPageController extends Controller
@@ -49,20 +51,24 @@ class LandingPageController extends Controller
 
         $produks = $produksQuery->paginate(12);
 
-        // Get popular villas (based on rating, bookings, or views)
-        $popularVillas = Produk::with('images', 'category')
-            ->where('status', 'publish')
-            ->orderBy('harga_weekday', 'desc') // You can change this to actual popularity logic
-            ->limit(6)
-            ->get();
+        // Get popular villas (based on rating, bookings, or views) - dengan cache
+        $popularVillas = Cache::remember('landing_popular_villas', 3600, function () {
+            return Produk::with('images', 'category')
+                ->where('status', 'publish')
+                ->orderBy('harga_weekday', 'desc') // You can change this to actual popularity logic
+                ->limit(6)
+                ->get();
+        });
 
-        // Get best villas (premium properties with high ratings)
-        $bestVillas = Produk::with('images', 'category', 'fasilitases')
-            ->where('status', 'publish')
-            ->where('label', 'LIKE', '%premium%') // or any other criteria for best villas
-            ->inRandomOrder()
-            ->limit(4)
-            ->get();
+        // Get best villas (premium properties with high ratings) - dengan cache
+        $bestVillas = Cache::remember('landing_best_villas', 3600, function () {
+            return Produk::with('images', 'category', 'fasilitases')
+                ->where('status', 'publish')
+                ->where('label', 'LIKE', '%premium%') // or any other criteria for best villas
+                ->inRandomOrder()
+                ->limit(4)
+                ->get();
+        });
 
         // Get testimonials data
         $testimonials = [
@@ -263,24 +269,13 @@ class LandingPageController extends Controller
                 ->distinct()
                 ->pluck('produk_id');
 
-            // Cek setiap produk apakah fully booked
+            // Cek setiap produk apakah fully booked menggunakan method konsisten
             foreach ($productsWithBookings as $produkId) {
                 $produk = Produk::find($produkId);
                 if (!$produk) continue;
 
-                // Hitung booking per tanggal untuk produk ini
-                $bookingsPerDate = TransaksiDetail::where('produk_id', $produkId)
-                    ->where('status', '!=', 'REJECTED')
-                    ->whereBetween('date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
-                    ->select('date', DB::raw('SUM(unit) as daily_booked'))
-                    ->groupBy('date')
-                    ->get();
-
-                // Cari hari dengan booking terbanyak
-                $maxBookedInRange = $bookingsPerDate->max('daily_booked') ?? 0;
-
-                // Jika max booking >= total unit, berarti fully booked
-                if ($maxBookedInRange >= $produk->unit) {
+                // Gunakan method baru untuk cek fully booked
+                if ($produk->isFullyBookedForRange($startDate->format('Y-m-d'), $endDate->format('Y-m-d'))) {
                     $fullyBookedProductIds[] = $produkId;
                 }
             }
@@ -300,24 +295,14 @@ class LandingPageController extends Controller
             $endDate = $startDate->copy()->addDays($daysToAdd);
 
             foreach ($produks as $produk) {
-                // Hitung booking per tanggal dalam range (group by date)
-                // Ambil tanggal dengan booking terbanyak (worst case scenario)
-                $bookingsPerDate = TransaksiDetail::where('produk_id', $produk->id)
-                    ->where('status', '!=', 'REJECTED')
-                    ->whereBetween('date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
-                    ->select('date', DB::raw('SUM(unit) as daily_booked'))
-                    ->groupBy('date')
-                    ->get();
-
-                // Cari hari dengan booking terbanyak dalam range
-                $maxBookedInRange = $bookingsPerDate->max('daily_booked') ?? 0;
-
-                $availableUnits = $produk->unit - $maxBookedInRange;
+                // Gunakan method konsisten untuk hitung available units
+                $availableUnits = $produk->getAvailableUnitsForRange($startDate->format('Y-m-d'), $endDate->format('Y-m-d'));
+                $maxBookedInRange = $produk->unit - $availableUnits;
 
                 $availability[$produk->id] = [
                     'total' => $produk->unit,
                     'booked' => $maxBookedInRange,  // Max booking di salah satu tanggal
-                    'available' => max(0, $availableUnits),
+                    'available' => $availableUnits,
                     'percentage' => $produk->unit > 0 ? round(($availableUnits / $produk->unit) * 100) : 0
                 ];
             }
@@ -360,9 +345,8 @@ class LandingPageController extends Controller
         // beserta relasinya yaitu gambar, fasilitas, wisata dan syarat
         $produk = Produk::with('images', 'fasilitases', 'wisatas', 'syarats')->where('slug', $slug)->firstOrFail();
 
-        // menghitung total unit yang sudah dibooking per tanggal
-        // berdasarkan status yang tidak sama dengan "REJECTED"
-        $booked = TransaksiDetail::where('produk_id', $produk->id)->where('status', '!=', 'REJECTED')->select('date', DB::raw('SUM(unit) as total'))->groupBy('date')->pluck('total', 'date');
+        // menghitung total unit yang sudah dibooking per tanggal menggunakan method konsisten
+        $booked = $produk->getBookedDates();
 
         // if ($availableProduk) {
         //     $booked = $booked->merge($availableProduk);
@@ -395,6 +379,58 @@ class LandingPageController extends Controller
     }
     public function final(ProdukFinalRequest $request)
     {
+        $produk = Produk::find(session('produk_booking')['produk_id']);
+        if (!$produk) {
+            return back()->withErrors('Produk tidak ditemukan.');
+        }
+
+        // Validasi konsistensi: Pastikan produk masih available untuk tanggal yang dipilih
+        $startDate = $request->start_date;
+        $endDate = $request->end_date;
+        $unit = $request->unit;
+
+        $availableUnits = $produk->getAvailableUnitsForRange($startDate, $endDate);
+        if ($availableUnits < $unit) {
+            // Log inkonsistensi availability
+            ActivityLog::create([
+                'log_date' => now(),
+                'table_name' => 'produks',
+                'log_type' => 'INCONSISTENCY_AVAILABILITY',
+                'data' => json_encode([
+                    'produk_id' => $produk->id,
+                    'produk_name' => $produk->name,
+                    'requested_units' => $unit,
+                    'available_units' => $availableUnits,
+                    'start_date' => $startDate,
+                    'end_date' => $endDate,
+                    'user_email' => $request->email,
+                ]),
+            ]);
+            return back()->withErrors('Maaf, unit yang tersedia tidak mencukupi untuk tanggal yang dipilih. Silakan pilih tanggal lain.');
+        }
+
+        // Validasi harga konsisten
+        $expectedTotal = $this->calculateExpectedTotal($produk, $startDate, $endDate, $unit);
+        if (abs($request->total - $expectedTotal) > 0.01) { // Toleransi kecil untuk floating point
+            // Log inkonsistensi harga
+            ActivityLog::create([
+                'log_date' => now(),
+                'table_name' => 'produks',
+                'log_type' => 'INCONSISTENCY_PRICE',
+                'data' => json_encode([
+                    'produk_id' => $produk->id,
+                    'produk_name' => $produk->name,
+                    'submitted_total' => $request->total,
+                    'expected_total' => $expectedTotal,
+                    'start_date' => $startDate,
+                    'end_date' => $endDate,
+                    'unit' => $unit,
+                    'user_email' => $request->email,
+                ]),
+            ]);
+            return back()->withErrors('Harga total tidak sesuai. Silakan refresh halaman dan coba lagi.');
+        }
+
         $datas = Arr::except($request->validated(), ['image']);
         if ($request->image) {
             $datas['image'] = storeImage($request, 'image', 'Transaksi\Transaksi');
@@ -413,6 +449,15 @@ class LandingPageController extends Controller
         }
         session()->forget('produk_booking');
         return redirect()->route('index')->with('success', 'Booking berhasil! Tunggu konfirmasi admin.');
+    }
+
+    private function calculateExpectedTotal(Produk $produk, $startDate, $endDate, $unit)
+    {
+        $start = Carbon::parse($startDate);
+        $end = Carbon::parse($endDate);
+        $nights = $start->diffInDays($end);
+        $pricePerNight = $produk->isPromo() ? $produk->getPromoPriceWeekday() : $produk->harga_weekday; // Simplified, assuming weekday pricing
+        return $pricePerNight * $nights * $unit;
     }
     public function about()
     {

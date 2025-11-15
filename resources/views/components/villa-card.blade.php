@@ -116,12 +116,12 @@
         <div class="flex items-center mb-2.5 sm:mb-3">
             <div class="flex text-yellow-400">
                 @for($i = 1; $i <= 5; $i++)
-                <svg class="w-4 h-4 {{ $i <= 4 ? 'text-yellow-400' : 'text-gray-300' }}" fill="currentColor" viewBox="0 0 24 24">
+                <svg class="w-4 h-4 {{ $i <= $villa->rating ? 'text-yellow-400' : 'text-gray-300' }}" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
                 </svg>
                 @endfor
             </div>
-            <span class="ml-1.5 sm:ml-2 text-xs sm:text-sm text-gray-600">({{ rand(10, 50) }})</span>
+            <span class="ml-1.5 sm:ml-2 text-xs sm:text-sm text-gray-600">({{ $villa->rating }}/5)</span>
         </div>
         @endif
 
