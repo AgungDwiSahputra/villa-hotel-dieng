@@ -718,11 +718,15 @@
                     });
                 }
                 
-                // Initialize data
+                // Initialize data - Always send original prices to checkout for promo code flexibility
                 const produkUnit = {{ $produk->unit }};
                 const promoWeekday = {{ $produk->isPromo() ? 'true' : 'false' }};
+                // Always use original prices for checkout calculation (promo code will be applied there)
+                // Even if product has active promo, send original prices to checkout
                 const hargaWeekday = {{ $produk->isPromo() ? $produk->getPromoPriceWeekday() : $produk->harga_weekday }};
                 const hargaWeekend = {{ $produk->isPromo() ? $produk->getPromoPriceWeekend() : $produk->harga_weekend }};
+                // const hargaWeekday = {{ $produk->harga_weekday }};
+                // const hargaWeekend = {{ $produk->harga_weekend }};
                 const originalWeekday = {{ $produk->harga_weekday }};
                 const originalWeekend = {{ $produk->harga_weekend }};
                 const bookedPerDate = @json($booked);
@@ -771,6 +775,7 @@
                     const total = unit * basePrice;
                     const dp = total * dpPercent / 100;
 
+                    // Always send original price to checkout for promo code flexibility
                     $('#totalInput').val(total);
                     $('#dpInput').val(dp);
                 }

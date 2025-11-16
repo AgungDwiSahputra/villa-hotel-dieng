@@ -254,4 +254,69 @@ class Produk extends Model
         $maxBookedInRange = $bookingsPerDate->max('daily_booked') ?? 0;
         return max(0, $this->unit - $maxBookedInRange);
     }
+
+    /**
+     * Calculate total price for date range based on weekday/weekend pricing
+     */
+    public function calculateTotalPriceForRange($startDate, $endDate, $unit = 1)
+    {
+        $start = \Carbon\Carbon::parse($startDate);
+        $end = \Carbon\Carbon::parse($endDate);
+        $totalPrice = 0;
+
+        $currentDate = $start->copy();
+        while ($currentDate->lt($end)) {
+            // Check if it's weekend (Saturday = 6, Sunday = 0)
+            $dayOfWeek = $currentDate->dayOfWeek;
+            $isWeekend = ($dayOfWeek === 0 || $dayOfWeek === 6);
+
+            if ($isWeekend) {
+                $price = $this->isPromo() ? $this->getPromoPriceWeekend() : $this->harga_weekend;
+            } else {
+                $price = $this->isPromo() ? $this->getPromoPriceWeekday() : $this->harga_weekday;
+            }
+
+            $totalPrice += $price;
+            $currentDate->addDay();
+        }
+
+        return $totalPrice * $unit;
+    }
+
+    /**
+     * Get price breakdown for date range
+     */
+    public function getPriceBreakdownForRange($startDate, $endDate, $unit = 1)
+    {
+        $start = \Carbon\Carbon::parse($startDate);
+        $end = \Carbon\Carbon::parse($endDate);
+        $breakdown = [];
+
+        $currentDate = $start->copy();
+        while ($currentDate->lt($end)) {
+            $dayOfWeek = $currentDate->dayOfWeek;
+            $isWeekend = ($dayOfWeek === 0 || $dayOfWeek === 6);
+            $dayName = $currentDate->locale('id')->dayName;
+
+            if ($isWeekend) {
+                $price = $this->isPromo() ? $this->getPromoPriceWeekend() : $this->harga_weekend;
+                $priceType = 'weekend';
+            } else {
+                $price = $this->isPromo() ? $this->getPromoPriceWeekday() : $this->harga_weekday;
+                $priceType = 'weekday';
+            }
+
+            $breakdown[] = [
+                'date' => $currentDate->format('Y-m-d'),
+                'day_name' => $dayName,
+                'price_type' => $priceType,
+                'price_per_unit' => $price,
+                'total_for_day' => $price * $unit
+            ];
+
+            $currentDate->addDay();
+        }
+
+        return $breakdown;
+    }
 }

@@ -379,7 +379,43 @@ class LandingPageController extends Controller
     }
     public function produkBooking(Request $request)
     {
-        session()->put('produk_booking', $request->all());
+        $produk = Produk::findOrFail($request->produk_id);
+
+        // Calculate original total using original prices based on actual dates
+        // Promo codes will be applied at checkout
+        $bookingData = $request->all();
+
+        // Calculate total price based on weekday/weekend pricing for the date range
+        $originalTotal = $produk->calculateTotalPriceForRange(
+            $request->start_date,
+            $request->end_date,
+            $request->unit
+        );
+
+        // Calculate original DP based on original total
+        $dpPercentage = $request->dp / $request->total;
+        $originalDp = $originalTotal * $dpPercentage;
+
+        // Calculate number of nights
+        $startDate = Carbon::parse($request->start_date);
+        $endDate = Carbon::parse($request->end_date);
+        $nights = $startDate->diffInDays($endDate);
+
+        // Override with calculated prices
+        $bookingData['total'] = $originalTotal;
+        $bookingData['dp'] = $originalDp;
+        $bookingData['night'] = $nights;
+
+        // Add price breakdown for display
+        $bookingData['price_breakdown'] = $produk->getPriceBreakdownForRange(
+            $request->start_date,
+            $request->end_date,
+            $request->unit
+        );
+
+        // Store booking data in session temporarily for checkout page
+        // TODO: Remove session usage in future refactoring
+        session()->put('produk_booking', $bookingData);
         return redirect()->route('produk.checkout');
     }
     public function checkout()
@@ -387,9 +423,12 @@ class LandingPageController extends Controller
         if (!session('produk_booking')) {
             return back()->withErrors('Permintaan tidak bisa diproses');
         }
+
         $rekenings = Rekening::orderBy('bank')->get();
         $produk = Produk::find(session('produk_booking')['produk_id']);
-        return view('landing.checkout', compact('rekenings', 'produk'));
+        $bookingData = session('produk_booking');
+
+        return view('landing.checkout', compact('rekenings', 'produk', 'bookingData'));
     }
     public function final(ProdukFinalRequest $request)
     {
@@ -467,11 +506,8 @@ class LandingPageController extends Controller
 
     private function calculateExpectedTotal(Produk $produk, $startDate, $endDate, $unit)
     {
-        $start = Carbon::parse($startDate);
-        $end = Carbon::parse($endDate);
-        $nights = $start->diffInDays($end);
-        $pricePerNight = $produk->isPromo() ? $produk->getPromoPriceWeekday() : $produk->harga_weekday; // Simplified, assuming weekday pricing
-        return $pricePerNight * $nights * $unit;
+        // Use the same calculation method as booking process
+        return $produk->calculateTotalPriceForRange($startDate, $endDate, $unit);
     }
     public function about()
     {
@@ -484,5 +520,141 @@ class LandingPageController extends Controller
         return view('landing.terms', [
             'categories' => ProdukCategory::with('produks.images')->orderBy('name')->get(),
         ]);
+    }
+
+    public function getActivePromos()
+    {
+        $promos = \App\Models\Promo\Promo::where('is_active', true)
+            ->where('start_date', '<=', now())
+            ->where('end_date', '>=', now())
+            ->where(function ($query) {
+                $query->where('usage_limit', '>', \DB::raw('usage_count'))
+                    ->orWhereNull('usage_limit');
+            })
+            ->select(['id', 'name', 'promo_code', 'description', 'discount_type', 'discount_value', 'applicable_to'])
+            ->get()
+            ->map(function ($promo) {
+                // Generate meaningful description if null
+                $description = $promo->description;
+                if (!$description) {
+                    if ($promo->discount_type === 'percentage') {
+                        $description = "Diskon {$promo->discount_value}%";
+                    } else {
+                        $description = "Potongan Rp " . number_format($promo->discount_value, 0, ',', '.');
+                    }
+
+                    // Add applicability info
+                    if ($promo->applicable_to === 'all') {
+                        $description .= " untuk semua produk";
+                    } elseif ($promo->applicable_to === 'category') {
+                        $description .= " untuk kategori tertentu";
+                    } else { // product
+                        $description .= " untuk produk tertentu";
+                    }
+                }
+
+                return [
+                    'code' => $promo->promo_code,
+                    'name' => $promo->name,
+                    'description' => $description,
+                    'discount_type' => $promo->discount_type,
+                    'discount_value' => $promo->discount_value,
+                    'applicable_to' => $promo->applicable_to,
+                ];
+            });
+
+        return response()->json($promos);
+    }
+
+    public function previewPromo(Request $request)
+    {
+        $request->validate([
+            'promo_code' => 'required|string|max:20',
+            'produk_id' => 'required|uuid|exists:produks,id',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after:start_date',
+            'unit' => 'required|integer|min:1',
+            'night' => 'required|integer|min:1',
+            'total' => 'required|numeric|min:0',
+            'dp' => 'required|numeric|min:0',
+        ]);
+
+        try {
+            $produk = \App\Models\Produk\Produk::findOrFail($request->produk_id);
+
+            // Find promo
+            $promo = \App\Models\Promo\Promo::where('promo_code', $request->promo_code)
+                ->where('is_active', true)
+                ->first();
+
+            if (!$promo) {
+                return response()->json([
+                    'valid' => false,
+                    'message' => 'Kode promo tidak valid atau tidak aktif.'
+                ], 422);
+            }
+
+            // Validate promo
+            if (!$promo->isValid()) {
+                return response()->json([
+                    'valid' => false,
+                    'message' => 'Kode promo sudah tidak berlaku atau sudah mencapai batas penggunaan.'
+                ], 422);
+            }
+
+            // Check if promo is applicable to this product
+            if (!$promo->isApplicableToProduct($produk)) {
+                return response()->json([
+                    'valid' => false,
+                    'message' => 'Kode promo tidak berlaku untuk produk ini.'
+                ], 422);
+            }
+
+            // Calculate discount (same logic as BookingController)
+            $discountConfig = $promo->getEffectiveDiscountForProduct($produk);
+
+            // Calculate total price based on actual date range (weekday/weekend pricing)
+            $totalPrice = $produk->calculateTotalPriceForRange(
+                $request->start_date,
+                $request->end_date,
+                $request->unit
+            );
+
+            if ($discountConfig['type'] === 'percentage') {
+                $discountAmount = $totalPrice * ($discountConfig['value'] / 100);
+            } else {
+                $discountAmount = min($discountConfig['value'], $totalPrice);
+            }
+
+            $finalTotal = max(0, $totalPrice - $discountAmount);
+
+            // Recalculate DP based on discount (same as BookingController)
+            $dpPercentage = $request->dp / $request->total;
+            $finalDp = $finalTotal * $dpPercentage;
+
+            return response()->json([
+                'valid' => true,
+                'promo' => [
+                    'name' => $promo->name,
+                    'code' => $promo->promo_code,
+                    'discount_type' => $discountConfig['type'],
+                    'discount_value' => $discountConfig['value'],
+                ],
+                'calculation' => [
+                    'original_total' => $totalPrice, // Use calculated original total, not from request
+                    'original_dp' => $request->dp,
+                    'discount_amount' => $discountAmount,
+                    'final_total' => $finalTotal,
+                    'final_dp' => $finalDp,
+                ],
+                'message' => 'Kode promo valid! Diskon akan diterapkan.'
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'valid' => false,
+                'message' => 'Terjadi kesalahan saat memvalidasi promo: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }

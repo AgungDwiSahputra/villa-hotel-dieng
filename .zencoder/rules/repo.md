@@ -326,6 +326,8 @@ php artisan migrate:fresh --seed
 **Artisan Console**: `artisan` - CLI tool for database, queue, and utility commands
 **Web Routes**: `routes/web.php` - Public and authenticated web routes (landing page, dashboard, admin)
 **API Routes**: `routes/api.php` - RESTful API endpoints with Sanctum authentication
+  - `GET /api/promos/active` - Retrieve active promo codes for checkout display
+  - `POST /api/promos/preview` - Preview promo code discount calculation
 **Authentication Routes**: `routes/auth.php` - Login, registration, password reset routes
 **Configuration Bootstrap**: `bootstrap/app.php` - Application kernel and service provider setup
 
@@ -385,7 +387,10 @@ php artisan test --coverage
 *Product Management*:
 - `Produk` - Villa/property management with categories, facilities, images, terms, and availability methods
   - Availability Methods: `getBookedDates()`, `isFullyBookedForRange()`, `getAvailableUnitsForRange()` for consistent availability checking across controllers
-  - Promo Methods: `isPromo()`, `getPromoPriceWeekday()`, `getPromoPriceWeekend()`, `getPromoDiscountPercentage()` with caching support
+  - Advanced Promo Methods: `getBestPromo()`, `getActivePromos()`, `getPromoPriceWeekday()`, `getPromoPriceWeekend()`, `getPromoDiscountPercentage()`, `updatePromoCache()` with intelligent caching and discount calculation
+  - Dynamic Pricing Methods: `calculateTotalPriceForRange()`, `getPriceBreakdownForRange()` for accurate weekday/weekend pricing calculations across date ranges
+  - Promo Caching: 1-hour TTL caching system with automatic invalidation for performance optimization
+  - Flexible Promo Targeting: Product-specific, category-based, and global promo support with usage limit enforcement
 - `ProdukCategory` - Product categorization (Villa, Hotel Room, etc.)
 - `ProdukFasilitas` - Facility management (WiFi, AC, TV, Kitchen, etc.)
 - `ProdukImage` - Product image gallery with multiple photos per product
@@ -648,6 +653,27 @@ Cache::remember('cache_key', 3600, function () {
 - Mobile-responsive filter interface with collapsible sections
 ## Recent Updates (November 2025)
 
+### Advanced Promo Code System Integration:
+- **Complete Promo Code Implementation**: Full-featured promo code system with real-time validation and dynamic pricing
+  - **File**: `resources/views/landing/checkout.blade.php`
+  - **Features**: Interactive promo code input, real-time validation, visual feedback, auto-apply for specific products
+  - **API Integration**: `/api/promos/active` and `/api/promos/preview` endpoints for promo management
+  - **Backend Processing**: Enhanced `BookingController` with complex discount calculations and Midtrans integration
+  - **Visual Feedback**: Success/error messages, price breakdowns, discount animations, touch-friendly mobile interactions
+- **Promo Code Features**:
+  - Real-time validation with AJAX calls
+  - Percentage and fixed amount discounts
+  - Usage limit tracking and enforcement
+  - Product-specific auto-application (e.g., AGUNG_ULTAH for specific products)
+  - Visual promo cards with gradient backgrounds and animations
+  - Mobile-optimized touch interactions with haptic feedback
+  - Debounced input validation to prevent excessive API calls
+- **Checkout Flow Enhancement**:
+  - Dynamic price calculation with promo discounts
+  - Original price preservation for consistent calculations
+  - Promo status persistence across page refreshes
+  - Comprehensive error handling and user feedback
+
 ### Interactive Map Location System (LeafletJS Integration):
 - **Admin Product Location Mapping**: Added LeafletJS-powered interactive map for villa/hotel location management
   - **File**: `resources/views/admin/produk/produk/index.blade.php`
@@ -761,6 +787,7 @@ Cache::remember('cache_key', 3600, function () {
 
 ## Summary
 Dokumentasi ini telah diperbarui pada November 2025 untuk mencakup:
+- **Advanced Promo Code System**: Complete promo code integration with real-time validation, dynamic pricing, and interactive checkout experience
 - **Interactive Map Location System**: LeafletJS integration for villa/hotel location management with click-to-set coordinates
 - **Database Schema Updates**: Added latitude/longitude columns to produks table with proper validation
 - **Admin Panel Enhancements**: Interactive map interface for precise location setting in product management
@@ -769,7 +796,10 @@ Dokumentasi ini telah diperbarui pada November 2025 untuk mencakup:
 - **Advanced Filtering System**: Multi-criteria search with date-based availability
 - **Performance Optimizations**: Laravel caching, query optimization, image handling
 - **Enhanced Promo System**: Dynamic pricing, usage tracking, flexible targeting
+- **Dynamic Pricing Engine**: Accurate weekday/weekend pricing calculations with date range support and price breakdowns
 - **Data Consistency**: Standardized availability methods, validation logging, real ratings
 - **Mobile Optimization**: Touch-friendly components, responsive design, accessibility compliance
 - **Component Architecture**: Reusable villa cards, advanced badge systems, modern UI patterns
 - **Checkout Page Redesign**: Complete UI/UX overhaul with Tailwind CSS including centered layout, modern card design, enhanced forms, and mobile-first responsive design for improved booking experience
+- **API Integration**: Promo management endpoints with real-time validation and preview functionality
+- **Backend Enhancements**: Advanced discount calculations, Midtrans payment integration, comprehensive logging, dynamic pricing methods

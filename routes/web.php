@@ -10,6 +10,12 @@ Route::get('/all-produk', [App\Http\Controllers\LandingPageController::class, 'a
 Route::get('/produk/{slug}', [App\Http\Controllers\LandingPageController::class, 'produk'])->name('produk');
 Route::post('/booking', [App\Http\Controllers\LandingPageController::class, 'produkBooking'])->name('produk.booking');
 Route::get('/checkout', [App\Http\Controllers\LandingPageController::class, 'checkout'])->name('produk.checkout');
+Route::get('/checkout', [App\Http\Controllers\LandingPageController::class, 'checkout'])->name('produk.checkout');
+Route::post('/api/promos/preview', [App\Http\Controllers\LandingPageController::class, 'previewPromo'])->name('api.promos.preview');
+Route::post('/midtrans-callback', [App\Http\Controllers\BookingController::class, 'handleCallback'])->name('midtrans.callback');
+Route::get('/api/promos/active', [App\Http\Controllers\LandingPageController::class, 'getActivePromos'])->name('api.promos.active');
+Route::post('/midtrans-callback', [App\Http\Controllers\BookingController::class, 'handleCallback'])->name('midtrans.callback');
+Route::get('/checkout', [App\Http\Controllers\LandingPageController::class, 'checkout'])->name('produk.checkout');
 Route::post('/midtrans-callback', [App\Http\Controllers\BookingController::class, 'handleCallback'])->name('midtrans.callback');
 
 // Booking Routes

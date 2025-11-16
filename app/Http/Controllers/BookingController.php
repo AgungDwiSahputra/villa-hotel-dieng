@@ -28,6 +28,16 @@ class BookingController extends Controller
     {
         $datas = $request->validated();
 
+        // Log received data for debugging
+        Log::info('Booking Process - Received Data:', [
+            'produk_id' => $datas['produk_id'],
+            'promo_code' => $datas['promo_code'] ?? null,
+            'total' => $datas['total'],
+            'dp' => $datas['dp'],
+            'unit' => $datas['unit'],
+            'night' => $datas['night'],
+        ]);
+
         try {
             DB::beginTransaction();
 
@@ -67,24 +77,44 @@ class BookingController extends Controller
                     ], 422);
                 }
 
-                // Calculate discount
+                // Calculate original price (before discount) based on actual date range
+                $calculatedOriginalTotal = $produk->calculateTotalPriceForRange(
+                    $datas['start_date'],
+                    $datas['end_date'],
+                    $datas['unit']
+                );
+
+                // Calculate discount based on original price
                 $discountConfig = $promo->getEffectiveDiscountForProduct($produk);
-                
-                // Calculate price per night (simplified - using average of weekday/weekend)
-                $avgPricePerNight = ($produk->harga_weekday + $produk->harga_weekend) / 2;
-                $totalPrice = $avgPricePerNight * $datas['night'] * $datas['unit'];
 
                 if ($discountConfig['type'] === 'percentage') {
-                    $discountAmount = $totalPrice * ($discountConfig['value'] / 100);
+                    $discountAmount = $calculatedOriginalTotal * ($discountConfig['value'] / 100);
                 } else {
-                    $discountAmount = min($discountConfig['value'], $totalPrice);
+                    $discountAmount = min($discountConfig['value'], $calculatedOriginalTotal);
                 }
 
-                $finalTotal = max(0, $totalPrice - $discountAmount);
-                
-                // Recalculate DP based on discount
-                $dpPercentage = $datas['dp'] / $originalTotal;
-                $finalDp = $finalTotal * $dpPercentage;
+                Log::info("Discount Amount:", ["amount" => $discountAmount, "promo_type" => $discountConfig["type"], "promo_value" => $discountConfig["value"]], "booking_process");
+
+                // The final total and DP should match what was calculated in frontend
+                $expectedFinalTotal = max(0, $calculatedOriginalTotal - $discountAmount);
+                $expectedDpPercentage = $datas['dp'] / $datas['total']; // DP percentage from frontend
+                $expectedFinalDp = $expectedFinalTotal * $expectedDpPercentage;
+
+                // Use the values from frontend if they match our calculation (within tolerance)
+                // This prevents double-discounting when promo was applied in frontend
+                if (abs($datas['total'] - $expectedFinalTotal) < 0.01 &&
+                    abs($datas['dp'] - $expectedFinalDp) < 0.01) {
+                    // Frontend calculation matches backend - use frontend values
+                    $finalTotal = $datas['total'];
+                    $finalDp = $datas['dp'];
+                } else {
+                    // Fallback to backend calculation if there's a mismatch
+                    $finalTotal = $expectedFinalTotal;
+                    $finalDp = $expectedFinalDp;
+                }
+
+                // Store the calculated original total for database
+                $originalTotal = $calculatedOriginalTotal;
             }
 
             $orderId = uniqid();
@@ -112,9 +142,9 @@ class BookingController extends Controller
             for ($date = $start; $date->lt($end); $date->addDay()) {
                 TransaksiDetail::create([
                     'transaksi_id' => $transaksi->id,
-                    'produk_id' => session('produk_booking')['produk_id'],
+                    'produk_id' => $datas['produk_id'],
                     'date' => $date->format('Y-m-d'),
-                    'unit' => session('produk_booking')['unit'],
+                    'unit' => $datas['unit'],
                 ]);
             }
 
@@ -130,14 +160,14 @@ class BookingController extends Controller
             ];
 
             // Add discount as item if promo applied
-            if ($promo && $discountAmount > 0) {
-                $itemDetails[] = [
-                    'id' => 'DISCOUNT-' . $promo->promo_code,
-                    'price' => (int) -$discountAmount,
-                    'quantity' => 1,
-                    'name' => 'Diskon Promo: ' . $promo->name,
-                ];
-            }
+            // if ($promo && $discountAmount > 0) {
+            //     $itemDetails[] = [
+            //         'id' => 'DISCOUNT-' . $promo->promo_code,
+            //         'price' => (int) -$discountAmount,
+            //         'quantity' => 1,
+            //         'name' => 'Diskon Promo: ' . $promo->name,
+            //     ];
+            // }
 
             $params = [
                 'transaction_details' => [
@@ -171,6 +201,9 @@ class BookingController extends Controller
             }
 
             DB::commit();
+
+            // Clear booking session after successful booking
+            session()->forget('produk_booking');
 
             return response()->json([
                 'status' => 'success',
@@ -235,3 +268,4 @@ class BookingController extends Controller
         return response()->json(['message' => 'Notification processed successfully'], 200);
     }
 }
+
