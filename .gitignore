@@ -21,3 +21,4 @@ yarn-error.log
 /.vscode
 /.zed
 .kilocodemodes
+.DS_Store

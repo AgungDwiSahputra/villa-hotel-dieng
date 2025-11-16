@@ -362,11 +362,19 @@ class LandingPageController extends Controller
         // dengan batas 3 produk dan tidak sama dengan produk yang sedang dibuka
         $rekomendasis = Produk::with('images')->where('id', '!=', $produk->id)->where('status', 'publish')->inRandomOrder()->limit(3)->get();
 
+        // mengambil data semua produk yang memiliki koordinat untuk peta
+        $produkData = Produk::whereNotNull('latitude')
+            ->whereNotNull('longitude')
+            ->with('category')
+            ->select(['id', 'name', 'lokasi', 'latitude', 'longitude', 'harga_weekday', 'harga_weekend', 'slug'])
+            ->get();
+
         // mengirimkan data ke view
         return view('landing.produk', [
             'produk' => $produk,
             'booked' => $booked,
             'rekomendasis' => $rekomendasis,
+            'produkData' => $produkData,
         ]);
     }
     public function produkBooking(Request $request)

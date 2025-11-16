@@ -515,6 +515,15 @@ php artisan test --coverage
 - Contact information and location map
 - Responsive navigation with mobile menu
 - SEO-friendly structure
+- **Interactive Product Location Map**: Modal-based LeafletJS map showing all villa/hotel locations with detailed popups
+  - **File**: `resources/views/landing/produk.blade.php`
+  - **Controller**: `app/Http/Controllers/LandingPageController.php` (produk method)
+  - **Features**: "Lihat di Peta" button, modal with full-screen map, marker clustering, location details popup
+  - **Data**: Fetches all products with latitude/longitude coordinates from controller (proper MVC separation)
+  - **UI**: TailwindCSS modal with backdrop blur, responsive design, custom SVG markers
+  - **Custom Icons**: Uses `home-location.svg` for all markers with animated glow effect for current product
+  - **Functionality**: Click markers to view villa details, pricing info, and booking links
+  - **Current Product Highlight**: Larger animated marker with red glow effect for the currently viewed product
 - **Tablet-width centered design** for optimal viewing experience on all devices
 - **Advanced filtering system** with price range, capacity, room count, and nearby attractions
 - **Category-based navigation** with quick links to villa types
@@ -742,6 +751,7 @@ Dokumentasi ini telah diperbarui pada November 2025 untuk mencakup:
 - **Interactive Map Location System**: LeafletJS integration for villa/hotel location management with click-to-set coordinates
 - **Database Schema Updates**: Added latitude/longitude columns to produks table with proper validation
 - **Admin Panel Enhancements**: Interactive map interface for precise location setting in product management
+- **Landing Page Map Modal**: Interactive modal map showing all villa locations with detailed popups and navigation (MVC-compliant with controller data passing)
 - **Frontend Modernization**: SCSS migration, Flickity carousel replacement, mobile-first design
 - **Advanced Filtering System**: Multi-criteria search with date-based availability
 - **Performance Optimizations**: Laravel caching, query optimization, image handling

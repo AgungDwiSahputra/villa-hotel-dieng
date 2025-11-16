@@ -100,6 +100,14 @@
                             <div>
                                 <p class="text-sm text-gray-600">Lokasi</p>
                                 <p class="font-semibold text-gray-900">{{ $produk->lokasi }}</p>
+                                <!-- Button show modal peta leafletjs -->
+                                <button onclick="showMapModal()"
+                                        class="mt-2 inline-flex items-center px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors duration-200 border border-blue-200">
+                                    <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path>
+                                    </svg>
+                                    Lihat di Peta
+                                </button>
                             </div>
                         </div>
 
@@ -446,6 +454,7 @@
 
     @push('css')
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css" />
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
         <style>
             .glightbox-clean .gclose {
                 position: fixed !important;
@@ -698,6 +707,7 @@
 
     @push('js')
         <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
         <script>
             // Wait for all libraries to be loaded
             document.addEventListener('DOMContentLoaded', function() {
@@ -947,6 +957,215 @@
                 }
             });
         </script>
+
+        <!-- Leaflet Map Modal Script -->
+        <script>
+            let produkMap = null;
+            let produkMarkers = [];
+
+            // Data produk dengan koordinat dari controller
+            const produkData = @json($produkData);
+
+            function showMapModal() {
+                const modal = document.getElementById('mapModal');
+                modal.classList.remove('hidden');
+
+                // Initialize map after modal is shown
+                setTimeout(() => {
+                    initializeProdukMap();
+                }, 100);
+
+                // Prevent body scroll when modal is open
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeMapModal() {
+                const modal = document.getElementById('mapModal');
+                modal.classList.add('hidden');
+
+                // Restore body scroll
+                document.body.style.overflow = 'auto';
+
+                // Clean up map
+                if (produkMap) {
+                    produkMap.remove();
+                    produkMap = null;
+                    produkMarkers = [];
+                }
+            }
+
+            function initializeProdukMap() {
+                if (produkMap) return; // Prevent re-initialization
+
+                // Default center (Indonesia)
+                const defaultLat = -7.7956;
+                const defaultLng = 110.3695;
+
+                // Initialize map
+                produkMap = L.map('produkMap').setView([defaultLat, defaultLng], 8);
+
+                // Add OpenStreetMap tiles
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                }).addTo(produkMap);
+
+                // Create custom icon for markers
+                const customIcon = L.icon({
+                    iconUrl: '{{ asset("assets/images/home-location.svg") }}',
+                    iconSize: [32, 32], // Size of the icon
+                    iconAnchor: [16, 32], // Point of the icon which corresponds to marker's location
+                    popupAnchor: [0, -32], // Point from which the popup should open relative to the iconAnchor
+                    shadowUrl: null, // No shadow
+                    shadowSize: null,
+                    shadowAnchor: null
+                });
+
+                // Add markers for each product
+                let bounds = [];
+                produkData.forEach(produk => {
+                    if (produk.latitude && produk.longitude) {
+                        const marker = L.marker([produk.latitude, produk.longitude], {
+                            icon: customIcon
+                        })
+                            .addTo(produkMap)
+                            .bindPopup(`
+                                <div class="p-3 max-w-xs">
+                                    <h3 class="font-bold text-gray-900 text-sm mb-2">${produk.name}</h3>
+                                    <p class="text-xs text-gray-600 mb-2">
+                                        <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314-9.894 8 8 0 01-1.314 9.894z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                        </svg>
+                                        ${produk.lokasi}
+                                    </p>
+                                    <div class="text-xs text-gray-600 mb-3">
+                                        <div class="flex justify-between">
+                                            <span>Weekday:</span>
+                                            <span class="font-medium">Rp ${produk.harga_weekday.toLocaleString('id-ID')}</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span>Weekend:</span>
+                                            <span class="font-medium">Rp ${produk.harga_weekend.toLocaleString('id-ID')}</span>
+                                        </div>
+                                    </div>
+                                    <a href="${window.location.origin}/produk/${produk.slug}"
+                                       class="inline-block w-full text-center bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium py-2 px-3 rounded transition-colors">
+                                        Lihat Detail
+                                    </a>
+                                </div>
+                            `);
+
+                        produkMarkers.push(marker);
+                        bounds.push([produk.latitude, produk.longitude]);
+                    }
+                });
+
+                // Fit map to show all markers if there are any
+                if (bounds.length > 0) {
+                    produkMap.fitBounds(bounds, { padding: [20, 20] });
+                }
+
+                // Add current product highlight if it has coordinates
+                const currentProduk = @json($produk);
+                if (currentProduk.latitude && currentProduk.longitude) {
+                    // Create special icon for current product (highlighted version)
+                    const currentIcon = L.icon({
+                        iconUrl: '{{ asset("assets/images/home-location.svg") }}',
+                        iconSize: [40, 40], // Slightly larger for current product
+                        iconAnchor: [20, 40], // Adjusted anchor point
+                        popupAnchor: [0, -40], // Adjusted popup anchor
+                        shadowUrl: null,
+                        shadowSize: null,
+                        shadowAnchor: null,
+                        className: 'current-product-marker' // Custom class for styling
+                    });
+
+                    // Add a special marker for current product
+                    const currentMarker = L.marker([currentProduk.latitude, currentProduk.longitude], {
+                        icon: currentIcon
+                    })
+                    .addTo(produkMap)
+                    .bindPopup(`
+                        <div class="p-3 max-w-xs">
+                            <div class="flex items-center mb-2">
+                                <div class="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
+                                <h3 class="font-bold text-gray-900 text-sm">Lokasi Saat Ini</h3>
+                            </div>
+                            <h4 class="font-semibold text-gray-800 text-sm mb-1">${currentProduk.name}</h4>
+                            <p class="text-xs text-gray-600">${currentProduk.lokasi}</p>
+                        </div>
+                    `);
+
+                    // Open popup for current product
+                    setTimeout(() => {
+                        currentMarker.openPopup();
+                    }, 500);
+                }
+            }
+
+            // Close modal when clicking outside
+            document.getElementById('mapModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeMapModal();
+                }
+            });
+
+            // Close modal on Escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && !document.getElementById('mapModal').classList.contains('hidden')) {
+                    closeMapModal();
+                }
+            });
+        </script>
+
+        <style>
+            /* Custom marker styles */
+            .custom-marker {
+                background: transparent !important;
+                border: none !important;
+            }
+
+            /* Leaflet popup custom styles */
+            .leaflet-popup-content-wrapper {
+                border-radius: 12px !important;
+                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+            }
+
+            .leaflet-popup-content {
+                margin: 0 !important;
+            }
+
+            .leaflet-popup-tip {
+                background-color: white !important;
+            }
+
+            /* Modal backdrop blur effect */
+            #mapModal {
+                backdrop-filter: blur(4px);
+            }
+
+            /* Custom marker styling for current product */
+            .current-product-marker {
+                filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.6)) !important;
+                animation: pulse-glow 2s infinite;
+            }
+
+            @keyframes pulse-glow {
+                0%, 100% {
+                    filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.6));
+                }
+                50% {
+                    filter: drop-shadow(0 0 12px rgba(239, 68, 68, 0.8));
+                }
+            }
+
+            /* Responsive map height */
+            @media (max-width: 768px) {
+                #produkMap {
+                    height: 300px !important;
+                }
+            }
+        </style>
     @endpush
 
     <script>
@@ -1050,4 +1269,46 @@
 
     <!-- Add fallback for missing favicon -->
     <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏨</text></svg>">
+
+    <!-- Modal Peta LeafletJS -->
+    <div id="mapModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden">
+                <!-- Modal Header -->
+                <div class="flex items-center justify-between p-6 border-b border-gray-200">
+                    <h3 class="text-xl font-bold text-gray-900 flex items-center">
+                        <svg class="w-6 h-6 mr-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path>
+                        </svg>
+                        Peta Lokasi Villa & Hotel
+                    </h3>
+                    <button onclick="closeMapModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Modal Body -->
+                <div class="p-6">
+                    <div id="produkMap" class="w-full h-96 rounded-xl border border-gray-200"></div>
+
+                    <!-- Map Info -->
+                    <div class="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                        <div class="flex items-start">
+                            <svg class="w-5 h-5 text-blue-600 mt-0.5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <div>
+                                <p class="text-sm text-blue-800 font-medium">Informasi Peta</p>
+                                <p class="text-sm text-blue-700 mt-1">
+                                    Klik pada marker untuk melihat detail villa/hotel. Peta menampilkan semua lokasi yang tersedia di Villa Hotel Dieng.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </x-app-landing-layout>
