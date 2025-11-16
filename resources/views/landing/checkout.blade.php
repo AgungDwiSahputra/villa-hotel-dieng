@@ -1,104 +1,72 @@
 <x-app-landing-layout>
-    <section class="py-2 bg-light">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-6">
-                    <div class="card shadow-sm p-3 mb-3">
-                        <h5 class="mb-3">Detail Pesanan</h5>
-                        <table class="table table-striped mb-0">
-                            <tbody>
-                                <tr>
-                                    <th scope="row">Check-in</th>
-                                    <td>{{ session('produk_booking')['start_date'] }}</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Check-out</th>
-                                    <td>{{ session('produk_booking')['end_date'] }}</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Jumlah malam</th>
-                                    <td>{{ session('produk_booking')['night'] }} Malam</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Jumlah Unit</th>
-                                    <td>{{ session('produk_booking')['unit'] }} Unit</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Total Dp ({{ $settings['dp'] ?? null }})</th>
-                                    <td>Rp. {{ number_format(session('produk_booking')['dp'], 0, ',', '.') }}</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Total harga</th>
-                                    <td>Rp. {{ number_format(session('produk_booking')['total'], 0, ',', '.') }}</td>
-                                </tr>
-                            </tbody>
-                        </table>
+    <section class="py-12 bg-gray-50 min-h-screen">
+        <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Detail Pesanan -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">Detail Pesanan</h2>
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center py-3 border-b border-gray-200">
+                            <span class="text-gray-600 font-medium">Check-in</span>
+                            <span class="text-gray-900">{{ session('produk_booking')['start_date'] }}</span>
+                        </div>
+                        <div class="flex justify-between items-center py-3 border-b border-gray-200">
+                            <span class="text-gray-600 font-medium">Check-out</span>
+                            <span class="text-gray-900">{{ session('produk_booking')['end_date'] }}</span>
+                        </div>
+                        <div class="flex justify-between items-center py-3 border-b border-gray-200">
+                            <span class="text-gray-600 font-medium">Jumlah malam</span>
+                            <span class="text-gray-900">{{ session('produk_booking')['night'] }} Malam</span>
+                        </div>
+                        <div class="flex justify-between items-center py-3 border-b border-gray-200">
+                            <span class="text-gray-600 font-medium">Jumlah Unit</span>
+                            <span class="text-gray-900">{{ session('produk_booking')['unit'] }} Unit</span>
+                        </div>
+                        <div class="flex justify-between items-center py-3 border-b border-gray-200">
+                            <span class="text-gray-600 font-medium">Total DP ({{ $settings['dp'] ?? null }})</span>
+                            <span class="text-gray-900 font-semibold">Rp. {{ number_format(session('produk_booking')['dp'], 0, ',', '.') }}</span>
+                        </div>
+                        <div class="flex justify-between items-center py-3">
+                            <span class="text-gray-600 font-medium">Total harga</span>
+                            <span class="text-gray-900 font-bold text-lg">Rp. {{ number_format(session('produk_booking')['total'], 0, ',', '.') }}</span>
+                        </div>
                     </div>
-                    {{-- <div class="card shadow-sm p-3">
-                        <h5 class="mb-3 fw-semibold">Rekening Pembayaran</h5>
-                        @foreach ($rekenings as $rekening)
-                            <div
-                                class="d-flex align-items-center justify-content-between border rounded p-3 bg-light mb-3">
-                                <div class="d-flex align-items-center">
-                                    <img src="{{ asset('storage/' . $rekening->image) }}" alt="Logo Bank" class="me-3"
-                                        style="width: 70px; height: auto;">
-                                    <div>
-                                        <div class="fw-bold mb-1">No Rekening:
-                                            <span id="rekening-{{ $loop->index }}">{{ $rekening->no_rekening }}</span>
-                                        </div>
-                                        <div class="text-muted small">a.n. {{ $rekening->name }}</div>
-                                    </div>
-                                </div>
-                                <button class="btn btn-success btn-sm copy-btn"
-                                    data-target="rekening-{{ $loop->index }}">
-                                    Salin
-                                </button>
-                            </div>
-                        @endforeach
-                    </div> --}}
                 </div>
-                <div class="col-lg-6">
-                    <div class="card shadow-sm p-4">
-                        <h5 class="mb-4">Detail Pemesan</h5>
-                        <form id="booking-form">
-                            @csrf
-                            <input type="hidden" name="produk_id" value="{{ session('produk_booking')['produk_id'] }}">
-                            <input type="hidden" name="start_date"
-                                value="{{ session('produk_booking')['start_date'] }}">
-                            <input type="hidden" name="end_date" value="{{ session('produk_booking')['end_date'] }}">
-                            <input type="hidden" name="night" value="{{ session('produk_booking')['night'] }}">
-                            <input type="hidden" name="unit" value="{{ session('produk_booking')['unit'] }}">
-                            <input type="hidden" name="dp" value="{{ session('produk_booking')['dp'] }}">
-                            <input type="hidden" name="total" value="{{ session('produk_booking')['total'] }}">
-                            <div class="mb-3">
-                                <label for="nama" class="form-label">Nama Lengkap*</label>
-                                <input type="text" id="name" name="name" class="form-control"
-                                    style="height: 40px;">
-                            </div>
 
-                            <div class="mb-3">
-                                <label for="whatsapp" class="form-label">Nomor Whatsapp*</label>
-                                <input type="text" id="no_wa" name="no_wa" class="form-control"
-                                    style="height: 40px;">
-                            </div>
+                <!-- Detail Pemesan -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">Detail Pemesan</h2>
+                    <form id="booking-form" class="space-y-6">
+                        @csrf
+                        <input type="hidden" name="produk_id" value="{{ session('produk_booking')['produk_id'] }}">
+                        <input type="hidden" name="start_date" value="{{ session('produk_booking')['start_date'] }}">
+                        <input type="hidden" name="end_date" value="{{ session('produk_booking')['end_date'] }}">
+                        <input type="hidden" name="night" value="{{ session('produk_booking')['night'] }}">
+                        <input type="hidden" name="unit" value="{{ session('produk_booking')['unit'] }}">
+                        <input type="hidden" name="dp" value="{{ session('produk_booking')['dp'] }}">
+                        <input type="hidden" name="total" value="{{ session('produk_booking')['total'] }}">
 
-                            <div class="mb-3">
-                                <label for="email" class="form-label">Alamat Email*</label>
-                                <input type="text" id="email" name="email" class="form-control"
-                                    style="height: 40px;">
-                            </div>
+                        <div>
+                            <label for="name" class="block text-sm font-medium text-gray-700 mb-2">Nama Lengkap*</label>
+                            <input type="text" id="name" name="name" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" required>
+                        </div>
 
-                            {{-- <div class="mb-4">
-                                <label for="bukti_pembayaran" class="form-label">Bukti Pembayaran*</label>
-                                <input type="file" id="image" name="image" class="form-control"
-                                    style="height: 40px;">
-                            </div> --}}
+                        <div>
+                            <label for="no_wa" class="block text-sm font-medium text-gray-700 mb-2">Nomor Whatsapp*</label>
+                            <input type="text" id="no_wa" name="no_wa" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" required>
+                        </div>
 
-                            <div class="text-end">
-                                <button type="submit" class="btn btn-primary px-4" id="booking-button">Booking</button>
-                            </div>
-                        </form>
-                    </div>
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Alamat Email*</label>
+                            <input type="email" id="email" name="email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" required>
+                        </div>
+
+                        <div class="pt-4">
+                            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed" id="booking-button">
+                                Booking Sekarang
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
