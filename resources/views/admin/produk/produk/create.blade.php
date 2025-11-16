@@ -6,6 +6,8 @@
             $('#id').val(null);
             $('.select2').val(null).change();
             $('#form')[0].reset();
+            $('#latitude').val('');
+            $('#longitude').val('');
         }
         
         $("#form").submit(function(event) {

@@ -62,6 +62,8 @@ class ProdukDataTable extends DataTable
             Column::make('orang')->width('50px')->addClass('text-center'),
             Column::make('maks_orang')->width('100px')->addClass('text-center'),
             Column::make('lokasi')->width('250px')->addClass('text-center'),
+            Column::make('latitude')->width('100px')->addClass('text-center'),
+            Column::make('longitude')->width('100px')->addClass('text-center'),
             Column::make('harga_weekday')->width('150px')->addClass('text-center'),
             Column::make('harga_weekend')->width('150px')->addClass('text-center'),
             Column::make('label')->width('10px')->addClass('text-center'),

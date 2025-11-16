@@ -30,6 +30,8 @@ class ProdukRequest extends FormRequest
             'orang' => ['required','integer'],
             'maks_orang' => ['required','integer'],
             'lokasi' => ['required','string'],
+            'latitude' => ['nullable','numeric','between:-90,90'],
+            'longitude' => ['nullable','numeric','between:-180,180'],
             'harga_weekday' => ['required','integer'],
             'harga_weekend' => ['required','integer'],
             'label' => ['nullable','string'],

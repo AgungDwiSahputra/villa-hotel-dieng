@@ -111,7 +111,7 @@ The database schema is visualized in the ERD diagram located at the project root
 
 ### Product Management (Villa/Property)
 - **produks** - Main product/villa table
-  - Fields: id, category_id, owner, name, slug, unit, orang, maks_orang, lokasi, fasilitas, kamar, gluten, rating, status, timestamps, deleted_at
+  - Fields: id, category_id, owner, name, slug, unit, orang, maks_orang, lokasi, latitude, longitude, fasilitas, kamar, gluten, rating, status, timestamps, deleted_at
   - Additional: has_active_promo, promo_price_weekday, promo_price_weekend, promo_discount_type, promo_discount_percentage, promo_calculated_at
   - Relations: Belongs to category, has many images, fasilitas, syarat, wisata, transaksi_details, availabilities, promo_products
 
@@ -239,6 +239,7 @@ The ERD diagram provides visual representation of all tables, their fields, data
 - `concurrently: ^9.0.1` - Concurrent process runner
 - `laravel-datatables-vite: ^0.5.2` - DataTables Vite integration
 - `flickity: ^2.3.0` - Modern carousel library (replaced Swiper.js)
+- `leaflet: ^1.9.4` - Interactive maps library for location management
 - `scss` - SASS/SCSS preprocessor for enhanced styling
 
 **Development Dependencies**:
@@ -494,7 +495,8 @@ php artisan test --coverage
 
 **Admin Panel Features**:
 - Dashboard with statistics and charts
-- Product CRUD with image management
+- Product CRUD with image management and interactive location mapping
+- Interactive map location setting using LeafletJS for villa/hotel coordinates
 - Category and facility management
 - Promo creation and management
 - Transaction monitoring and management
@@ -637,6 +639,30 @@ Cache::remember('cache_key', 3600, function () {
 - Mobile-responsive filter interface with collapsible sections
 ## Recent Updates (November 2025)
 
+### Interactive Map Location System (LeafletJS Integration):
+- **Admin Product Location Mapping**: Added LeafletJS-powered interactive map for villa/hotel location management
+  - **File**: `resources/views/admin/produk/produk/index.blade.php`
+  - **Features**: Click-to-set location, marker placement, coordinate auto-fill, map reset functionality
+  - **Database**: Added `latitude` (decimal 10,8) and `longitude` (decimal 11,8) columns to `produks` table
+  - **Migration**: `database/migrations/2025_11_16_205623_add_latitude_longitude_to_produks_table.php`
+  - **Validation**: Coordinate validation in `app/Http/Requests/Produk/ProdukRequest.php`
+  - **Model Updates**: Added latitude/longitude to fillable array in `app/Models/Produk/Produk.php`
+  - **DataTable**: Added coordinate columns to `app/DataTables/Admin/Produk/ProdukDataTable.php`
+- **Map Features**:
+  - Interactive Leaflet map with OpenStreetMap tiles
+  - Click-to-place markers with popup information
+  - Auto-zoom to marker location (zoom level 15)
+  - Coordinate synchronization between map and form fields
+  - Default center location: Indonesia (-7.7956, 110.3695)
+  - Responsive map container (400px height, full width)
+- **JavaScript Implementation**:
+  - Map initialization on modal show
+  - Event handlers for map clicks and form input changes
+  - Marker management with location updates
+  - Map cleanup on modal close
+- **Admin Workflow**: Create/edit products → Click map to set location → Coordinates auto-populate form fields → Save with location data
+- **Benefits**: Precise location setting, visual location confirmation, improved property mapping accuracy
+
 ### Frontend Architecture Modernization:
 - **SCSS Migration**: Complete migration from CSS to SCSS for landing page styling
   - **File**: `public/landing/app/scss/style.scss` - Main stylesheet with SCSS architecture
@@ -713,6 +739,9 @@ Cache::remember('cache_key', 3600, function () {
 
 ## Summary
 Dokumentasi ini telah diperbarui pada November 2025 untuk mencakup:
+- **Interactive Map Location System**: LeafletJS integration for villa/hotel location management with click-to-set coordinates
+- **Database Schema Updates**: Added latitude/longitude columns to produks table with proper validation
+- **Admin Panel Enhancements**: Interactive map interface for precise location setting in product management
 - **Frontend Modernization**: SCSS migration, Flickity carousel replacement, mobile-first design
 - **Advanced Filtering System**: Multi-criteria search with date-based availability
 - **Performance Optimizations**: Laravel caching, query optimization, image handling
