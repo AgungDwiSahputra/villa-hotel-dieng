@@ -1,9 +1,9 @@
 <x-app-landing-layout>
     <section class="relative py-16 sm:py-20 bg-gradient-to-br from-primary-900 via-primary-800 to-primary-900 text-white overflow-hidden">
         <div class="absolute inset-0 opacity-10">
-            <div class="absolute inset-0" style="background-image: url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.4"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
+            <div class="absolute inset-0" style="background-image: url('data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
         </div>
-        <div class="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
             <div class="max-w-3xl">
                 <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold font-display mb-4">Semua Villa</h1>
                 <p class="text-base sm:text-lg lg:text-xl text-gray-200">Jelajahi seluruh koleksi villa dengan filter kategori dan pencarian untuk menemukan pilihan terbaik.</p>
@@ -35,7 +35,7 @@
     </section>
 
     <section class="py-16 sm:py-20 bg-gray-50" id="all-products">
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
             <div class="bg-white rounded-2xl shadow-lg p-6 sm:p-8 mb-8">
                 <form method="GET" action="{{ route('produk.all') }}" class="space-y-4 lg:space-y-6">
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">

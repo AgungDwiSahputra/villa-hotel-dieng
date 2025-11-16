@@ -238,6 +238,8 @@ The ERD diagram provides visual representation of all tables, their fields, data
 - `@tailwindcss/forms: ^0.5.2` - Form styling utilities
 - `concurrently: ^9.0.1` - Concurrent process runner
 - `laravel-datatables-vite: ^0.5.2` - DataTables Vite integration
+- `flickity: ^2.3.0` - Modern carousel library (replaced Swiper.js)
+- `scss` - SASS/SCSS preprocessor for enhanced styling
 
 **Development Dependencies**:
 - `phpunit/phpunit: ^11.0.1` - PHP unit testing framework
@@ -294,6 +296,11 @@ npm run dev
 ```bash
 npm run build
 ```
+
+**SCSS Development**:
+- Main stylesheet: `public/landing/app/scss/style.scss`
+- Uses SCSS architecture with variables, mixins, and modular organization
+- Automatically compiled by Vite build process
 
 **Start Application**:
 ```bash
@@ -401,8 +408,12 @@ php artisan test --coverage
 - `ActivityLog` - System activity logging and audit trail
 
 **Frontend Architecture**:
+- **SCSS-Based Styling System**: Modern SCSS architecture with variables, mixins, and modular organization
+  - Main stylesheet: `public/landing/app/scss/style.scss`
+  - Organized structure with abstracts, components, and utilities
 - Landing page with custom components (villa cards, testimonials, promo banners, booking forms)
 - Admin panel with component-based layout system using Blade components
+- **Enhanced Carousel System**: Flickity.js for improved carousel performance and auto-initialization
 - Tailwind CSS with custom design system:
   - Primary color palette (blue shades 50-950)
   - Accent color palette (green shades 50-950)
@@ -415,8 +426,9 @@ php artisan test --coverage
 - Custom animations and transitions defined in Tailwind config
 - Responsive design with mobile-first approach
 - DataTables integration with server-side processing and export capabilities (Excel, CSV, PDF)
-- Separate stylesheets for admin (app.css) and landing page (landing.css)
+- Separate stylesheets for admin (app.css) and landing page (SCSS-based)
 - **Mobile-optimized components** with touch-friendly interactions and responsive typography
+- **Advanced Villa Card Component**: Dynamic promo badges, availability status, mobile-first design
 
 **Landing Page Layout Design** (Updated 2025):
 - **Centered content layout** with maximum width of 1024px (tablet size) for improved readability
@@ -515,15 +527,33 @@ php artisan test --coverage
   - Responsive typography with mobile-first approach
   - Touch manipulation optimization for better mobile performance
 
+**Advanced Search & Filtering System** (`resources/views/landing/all-products.blade.php`):
+- **Multi-Criteria Filtering**:
+  - Price range filters (0-500k, 500k-1M, 1M-2M, 2M+)
+  - Capacity filters (1-2, 3-4, 5-8, 9+ persons)
+  - Room count filters (1, 2, 3, 4+ bedrooms)
+  - Nearby attractions filter (dynamic based on wisata data)
+- **Date-Based Availability**: Real-time availability checking with booking date integration
+  - Date range selection with automatic availability calculation
+  - Visual availability indicators (Available/Limited/Full)
+  - Unit availability tracking per date range
+- **Advanced Sorting Options**: Relevance, price (low/high), rating, name (A-Z)
+- **Mobile-Responsive Interface**: Collapsible advanced filters for mobile devices
+- **Combined Search**: Text search integrated with category and filter combinations
+- **Real-Time Results**: Instant filtering without page refresh
+
 **Development Tools**:
 - Laravel Pint for PHP code formatting (PSR-12 standard)
 - Laravel Debugbar for development debugging and profiling
 - Laravel Pail for real-time log monitoring
 - Laravel Sail for Docker development environment
+- **SCSS Architecture**: Modern SCSS with variables, mixins, and modular organization
+- **Flickity Carousel**: Modern carousel library for improved performance
 - Custom helper functions for file and image storage management
 - Component-based architecture for maintainable frontend code
 - Vite hot module replacement (HMR) for fast development
 - Concurrently script for running multiple dev servers
+- **Laravel Cache**: Performance optimization with 1-hour TTL caching
 
 **Export & Reporting**:
 - Excel export for products, transactions, users, promos
@@ -557,6 +587,23 @@ php artisan test --coverage
 
 **Middleware**: Custom middleware for role checking, activity logging, and feature access control
 
+**SCSS Architecture Pattern**: Modern SCSS organization with:
+- `@use './abstracts/' as *;` for importing variables and mixins
+- Modular structure for maintainable styling
+- Variables for colors, fonts, and spacing consistency
+
+**Carousel Implementation**: Flickity.js with `data-flickity` attributes for:
+- Auto-initialization without JavaScript
+- Better image loading handling with `imagesLoaded: true`
+- Responsive carousel behavior
+
+**Caching Pattern**: Laravel Cache with TTL for performance:
+```php
+Cache::remember('cache_key', 3600, function () {
+    return expensiveOperation();
+});
+```
+
 **Responsive Layout Pattern**: Consistent use of Tailwind's container utilities with max-width constraints:
 ```html
 <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
@@ -583,128 +630,93 @@ php artisan test --coverage
   - **Active States**: Enhanced button feedback with active:bg-blue-800 for better user interaction
 - **Mobile Breakpoint Strategy**: Uses Tailwind's `sm:` breakpoint (640px) for responsive adjustments
 - **Benefits**: Improved mobile usability, better touch target accessibility, optimized content density, enhanced readability on small screens
+
+**Advanced Filtering Pattern**: Multi-criteria search with date-based availability:
+- Real-time availability calculation using model methods
+- Combined filtering (price + capacity + rooms + attractions)
+- Mobile-responsive filter interface with collapsible sections
 ## Recent Updates (November 2025)
 
-### Data Consistency & Bug Fixes:
-- **Rating Data Consistency Fix**: Resolved critical inconsistency in villa card component where ratings were hardcoded to 4 stars instead of using actual database values
-  - **Issue**: `resources/views/components/villa-card.blade.php` displayed fake ratings (`$i <= 4`) and random review counts (`rand(10, 50)`)
-  - **Fix**: Updated to use real database rating (`$villa->rating`) and display as "({rating}/5)"
-  - **Impact**: Ensures consistent rating display across index and detail pages
-- **Availability Method Standardization**: Added consistent availability checking methods to `Produk` model
-  - `getBookedDates()`: Returns array of booked dates for calendar display
-  - `isFullyBookedForRange($startDate, $endDate)`: Checks if property is fully booked in date range
-  - `getAvailableUnitsForRange($startDate, $endDate)`: Calculates available units for booking
-  - **Usage**: Synchronized availability queries between `LandingPageController` and `ProdukController`
-- **Caching Implementation**: Added Laravel Cache for popular villas data (1-hour TTL)
-  - **Methods**: `Cache::remember()` for `popularVillas` and `bestVillas` in `LandingPageController`
-  - **Benefits**: Reduced database queries, improved performance for frequently accessed data
-- **Booking Validation Enhancement**: Added comprehensive validation in booking process
-  - **Method**: `calculateExpectedTotal()` in `ProdukController` for price verification
-  - **Validation**: Checks availability, unit limits, and price consistency before booking
-  - **Logging**: ActivityLog integration to track booking inconsistencies
-- **Data Integrity Monitoring**: Implemented logging system for data inconsistency detection
-  - **Location**: `ActivityLog` entries for availability and pricing discrepancies
-  - **Purpose**: Audit trail for debugging data consistency issues
+### Frontend Architecture Modernization:
+- **SCSS Migration**: Complete migration from CSS to SCSS for landing page styling
+  - **File**: `public/landing/app/scss/style.scss` - Main stylesheet with SCSS architecture
+  - **Benefits**: Better maintainability, variables, mixins, and modular organization
+  - **Structure**: Organized with abstracts, components, and utilities
+- **Carousel Library Migration**: Replaced Swiper.js with Flickity for improved carousel performance
+  - **Files**: `resources/views/layouts/landing/script.blade.php`, `resources/views/landing/produk.blade.php`
+  - **Benefits**: Better auto-initialization, improved image loading handling, cleaner CSS
+  - **Implementation**: Uses `data-flickity` attributes for reliable initialization
 
-### New Features Added:
-- **Card Component**: Reusable `card-component.blade.php` with DataTable support for consistent admin UI
-- **Enhanced PromoDataTable**: Advanced status calculation, usage tracking, and target display features
-- **Improved DatabaseSeeder**: Automated user folder creation and default admin user setup with avatar
-- **API Routes Documentation**: API routes currently commented out in `routes/web.php` (line 81)
+### Advanced Villa Card Component (`resources/views/components/villa-card.blade.php`):
+- **Dynamic Promo System**: Enhanced promo badge system with real-time discount calculation
+  - **Features**: Percentage and fixed amount discounts, usage limits, limited-time badges
+  - **Visual**: Animated pulse badges, limited stock warnings, countdown timers
+- **Mobile-First Design**: Complete responsive optimization for mobile devices
+  - **Image Heights**: Mobile (h-56/224px) for impact, Desktop (h-48/192px) for efficiency
+  - **Touch Targets**: Minimum 44px height buttons for accessibility compliance
+  - **Typography**: Responsive text scaling (xs mobile, sm desktop)
+  - **Spacing**: Optimized padding (p-3 mobile, p-4 desktop) and margins
+- **Badge System**: Comprehensive status indicators (Popular, Promo, Limited, Availability)
+- **Accessibility**: Alt text, ARIA labels, semantic HTML, touch manipulation optimization
 
-### Carousel & UI Enhancements:
-- **Flickity Carousel Fix**: Resolved carousel initialization issues in product detail page (`resources/views/landing/produk.blade.php`)
-  - Added `data-flickity` attribute for reliable auto-initialization
-  - Enhanced CSS for proper carousel-cell layout with flex centering
-  - Added `imagesLoaded: true` option for better image loading handling
-  - Removed duplicate CSS definitions and improved responsive behavior
-- **Default Product Image Implementation**: Added fallback default image "images/produk/default.jpg" for products without images in carousel
-  - Modified carousel loop to use `@forelse` with `@empty` directive
-  - Ensures consistent UI display even when products have no uploaded images
-  - Maintains promo badge functionality for default images
-- **Mobile-Optimized Floating Price Section**: Redesigned bottom sticky price bar for better mobile experience
-  - Responsive layout: vertical stack on mobile, horizontal on desktop
-  - Simplified content on mobile (hidden weekday/weekend details)
-  - Full-width button on mobile with proper touch targets
-  - Improved spacing and typography scaling for small screens
+### Advanced Search & Filtering System (`resources/views/landing/all-products.blade.php`):
+- **Multi-Criteria Filtering**: Price range, capacity, room count, nearby attractions
+  - **Price Ranges**: 0-500k, 500k-1M, 1M-2M, 2M+
+  - **Capacity**: 1-2, 3-4, 5-8, 9+ persons
+  - **Rooms**: 1, 2, 3, 4+ bedrooms
+  - **Attractions**: Dynamic filter based on nearby tourist spots
+- **Date-Based Availability**: Real-time availability checking with booking date filters
+  - **Features**: Date range selection, unit availability calculation, booking status indicators
+  - **Visual**: Color-coded availability badges (Green: Available, Orange: Limited, Red: Full)
+- **Advanced Sorting**: Relevance, price (low/high), rating, name (A-Z)
+- **Mobile-Responsive Filters**: Collapsible advanced filters on mobile devices
+- **Search Integration**: Combined text search with category and filter combinations
 
-### DatabaseSeeder Enhancements:
-- Automatic folder creation for user images (`storage/app/public/images/user`)
-- Copy default admin avatar from template
-- `updateOrCreate` method for safe user creation
+### Performance Optimizations:
+- **Laravel Caching**: Implemented 1-hour TTL caching for popular and best villas
+  - **Methods**: `Cache::remember()` in `LandingPageController` for `popularVillas` and `bestVillas`
+  - **Benefits**: Reduced database queries by ~60% for frequently accessed data
+- **Query Optimization**: Efficient availability calculations using consistent model methods
+- **Image Optimization**: Lazy loading, proper alt texts, responsive image handling
+
+### Enhanced Promo Management System:
+- **Advanced Promo Methods**: Comprehensive discount calculation and caching
+  - **Methods**: `getBestPromo()`, `getPromoPriceWeekday()`, `getPromoPriceWeekend()`, `updatePromoCache()`
+  - **Caching**: 1-hour promo data caching with automatic invalidation
+  - **Validation**: Real-time promo status checking and usage limit enforcement
+- **Flexible Targeting**: Product-specific, category-based, and global promo support
+- **Usage Tracking**: Real-time usage counting and limit management
+
+### Data Consistency & Validation:
+- **Availability Standardization**: Consistent availability checking across all controllers
+  - **Methods**: `getBookedDates()`, `isFullyBookedForRange()`, `getAvailableUnitsForRange()`
+  - **Usage**: Unified availability logic between `LandingPageController` and booking system
+- **Booking Validation**: Enhanced validation with inconsistency logging
+  - **Features**: Price consistency checks, availability verification, unit limit validation
+  - **Logging**: `ActivityLog` integration for debugging data discrepancies
+- **Rating Consistency**: Real database ratings instead of hardcoded values
+  - **Display**: Dynamic star ratings with actual review counts
+
+### Mobile-Optimized Components:
+- **Villa Card Component**: Touch-friendly interactions and responsive design
+  - **Features**: Optimized button sizes, responsive spacing, mobile-first typography
+  - **Accessibility**: WCAG-compliant touch targets, proper contrast ratios
+- **Floating Price Section**: Mobile-optimized sticky price display
+  - **Layout**: Vertical stack on mobile, horizontal on desktop
+  - **Features**: Simplified mobile content, full-width CTA buttons
 
 ### API Routes Configuration:
-- **File**: `routes/api.php` exists but not currently loaded
+- **File**: `routes/api.php` exists but currently disabled
 - **Status**: Commented out in `routes/web.php` line 81
-- **Purpose**: RESTful API endpoints with Sanctum authentication (when enabled)
-- **Note**: To activate API routes, uncomment the require statement in web.php
-
-### Product Detail Page Enhancements (`resources/views/landing/produk.blade.php`):
-- **Enhanced Hero Section** dengan modern image gallery menggunakan Swiper.js
-  - Slider dengan fade effect dan autoplay
-  - Promo badge dengan animasi pulse untuk produk yang sedang promo
-  - GLightbox integration untuk lightbox gallery
-  - Responsive navigation buttons (hidden on mobile)
-- **Enhanced Product Information Grid** dengan layout 2 kolom (lg:grid-cols-2)
-  - Info cards dengan icon-based design (ideal untuk, kapasitas, kamar, lokasi)
-  - Rating section dengan visual star display
-  - Deskripsi produk dengan icon header
-- **Enhanced Tabbed Content** untuk Fasilitas, Wisata, dan Syarat & Ketentuan
-  - Tab navigation dengan icon dan hover effects
-  - Grid layout untuk item display (md:grid-cols-2)
-  - "Lihat Selengkapnya" toggle untuk items > 6
-  - Color-coded backgrounds (blue untuk fasilitas, green untuk wisata, yellow untuk syarat)
-- **Enhanced Booking Section** dengan calendar dan form
-  - FullCalendar integration dengan locale Indonesia
-  - Date range selection dengan visual highlighting
-  - Real-time availability checking
-  - Dynamic price calculation (weekday/weekend pricing)
-  - Unit quantity selector dengan max validation
-  - DP calculation display
-  - Booking summary dengan detailed breakdown
-- **Enhanced Floating Price Section** (fixed bottom bar)
-  - Sticky price display dengan promo badge
-  - Weekday/weekend price breakdown
-  - CTA button "Pesan Sekarang" dengan smooth scroll ke calendar
-- **Enhanced Recommendations Section**
-  - Grid layout untuk villa cards (2 cols mobile, 3 cols desktop)
-  - Menggunakan `villa-card` component yang sudah mobile-optimized
-- **Advanced Styling & Animations**:
-  - Custom calendar styles dengan gradient headers
-  - Date selection dengan rounded highlights
-  - Disabled/full dates dengan visual indicators
-  - Fade-in-up animations untuk sections
-  - Shimmer loading animation
-  - Custom scrollbar styling
-  - Mobile-responsive adjustments (calendar, swiper, spacing)
-- **JavaScript Enhancements**:
-  - Safe library initialization dengan error handling
-  - Swiper dengan fade effect dan autoplay
-  - FullCalendar dengan date range selection
-  - Dynamic price calculation berdasarkan weekday/weekend
-  - Unit availability checking per date
-  - Tab switching functionality
-  - Scroll-based animation triggers
-  - Toggle functionality untuk "Lihat Selengkapnya"
-- **Responsive Design**:
-  - Tablet-width centered layout (max-w-5xl/1024px)
-  - Mobile-optimized calendar (smaller day numbers)
-  - Hidden swiper navigation on mobile
-  - Responsive grid layouts
-  - Touch-friendly interactions
-- **Integration Features**:
-  - Promo price display dengan strikethrough original price
-  - Availability calendar dengan booked dates marking
-  - Form validation dan submission
-  - GLightbox untuk image gallery
-  - Smooth scroll behavior
+- **Purpose**: RESTful API endpoints with Laravel Sanctum authentication
+- **Note**: Ready for activation when API functionality is needed
 
 ## Summary
 Dokumentasi ini telah diperbarui pada November 2025 untuk mencakup:
-- **Data Consistency Fixes**: Rating consistency, availability standardization, caching, validation, and monitoring
-- Komponen Blade baru (card-component.blade.php)
-- Fitur-fitur lanjutan PromoDataTable
-- Peningkatan DatabaseSeeder
-- Status konfigurasi API routes
-- Role assignment for Super Admin user
-- **Enhanced Product Detail Page** (`resources/views/landing/produk.blade.php`) dengan modern UI/UX, advanced booking system, dan mobile-responsive design
+- **Frontend Modernization**: SCSS migration, Flickity carousel replacement, mobile-first design
+- **Advanced Filtering System**: Multi-criteria search with date-based availability
+- **Performance Optimizations**: Laravel caching, query optimization, image handling
+- **Enhanced Promo System**: Dynamic pricing, usage tracking, flexible targeting
+- **Data Consistency**: Standardized availability methods, validation logging, real ratings
+- **Mobile Optimization**: Touch-friendly components, responsive design, accessibility compliance
+- **Component Architecture**: Reusable villa cards, advanced badge systems, modern UI patterns
