@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Landing\ProdukFinalRequest;
+use App\Mail\PaymentSuccess;
 use App\Models\Promo\Promo;
 use App\Models\Produk\Produk;
 use App\Models\Transaksi\Transaksi;
@@ -11,6 +12,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Midtrans\Config;
 
 class BookingController extends Controller
@@ -262,6 +264,22 @@ class BookingController extends Controller
         }
 
         $transaction->save();
+
+        // Send email notification if payment was successful
+        if ($transaction->status === 'success') {
+            try {
+                // Load produk relationship for email template
+                $transaction->load('produk');
+                Mail::to($transaction->email)->send(new PaymentSuccess($transaction));
+                Log::info('Payment success email sent.', ['order_id' => $orderId, 'email' => $transaction->email]);
+            } catch (\Exception $e) {
+                Log::error('Failed to send payment success email.', [
+                    'order_id' => $orderId,
+                    'email' => $transaction->email,
+                    'error' => $e->getMessage()
+                ]);
+            }
+        }
 
         Log::info('Midtrans notification processed successfully.', ['order_id' => $orderId, 'status' => $transaction->status]);
 
