@@ -58,7 +58,7 @@
                     {{ $title }}
                 </h2>
                 <p class="text-lg text-gray-600 max-w-2xl mx-auto">
-                    Pengalaman menginap mewah dengan fasilitas premium dan pelayanan terbaik
+                    Pengalaman menginap mewah dengan fasilitas premium dan pelayanan terbaik | {{ count($villas) }} || {{ !empty($villas) }}
                 </p>
                 <div class="w-24 h-1 bg-gradient-to-r from-primary-600 to-accent-600 mx-auto mt-6 rounded-full"></div>
             </header>
