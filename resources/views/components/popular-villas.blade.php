@@ -44,7 +44,7 @@
 }
 </script> --}}
 
-@if(!empty($villas) || count($villas) > 0)
+@if(count($villas) > 0)
     <section class="py-16 lg:py-24 bg-gradient-to-br from-gray-50 to-white" aria-labelledby="popular-villas-heading">
         <div class="max-w-5xl container mx-auto px-4 sm:px-6 lg:px-8">
             <header class="text-center mb-12">

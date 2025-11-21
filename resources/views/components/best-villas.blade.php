@@ -44,7 +44,7 @@
 }
 </script> --}}
 
-@if(!empty($villas) || count($villas) > 0)
+@if(count($villas) > 0)
     <section class="py-16 lg:py-24 bg-gradient-to-br from-gray-50 to-white" aria-labelledby="best-villas-heading">
         <div class="max-w-5xl container mx-auto px-4 sm:px-6 lg:px-8">
             <header class="text-center mb-12">
@@ -58,7 +58,7 @@
                     {{ $title }}
                 </h2>
                 <p class="text-lg text-gray-600 max-w-2xl mx-auto">
-                    Pengalaman menginap mewah dengan fasilitas premium dan pelayanan terbaik | {{ count($villas) }} || {{ !empty($villas) }}
+                    Pengalaman menginap mewah dengan fasilitas premium dan pelayanan terbaik
                 </p>
                 <div class="w-24 h-1 bg-gradient-to-r from-primary-600 to-accent-600 mx-auto mt-6 rounded-full"></div>
             </header>
