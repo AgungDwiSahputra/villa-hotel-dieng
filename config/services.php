@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'management_api' => [
+        'url' => env('MANAGEMENT_API_URL', 'https://management.villahoteldieng.com/api'),
+        'key' => env('MANAGEMENT_API_KEY'),
+    ],
+
 ];

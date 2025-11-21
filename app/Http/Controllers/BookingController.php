@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Landing\ProdukFinalRequest;
+use App\Mail\InvoiceNotification;
 use App\Mail\PaymentSuccess;
 use App\Models\Promo\Promo;
 use App\Models\Produk\Produk;
 use App\Models\Transaksi\Transaksi;
 use App\Models\Transaksi\TransaksiDetail;
+use App\Services\ProductUserService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -265,17 +267,51 @@ class BookingController extends Controller
 
         $transaction->save();
 
-        // Send email notification if payment was successful
+        // Send email notifications if payment was successful
         if ($transaction->status === 'success') {
             try {
                 // Load produk relationship for email template
                 $transaction->load('produk');
-                Mail::to($transaction->email)->send(new PaymentSuccess($transaction));
-                Log::info('Payment success email sent.', ['order_id' => $orderId, 'email' => $transaction->email]);
+
+                // Send invoice to customer
+                Mail::to($transaction->email)->send(new InvoiceNotification($transaction, false));
+                Log::info('Invoice email sent to customer.', ['order_id' => $orderId, 'email' => $transaction->email]);
+
+                // Send invoice to product admins
+                $productUserService = new ProductUserService();
+                $adminEmails = $productUserService->getProductAdminEmails($transaction->produk_id);
+
+                if (!empty($adminEmails)) {
+                    foreach ($adminEmails as $adminEmail) {
+                        try {
+                            Mail::to($adminEmail)->send(new InvoiceNotification($transaction, true));
+                            Log::info('Invoice email sent to admin.', [
+                                'order_id' => $orderId,
+                                'admin_email' => $adminEmail,
+                                'product_id' => $transaction->produk_id
+                            ]);
+                        } catch (\Exception $e) {
+                            Log::error('Failed to send invoice email to admin.', [
+                                'order_id' => $orderId,
+                                'admin_email' => $adminEmail,
+                                'error' => $e->getMessage()
+                            ]);
+                        }
+                    }
+                } else {
+                    Log::warning('No admin emails found for product.', [
+                        'order_id' => $orderId,
+                        'product_id' => $transaction->produk_id
+                    ]);
+                }
+
+                // Also send payment success confirmation to customer
+                // Mail::to($transaction->email)->send(new PaymentSuccess($transaction));
+                Log::info('Payment success confirmation email sent.', ['order_id' => $orderId, 'email' => $transaction->email]);
+
             } catch (\Exception $e) {
-                Log::error('Failed to send payment success email.', [
+                Log::error('Failed to send notification emails.', [
                     'order_id' => $orderId,
-                    'email' => $transaction->email,
                     'error' => $e->getMessage()
                 ]);
             }

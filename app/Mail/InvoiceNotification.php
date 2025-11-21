@@ -9,18 +9,20 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class PaymentSuccess extends Mailable
+class InvoiceNotification extends Mailable
 {
     use Queueable, SerializesModels;
 
     public $transaksi;
+    public $isAdminCopy;
 
     /**
      * Create a new message instance.
      */
-    public function __construct(Transaksi $transaksi)
+    public function __construct(Transaksi $transaksi, $isAdminCopy = false)
     {
         $this->transaksi = $transaksi;
+        $this->isAdminCopy = $isAdminCopy;
     }
 
     /**
@@ -28,8 +30,12 @@ class PaymentSuccess extends Mailable
      */
     public function envelope(): Envelope
     {
+        $subject = $this->isAdminCopy
+            ? 'Invoice Baru - Villa Hotel Dieng'
+            : 'Invoice Pembayaran - Villa Hotel Dieng';
+
         return new Envelope(
-            subject: 'Konfirmasi Pembayaran DP Berhasil - Villa Hotel Dieng',
+            subject: $subject,
         );
     }
 
@@ -39,10 +45,11 @@ class PaymentSuccess extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.payment-success',
+            view: 'emails.invoice-notification',
             with: [
                 'transaksi' => $this->transaksi,
                 'produk' => $this->transaksi->produk,
+                'isAdminCopy' => $this->isAdminCopy,
             ],
         );
     }
