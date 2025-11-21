@@ -739,7 +739,7 @@
                     <li>Simpan invoice ini sebagai bukti pembayaran yang sah</li>
                     <li>Admin akan menghubungi Anda dalam 24 jam untuk konfirmasi</li>
                     <li>Check-in dapat dilakukan sesuai tanggal yang telah dipesan</li>
-                    <li>Untuk pertanyaan mendesak, hubungi: {{ $transaksi->no_wa }}</li>
+                    <li>Untuk pertanyaan mendesak, hubungi: <a href="wa.me/6282162622680">082162622680</a></li>
                 </ul>
             </div>
             @else

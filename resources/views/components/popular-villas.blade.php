@@ -62,28 +62,45 @@
             <div class="w-24 h-1 bg-gradient-to-r from-primary-600 to-accent-600 mx-auto mt-6 rounded-full"></div>
         </header>
 
-        <div class="popular-villas-carousel flickity" role="list" aria-label="Villa Populer Carousel">
-            @foreach($villas as $villa)
-            <div class="carousel-cell" role="listitem" aria-label="{{ $villa->name }}">
-                <!-- Villa Card Component dengan Badge Terintegrasi -->
-                <x-villa-card
-                    :villa="$villa"
-                    :showCategory="false"
-                    :showRating="true"
-                    :showPrice="true"
-                    :showButton="true"
-                    :buttonText="'Pesan Sekarang'"
-                    :showPopularBadge="true"
-                    :showAvailabilityStatus="true"
-                    :availabilityText="'Tersedia'"
-                    :availabilityClass="'bg-green-500'"
-                    :cardClass="'group bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden'"
-                    :imageHeight="'h-48'"
-                    :contentPadding="'p-4'"
-                />
+        @if(empty($villas))
+            {{-- <div class="text-center py-16">
+                <svg class="w-24 h-24 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                </svg>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">Villa Populer Belum Tersedia</h3>
+                <p class="text-gray-600 mb-6">Saat ini belum ada villa yang ditandai sebagai populer. Silakan lihat semua villa yang tersedia.</p>
+                <a href="{{ route('produk.all') }}"
+                   class="inline-flex items-center px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg transition-colors duration-200">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H6zM14 16a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2h-2z"></path>
+                    </svg>
+                    Lihat Semua Villa
+                </a>
+            </div> --}}
+        @else
+            <div class="popular-villas-carousel flickity" role="list" aria-label="Villa Populer Carousel">
+                @foreach($villas as $villa)
+                <div class="carousel-cell" role="listitem" aria-label="{{ $villa->name }}">
+                    <!-- Villa Card Component dengan Badge Terintegrasi -->
+                    <x-villa-card
+                        :villa="$villa"
+                        :showCategory="false"
+                        :showRating="true"
+                        :showPrice="true"
+                        :showButton="true"
+                        :buttonText="'Pesan Sekarang'"
+                        :showPopularBadge="true"
+                        :showAvailabilityStatus="true"
+                        :availabilityText="'Tersedia'"
+                        :availabilityClass="'bg-green-500'"
+                        :cardClass="'group bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden'"
+                        :imageHeight="'h-48'"
+                        :contentPadding="'p-4'"
+                    />
+                </div>
+                @endforeach
             </div>
-            @endforeach
-        </div>
+        @endif
 
         <!-- View All Button -->
         <div class="text-center mt-20">

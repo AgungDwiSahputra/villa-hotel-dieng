@@ -87,53 +87,70 @@
                 <h3 class="text-xl lg:text-2xl font-semibold text-white">Ulasan Terbaru</h3>
             </div>
 
-            <div class="testimonial-slider testimonials-carousel flickity" role="region" aria-label="Testimonial carousel">
-                @foreach($testimonials as $testimonial)
-                <div class="testimonial-slide carousel-cell px-2 sm:px-3 lg:px-4" aria-label="Testimonial dari {{ $testimonial['name'] ?? 'Anonymous' }}">
-                        <div class="bg-white/5 backdrop-blur-sm rounded-xl lg:rounded-2xl p-6 lg:p-8 border border-white/10 hover:bg-white/10 transition-all duration-300 h-full">
-                            <!-- Rating Stars -->
-                            <div class="flex items-center mb-4 lg:mb-6">
-                                <div class="flex text-accent-400" aria-label="Rating {{ $testimonial['rating'] ?? 5 }} dari 5">
-                                    @for($i = 1; $i <= 5; $i++)
-                                    <svg class="w-4 h-4 lg:w-5 lg:h-5 {{ $i <= ($testimonial['rating'] ?? 5) ? 'text-accent-400' : 'text-white/30' }}" fill="currentColor" viewBox="0 0 24 24">
-                                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
-                                    </svg>
-                                    @endfor
-                                </div>
-                                <span class="ml-2 text-sm text-gray-300">{{ $testimonial['rating'] ?? 5 }}.0</span>
-                            </div>
-
-                            <!-- Testimonial Content -->
-                            <blockquote class="text-gray-200 mb-6 lg:mb-8 text-sm sm:text-base lg:text-lg leading-relaxed" itemprop="reviewBody">
-                                <svg class="w-6 h-6 lg:w-8 lg:h-8 text-accent-400/30 mb-3 lg:mb-4" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
-                                </svg>
-                                {{ $testimonial['content'] ?? 'Pengalaman menginap yang luar biasa! Villa sangat bersih, pemandangan indah, dan pelayanan yang ramah. Sangat direkomendasikan untuk liburan keluarga.' }}
-                            </blockquote>
-
-                            <!-- Author Info -->
-                            <div class="flex items-center">
-                                <div class="author-avatar mr-3 lg:mr-4">
-                                    <img src="{{ $testimonial['avatar'] ?? asset('images/default-avatar.svg') }}"
-                                         alt="{{ $testimonial['name'] ?? 'Anonymous' }}"
-                                         class="w-12 h-12 lg:w-14 lg:h-14 rounded-full object-cover border-2 border-accent-400/30"
-                                         itemprop="image">
-                                </div>
-                                <div class="author-info">
-                                    <div class="author-name font-semibold text-white text-sm sm:text-base lg:text-lg" itemprop="author">
-                                        {{ $testimonial['name'] ?? 'Anonymous' }}
-                                    </div>
-                                    <div class="author-details text-gray-400 text-xs sm:text-sm">
-                                        <span itemprop="datePublished">{{ $testimonial['date'] ?? 'November 2024' }}</span>
-                                        <span class="mx-2">•</span>
-                                        <span>{{ $testimonial['villa'] ?? 'Villa Premium' }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+            @if(empty($testimonials))
+                <div class="text-center py-16">
+                    <svg class="w-24 h-24 mx-auto text-white/30 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                    </svg>
+                    <h3 class="text-xl font-semibold text-white mb-2">Testimonial Belum Tersedia</h3>
+                    <p class="text-gray-300 mb-6">Saat ini belum ada testimonial dari tamu. Jadilah tamu pertama yang memberikan ulasan setelah menginap!</p>
+                    <a href="{{ route('index') }}"
+                       class="inline-flex items-center px-6 py-3 bg-accent-600 hover:bg-accent-700 text-white font-medium rounded-lg transition-colors duration-200">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                        Cari Villa Sekarang
+                    </a>
                 </div>
-                @endforeach
-            </div>
+            @else
+                <div class="testimonial-slider testimonials-carousel flickity" role="region" aria-label="Testimonial carousel">
+                    @foreach($testimonials as $testimonial)
+                    <div class="testimonial-slide carousel-cell px-2 sm:px-3 lg:px-4" aria-label="Testimonial dari {{ $testimonial['name'] ?? 'Anonymous' }}">
+                            <div class="bg-white/5 backdrop-blur-sm rounded-xl lg:rounded-2xl p-6 lg:p-8 border border-white/10 hover:bg-white/10 transition-all duration-300 h-full">
+                                <!-- Rating Stars -->
+                                <div class="flex items-center mb-4 lg:mb-6">
+                                    <div class="flex text-accent-400" aria-label="Rating {{ $testimonial['rating'] ?? 5 }} dari 5">
+                                        @for($i = 1; $i <= 5; $i++)
+                                        <svg class="w-4 h-4 lg:w-5 lg:h-5 {{ $i <= ($testimonial['rating'] ?? 5) ? 'text-accent-400' : 'text-white/30' }}" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+                                        </svg>
+                                        @endfor
+                                    </div>
+                                    <span class="ml-2 text-sm text-gray-300">{{ $testimonial['rating'] ?? 5 }}.0</span>
+                                </div>
+
+                                <!-- Testimonial Content -->
+                                <blockquote class="text-gray-200 mb-6 lg:mb-8 text-sm sm:text-base lg:text-lg leading-relaxed" itemprop="reviewBody">
+                                    <svg class="w-6 h-6 lg:w-8 lg:h-8 text-accent-400/30 mb-3 lg:mb-4" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
+                                    </svg>
+                                    {{ $testimonial['content'] ?? 'Pengalaman menginap yang luar biasa! Villa sangat bersih, pemandangan indah, dan pelayanan yang ramah. Sangat direkomendasikan untuk liburan keluarga.' }}
+                                </blockquote>
+
+                                <!-- Author Info -->
+                                <div class="flex items-center">
+                                    <div class="author-avatar mr-3 lg:mr-4">
+                                        <img src="{{ $testimonial['avatar'] ?? asset('images/default-avatar.svg') }}"
+                                             alt="{{ $testimonial['name'] ?? 'Anonymous' }}"
+                                             class="w-12 h-12 lg:w-14 lg:h-14 rounded-full object-cover border-2 border-accent-400/30"
+                                             itemprop="image">
+                                    </div>
+                                    <div class="author-info">
+                                        <div class="author-name font-semibold text-white text-sm sm:text-base lg:text-lg" itemprop="author">
+                                            {{ $testimonial['name'] ?? 'Anonymous' }}
+                                        </div>
+                                        <div class="author-details text-gray-400 text-xs sm:text-sm">
+                                            <span itemprop="datePublished">{{ $testimonial['date'] ?? 'November 2024' }}</span>
+                                            <span class="mx-2">•</span>
+                                            <span>{{ $testimonial['villa'] ?? 'Villa Premium' }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
+                    @endforeach
+                </div>
+            @endif
 
         </div>
 

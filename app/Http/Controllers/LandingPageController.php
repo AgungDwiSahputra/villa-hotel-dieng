@@ -82,25 +82,25 @@ class LandingPageController extends Controller
                 'name' => 'Budi Santoso',
                 'avatar' => asset('images/default-avatar.svg'),
                 'rating' => 5,
-                'content' => 'Liburan keluarga kami di Villa Premium Dieng benar-benar luar biasa! Dari check-in yang mudah hingga check-out yang lancar, semuanya sempurna. Villa sangat bersih, perabotan lengkap, dan pemandangan sunrise dari balkon membuat kami terkesima. Anak-anak sangat senang dengan taman bermain yang luas. Pelayanan staff sangat ramah dan responsif. Pasti akan kembali lagi tahun depan!',
+                'content' => 'Liburan keluarga kami di FULL HOUSE BEST VIEW benar-benar luar biasa! Dari check-in yang mudah hingga check-out yang lancar, semuanya sempurna. Villa sangat bersih, perabotan lengkap, dan pemandangan sunrise dari balkon membuat kami terkesima. Anak-anak sangat senang dengan taman bermain yang luas. Pelayanan staff sangat ramah dan responsif. Pasti akan kembali lagi tahun depan!',
                 'date' => '2 minggu lalu',
-                'villa' => 'Villa Premium Dieng'
+                'villa' => 'FULL HOUSE BEST VIEW'
             ],
             [
                 'name' => 'Sarah Wijaya',
                 'avatar' => asset('images/default-avatar.svg'),
                 'rating' => 5,
-                'content' => 'Saya mencari tempat untuk healing dari penatnya rutinitas kota, dan Villa Keluarga ini adalah jawabannya! Udara Dieng yang segar, pemandangan perbukitan yang hijau, dan ketenangan yang benar-benar jauh dari hiruk pikuk metropolitan. Villa dilengkapi dengan semua yang saya butuhkan, dari dapur lengkap hingga WiFi kencang. Malam hari dengan duduk di teras sambil minum teh dan melihat bintang adalah pengalaman tak terlupakan.',
+                'content' => 'Saya mencari tempat untuk healing dari penatnya rutinitas kota, dan Sunflowers Cabin Dieng ini adalah jawabannya! Udara Dieng yang segar, pemandangan perbukitan yang hijau, dan ketenangan yang benar-benar jauh dari hiruk pikuk metropolitan. Villa dilengkapi dengan semua yang saya butuhkan, dari dapur lengkap hingga WiFi kencang. Malam hari dengan duduk di teras sambil minum teh dan melihat bintang adalah pengalaman tak terlupakan.',
                 'date' => '1 bulan lalu',
-                'villa' => 'Villa Keluarga'
+                'villa' => 'Sunflowers Cabin Dieng'
             ],
             [
                 'name' => 'Ahmad Fauzi',
                 'avatar' => asset('images/default-avatar.svg'),
                 'rating' => 5,
-                'content' => 'Lokasi Villa View benar-benar strategis! Hanya 10 menit ke Kawah Sikidang dan 15 menit ke Candi Arjuna. Villa persis seperti di foto, bahkan lebih bagus secara langsung. Kamar tidur nyaman dengan selimut hangat, dapur bersih dengan peralatan lengkap, dan ruang keluarga yang cozy untuk berkumpul. Harga sangat worth it dengan fasilitas dan lokasi yang didapat. Highly recommended!',
+                'content' => 'Lokasi 1 Lantai Best View Di Lantai 2 benar-benar strategis! Hanya 10 menit ke Kawah Sikidang dan 15 menit ke Candi Arjuna. Villa persis seperti di foto, bahkan lebih bagus secara langsung. Kamar tidur nyaman dengan selimut hangat, dapur bersih dengan peralatan lengkap, dan ruang keluarga yang cozy untuk berkumpul. Harga sangat worth it dengan fasilitas dan lokasi yang didapat. Highly recommended!',
                 'date' => '3 minggu lalu',
-                'villa' => 'Villa View'
+                'villa' => '1 Lantai Best View Di Lantai 2'
             ],
             [
                 'name' => 'Maya Putri',
@@ -108,23 +108,23 @@ class LandingPageController extends Controller
                 'rating' => 5,
                 'content' => 'Customer service-nya luar biasa! Saya booking mendadak karena ada perubahan rencana, team Villa Hotel Dieng sangat membantu menemukan villa yang tersedia dan memproses booking dengan cepat. Saat check-in, staff sudah menunggu dan memberikan penjelasan detail tentang villa dan rekomendasi tempat wisata. Mereka bahkan membantu mengatur transportasi lokal. Service level ini jarang saya temukan di tempat lain!',
                 'date' => '2 bulan lalu',
-                'villa' => 'Villa Executive'
+                'villa' => '1 Kamar Best View Lantai 3'
             ],
             [
                 'name' => 'Rizki Pratama',
                 'avatar' => asset('images/default-avatar.svg'),
                 'rating' => 5,
-                'content' => 'Kami rombongan keluarga besar (15 orang) menginap di Villa Garden dan semuanya sempurna! Villa memiliki 4 kamar tidur yang luas, 3 kamar mandi, ruang keluarga yang besar, dan yang paling disukai anak-anak adalah taman bermain dengan ayunan dan perosotan. Dapur lengkap memudahkan kami masak untuk seluruh keluarga. Pemandangan gunung dari balkon utama sangat spektakuler, apalagi saat sunrise. Best family vacation ever!',
+                'content' => 'Kami rombongan keluarga besar (15 orang) menginap di Sunflower Private Pool dan semuanya sempurna! Villa memiliki 4 kamar tidur yang luas, 3 kamar mandi, ruang keluarga yang besar, dan yang paling disukai anak-anak adalah taman bermain dengan ayunan dan perosotan. Dapur lengkap memudahkan kami masak untuk seluruh keluarga. Pemandangan gunung dari balkon utama sangat spektakuler, apalagi saat sunrise. Best family vacation ever!',
                 'date' => '1 minggu lalu',
-                'villa' => 'Villa Garden'
+                'villa' => 'Sunflower Private Pool'
             ],
             [
                 'name' => 'Dewi Lestari',
                 'avatar' => asset('images/default-avatar.svg'),
                 'rating' => 5,
-                'content' => 'Villa Cozy exceeded all my expectations! Saya solo traveler yang mencari ketenangan, dan villa ini memberikan lebih dari itu. Interior designnya modern namun tetap cozy, tempat tidur super nyaman dengan bantal dan selimut berkualitas, kamar mandi bersih dengan water heater yang works perfectly. Yang saya suka: ada coffee maker, mini library dengan buku-buku menarik, dan teras kecil yang sempurna untuk morning coffee. Safety juga sangat terjamin dengan CCTV dan security 24 jam.',
+                'content' => 'FULL HOUSE BEST VIEW exceeded all my expectations! Saya solo traveler yang mencari ketenangan, dan villa ini memberikan lebih dari itu. Interior designnya modern namun tetap cozy, tempat tidur super nyaman dengan bantal dan selimut berkualitas, kamar mandi bersih dengan water heater yang works perfectly. Yang saya suka: ada coffee maker, mini library dengan buku-buku menarik, dan teras kecil yang sempurna untuk morning coffee. Safety juga sangat terjamin dengan CCTV dan security 24 jam.',
                 'date' => '4 minggu lalu',
-                'villa' => 'Villa Cozy'
+                'villa' => 'FULL HOUSE BEST VIEW'
             ]
         ];
 

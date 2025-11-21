@@ -162,7 +162,7 @@
             <strong>Petunjuk Selanjutnya:</strong><br>
             • Simpan email konfirmasi ini sebagai bukti booking<br>
             • Admin akan menghubungi Anda untuk konfirmasi lebih lanjut<br>
-            • Jika ada pertanyaan, hubungi kami di {{ $transaksi->no_wa }}
+            • Jika ada pertanyaan, hubungi kami di <a href="wa.me/6282162622680">082162622680</a>
         </div>
 
         <div class="footer">

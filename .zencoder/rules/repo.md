@@ -6,7 +6,7 @@ alwaysApply: true
 # Villa Hotel Dieng Management System
 
 ## Summary
-Villa Hotel Dieng is a comprehensive hotel and villa management system built with Laravel 12. The application manages properties, reservations, payments, user roles, and operational features for a boutique hotel/villa in Dieng, Indonesia. It provides both admin backend management and public booking interface with payment gateway integration (Midtrans). The system features a modular architecture with organized namespaces, role-based access control, activity logging, and a modern frontend built with Tailwind CSS and Alpine.js.
+Villa Hotel Dieng is a comprehensive hotel and villa management system built with Laravel 12. The application manages properties, reservations, payments, user roles, and operational features for a boutique hotel/villa in Dieng, Indonesia. It provides both admin backend management and public booking interface with payment gateway integration (Midtrans). The system features a modular architecture with organized namespaces, role-based access control, activity logging, and a modern frontend built with Tailwind CSS and Alpine.js. The system includes advanced empty state handling for improved user experience when data is unavailable.
 
 ## Structure
 **Root Directory Organization**:
@@ -380,6 +380,46 @@ php artisan test --coverage
 - Mail: Configurable mail driver for transactional emails
 - Storage: Public disk with symlink for images and files
 
+## Email & Notification System
+
+**Framework**: Laravel Mail (Symfony Mailer)
+**Location**: `app/Mail/` directory
+**Templates**: `resources/views/emails/`
+
+### Email Classes
+- `InvoiceNotification` - Automated invoice emails sent after successful payment
+  - Sent to customer with booking details
+  - Sent to product admins for order management
+- `PaymentSuccess` - Payment confirmation emails
+  - Currently commented out in implementation
+
+### Email Templates
+- `emails/invoice-notification.blade.php` - Professional invoice layout
+- `emails/payment-success.blade.php` - Payment success confirmation
+
+### Email Triggers
+- **Payment Success**: Automatic email sending via Midtrans callback
+- **Recipients**: Customer + Product-specific admin emails
+- **Content**: Booking details, pricing, product information
+
+### Configuration
+```env
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME=your_email@gmail.com
+MAIL_PASSWORD=your_app_password
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS=noreply@villahoteldieng.com
+MAIL_FROM_NAME="Villa Hotel Dieng"
+```
+
+### Email Features
+- **Multi-recipient Support**: Customer + Admin notifications
+- **Product-specific Routing**: Emails sent to relevant product administrators
+- **Error Handling**: Comprehensive logging for failed email deliveries
+- **Queue Support**: Emails can be queued for better performance
+
 ## Project Features
 
 **Core Models** (Organized by Domain):
@@ -485,6 +525,7 @@ php artisan test --coverage
 - Automatic price calculation with promo code support
 - Payment integration with Midtrans (Snap API)
 - Transaction status tracking (pending, paid, expired, cancelled)
+- **Automated Email Notifications**: Invoice emails sent to customers and admins upon successful payment
 - Payment confirmation handling via callback
 - Transaction history and reporting
 - Invoice generation
@@ -651,7 +692,7 @@ Cache::remember('cache_key', 3600, function () {
 - Real-time availability calculation using model methods
 - Combined filtering (price + capacity + rooms + attractions)
 - Mobile-responsive filter interface with collapsible sections
-## Recent Updates (November 2025)
+## Recent Updates (December 2025)
 
 ### Advanced Promo Code System Integration:
 - **Complete Promo Code Implementation**: Full-featured promo code system with real-time validation and dynamic pricing
@@ -785,8 +826,46 @@ Cache::remember('cache_key', 3600, function () {
 - **Purpose**: RESTful API endpoints with Laravel Sanctum authentication
 - **Note**: Ready for activation when API functionality is needed
 
+### Landing Page About & Terms Page Redesign:
+- **About Page Redesign** (`resources/views/landing/about.blade.php`):
+  - **Complete Tailwind CSS Migration**: Replaced Bootstrap classes with modern Tailwind utilities
+  - **Hero Section**: Elegant gradient background with icon and responsive typography
+  - **Content Section**: Card-based layout with prose styling and shadow effects
+  - **Values Section**: Added company values showcase with icons and hover effects
+  - **Mobile-First Design**: Responsive layout with touch-friendly interactions
+  - **Benefits**: Improved readability, professional appearance, better mobile experience
+- **Terms Page Redesign** (`resources/views/landing/terms.blade.php`):
+  - **Complete Tailwind CSS Migration**: Consistent with project design patterns
+  - **Hero Section**: Document-themed hero with gradient background and icon
+  - **Terms Content**: Enhanced card layout with prose styling for better readability
+  - **Key Points Section**: Added highlight cards for important terms (Booking, Payment, Cancellation)
+  - **Contact Section**: Integrated contact information with WhatsApp and email buttons
+  - **Mobile Optimization**: Responsive grid system and touch-friendly elements
+  - **Benefits**: Clear information hierarchy, improved user experience, professional design
+- **Design Consistency**: Both pages follow tablet-width centered layout (max-w-5xl) pattern
+- **Visual Enhancements**: Gradient backgrounds, shadow effects, hover transitions, consistent color scheme
+- **Accessibility**: Proper focus states, semantic HTML, WCAG-compliant touch targets
+
+### Empty State Handling Implementation (December 2025):
+- **Comprehensive Empty State Management**: Added graceful handling for empty data scenarios across all landing page components to improve user experience
+  - **Popular Villas Component** (`resources/views/components/popular-villas.blade.php`): Displays informative message with home icon when no popular villas are available
+  - **Best Villas Component** (`resources/views/components/best-villas.blade.php`): Shows star icon and message when no best villas are found
+  - **Testimonials Component** (`resources/views/components/testimonials.blade.php`): Provides chat icon and user-friendly message when testimonials are unavailable
+- **User Experience Enhancement**: Each empty state includes relevant icons, clear messaging, and call-to-action buttons guiding users to alternative actions
+- **Design Consistency**: Empty states follow the same design patterns as active content for seamless user experience and professional appearance
+
+### Testimonials Data Update (December 2025):
+- **Product Name Integration**: Updated testimonial content to reflect actual product names from the system database for authenticity
+  - **FULL HOUSE BEST VIEW**: Featured in testimonials from Budi Santoso and Dewi Lestari
+  - **Sunflowers Cabin Dieng**: Showcased in Sarah Wijaya's testimonial
+  - **1 Lantai Best View Di Lantai 2**: Highlighted in Ahmad Fauzi's review
+  - **1 Kamar Best View Lantai 3**: Mentioned in Maya Putri's testimonial
+  - **Sunflower Private Pool**: Featured in Rizki Pratama's family vacation story
+- **Realistic Content**: Maintained authentic testimonial language while incorporating actual product names for enhanced credibility and relevance
+
 ## Summary
-Dokumentasi ini telah diperbarui pada November 2025 untuk mencakup:
+Dokumentasi ini telah diperbarui pada December 2025 untuk mencakup:
+- **Email & Notification System**: Complete automated email system with invoice notifications for customers and admins
 - **Advanced Promo Code System**: Complete promo code integration with real-time validation, dynamic pricing, and interactive checkout experience
 - **Interactive Map Location System**: LeafletJS integration for villa/hotel location management with click-to-set coordinates
 - **Database Schema Updates**: Added latitude/longitude columns to produks table with proper validation
@@ -803,3 +882,6 @@ Dokumentasi ini telah diperbarui pada November 2025 untuk mencakup:
 - **Checkout Page Redesign**: Complete UI/UX overhaul with Tailwind CSS including centered layout, modern card design, enhanced forms, and mobile-first responsive design for improved booking experience
 - **API Integration**: Promo management endpoints with real-time validation and preview functionality
 - **Backend Enhancements**: Advanced discount calculations, Midtrans payment integration, comprehensive logging, dynamic pricing methods
+- **Landing Page Redesign**: Complete modernization of About and Terms pages with Tailwind CSS, mobile-first design, enhanced user experience, and professional visual hierarchy
+- **Empty State Handling**: Comprehensive empty data management across landing page components for improved user experience
+- **Testimonials Update**: Product name integration with actual villa names (FULL HOUSE BEST VIEW, Sunflowers Cabin Dieng, etc.) for enhanced authenticity

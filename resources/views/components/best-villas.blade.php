@@ -62,28 +62,45 @@
             <div class="w-24 h-1 bg-gradient-to-r from-primary-600 to-accent-600 mx-auto mt-6 rounded-full"></div>
         </header>
 
-        <div class="best-villas-carousel flickity" role="list" aria-label="Villa Terbaik Carousel">
-            @foreach($villas as $villa)
-            <div class="carousel-cell" role="listitem" aria-label="{{ $villa->name }}">
-                <!-- Villa Card Component dengan Badge Terintegrasi -->
-                <x-villa-card
-                    :villa="$villa"
-                    :showCategory="false"
-                    :showRating="true"
-                    :showPrice="true"
-                    :showButton="true"
-                    :buttonText="'Pesan Sekarang'"
-                    :showPopularBadge="true"
-                    :showAvailabilityStatus="true"
-                    :availabilityText="'Tersedia'"
-                    :availabilityClass="'bg-green-500'"
-                    :cardClass="'group bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden'"
-                    :imageHeight="'h-48'"
-                    :contentPadding="'p-4'"
-                />
+        @if(empty($villas))
+            {{-- <div class="text-center py-16">
+                <svg class="w-24 h-24 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
+                </svg>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">Villa Terbaik Belum Tersedia</h3>
+                <p class="text-gray-600 mb-6">Saat ini belum ada villa yang ditandai sebagai terbaik. Silakan lihat semua villa yang tersedia.</p>
+                <a href="{{ route('produk.all') }}"
+                   class="inline-flex items-center px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg transition-colors duration-200">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H6zM14 16a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2h-2z"></path>
+                    </svg>
+                    Lihat Semua Villa
+                </a>
+            </div> --}}
+        @else
+            <div class="best-villas-carousel flickity" role="list" aria-label="Villa Terbaik Carousel">
+                @foreach($villas as $villa)
+                <div class="carousel-cell" role="listitem" aria-label="{{ $villa->name }}">
+                    <!-- Villa Card Component dengan Badge Terintegrasi -->
+                    <x-villa-card
+                        :villa="$villa"
+                        :showCategory="false"
+                        :showRating="true"
+                        :showPrice="true"
+                        :showButton="true"
+                        :buttonText="'Pesan Sekarang'"
+                        :showPopularBadge="true"
+                        :showAvailabilityStatus="true"
+                        :availabilityText="'Tersedia'"
+                        :availabilityClass="'bg-green-500'"
+                        :cardClass="'group bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden'"
+                        :imageHeight="'h-48'"
+                        :contentPadding="'p-4'"
+                    />
+                </div>
+                @endforeach
             </div>
-            @endforeach
-        </div>
+        @endif
 
         <!-- View All Button -->
         <div class="text-center mt-20">
