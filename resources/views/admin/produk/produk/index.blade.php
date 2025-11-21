@@ -30,6 +30,8 @@
                     <x-input-form-component col="6" title="Kamar" type="number" id="kamar"/>
                     <x-input-form-component col="6" title="Ideal Orang" type="number" id="orang"/>
                     <x-input-form-component col="6" title="Maksimal Orang" type="number" id="maks_orang"/>
+                    <x-input-form-component col="6" title="Owner" type="email" id="owner"/>
+                    <x-input-form-component col="6" title="Rating" type="number" placeholder="5,0" step="0.1" max="5" id="rating"/>
                     <x-input-form-component col="6" title="Harga Weekday" type="number" id="harga_weekday"/>
                     <x-input-form-component col="6" title="Harga Weekend" type="number" id="harga_weekend"/>
                     <x-input-form-component col="6" title="Label" id="label" required="false"/>
@@ -37,6 +39,7 @@
                     <x-input-form-component col="6" title="Lokasi" id="lokasi"/>
                     <x-input-form-component col="6" title="Latitude" type="number" step="any" id="latitude" required="false"/>
                     <x-input-form-component col="6" title="Longitude" type="number" step="any" id="longitude" required="false"/>
+                    <x-input-form-component col="6" title="Status" type="drop-down" id="status" :options="(object)[(object)['id' => 'publish', 'name' => 'publish'], (object)['id' => 'draft', 'name' => 'Draft']]"/>
                     <div class="col-12">
                         <label for="map" class="form-label">Pilih Lokasi di Peta</label>
                         <div id="map" style="height: 400px; width: 100%; border: 1px solid #ddd; border-radius: 8px;"></div>

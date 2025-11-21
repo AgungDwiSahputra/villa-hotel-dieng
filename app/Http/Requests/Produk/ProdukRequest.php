@@ -29,13 +29,16 @@ class ProdukRequest extends FormRequest
             'kamar' => ['required','integer'],
             'orang' => ['required','integer'],
             'maks_orang' => ['required','integer'],
-            'lokasi' => ['required','string'],
-            'latitude' => ['nullable','numeric','between:-90,90'],
-            'longitude' => ['nullable','numeric','between:-180,180'],
+            'owner' => ['nullable','string'],
+            'rating' => ['nullable','numeric','min:0','max:5'],
+            'status' => ['required','in:publish,draft'],
             'harga_weekday' => ['required','integer'],
             'harga_weekend' => ['required','integer'],
             'label' => ['nullable','string'],
             'urutan' => ['required','integer'],
+            'lokasi' => ['required','string'],
+            'latitude' => ['nullable','numeric','between:-90,90'],
+            'longitude' => ['nullable','numeric','between:-180,180'],
         ];
     }
 }

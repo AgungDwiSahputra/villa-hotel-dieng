@@ -111,8 +111,8 @@ The database schema is visualized in the ERD diagram located at the project root
 
 ### Product Management (Villa/Property)
 - **produks** - Main product/villa table
-  - Fields: id, category_id, owner, name, slug, unit, orang, maks_orang, lokasi, latitude, longitude, fasilitas, kamar, gluten, rating, status, timestamps, deleted_at
-  - Additional: has_active_promo, promo_price_weekday, promo_price_weekend, promo_discount_type, promo_discount_percentage, promo_calculated_at
+  - Fields: id, category_id, owner, name, slug, unit, orang, maks_orang, lokasi, fasilitas, kamar, rating, status, has_active_promo, promo_price_weekday, promo_price_weekend, promo_discount_type, promo_discount_percentage, promo_calculated_at, timestamps, deleted_at
+  - Additional: latitude, longitude for location mapping
   - Relations: Belongs to category, has many images, fasilitas, syarat, wisata, transaksi_details, availabilities, promo_products
 
 - **produk_categories** - Product categorization (Villa, Hotel Room, etc.)
@@ -863,8 +863,18 @@ Cache::remember('cache_key', 3600, function () {
   - **Sunflower Private Pool**: Featured in Rizki Pratama's family vacation story
 - **Realistic Content**: Maintained authentic testimonial language while incorporating actual product names for enhanced credibility and relevance
 
+### Enhanced Product Management Form (November 2025):
+- **Complete Product Form Enhancement**: Added comprehensive form fields to match all database attributes for villa/product management
+  - **New Fields Added**: owner (pemilik properti), fasilitas (deskripsi fasilitas), rating (decimal), status (aktif/tidak aktif), has_active_promo (boolean), promo_discount_type (persentase/fixed), promo_discount_percentage (decimal)
+  - **Form Updates**: Enhanced create and edit forms in `resources/views/admin/produk/produk/index.blade.php` and `edit.blade.php`
+  - **Validation Enhancement**: Updated `app/Http/Requests/Produk/ProdukRequest.php` with comprehensive validation rules for all new fields
+  - **Model Updates**: Added new fields to fillable array in `app/Models/Produk/Produk.php`
+  - **Component Fixes**: Resolved input-form-component array structure issues for dropdown options (status, promo_discount_type)
+- **Admin Workflow Improvement**: Complete product data management with all database fields accessible through admin interface
+- **Data Integrity**: Enhanced validation ensures data consistency and prevents invalid entries
+
 ## Summary
-Dokumentasi ini telah diperbarui pada December 2025 untuk mencakup:
+Dokumentasi ini telah diperbarui pada November 2025 untuk mencakup:
 - **Email & Notification System**: Complete automated email system with invoice notifications for customers and admins
 - **Advanced Promo Code System**: Complete promo code integration with real-time validation, dynamic pricing, and interactive checkout experience
 - **Interactive Map Location System**: LeafletJS integration for villa/hotel location management with click-to-set coordinates
@@ -885,3 +895,4 @@ Dokumentasi ini telah diperbarui pada December 2025 untuk mencakup:
 - **Landing Page Redesign**: Complete modernization of About and Terms pages with Tailwind CSS, mobile-first design, enhanced user experience, and professional visual hierarchy
 - **Empty State Handling**: Comprehensive empty data management across landing page components for improved user experience
 - **Testimonials Update**: Product name integration with actual villa names (FULL HOUSE BEST VIEW, Sunflowers Cabin Dieng, etc.) for enhanced authenticity
+- **Enhanced Product Management Form**: Complete form enhancement with all database fields (owner, fasilitas, rating, status, promo fields) for comprehensive villa/product data management
