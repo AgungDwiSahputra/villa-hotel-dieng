@@ -753,6 +753,14 @@ Cache::remember('cache_key', 3600, function () {
 - **Dynamic Promo System**: Enhanced promo badge system with real-time discount calculation
   - **Features**: Percentage and fixed amount discounts, usage limits, limited-time badges
   - **Visual**: Animated pulse badges, limited stock warnings, countdown timers
+- **Interactive Availability Badges**: Smart status indicators based on date-based filtering
+  - **Badge Types**:
+    - 🟢 **"Tersedia X unit"**: For products with sufficient availability (default green)
+    - 🟠 **"Hampir Penuh"**: For products with limited availability (≤2 units or ≤30% remaining)
+    - 🔴 **"Habis"**: For fully booked products (automatically filtered out)
+  - **Conditional Display**: Badges only appear when date filters are active (`$showAvailabilityStatus = true`)
+  - **Smart Icons**: Check mark for available, warning for limited, cross for unavailable
+  - **Real-time Updates**: Reflects current booking data instantly
 - **Mobile-First Design**: Complete responsive optimization for mobile devices
   - **Image Heights**: Mobile (h-56/224px) for impact, Desktop (h-48/192px) for efficiency
   - **Touch Targets**: Minimum 44px height buttons for accessibility compliance
@@ -767,9 +775,19 @@ Cache::remember('cache_key', 3600, function () {
   - **Capacity**: 1-2, 3-4, 5-8, 9+ persons
   - **Rooms**: 1, 2, 3, 4+ bedrooms
   - **Attractions**: Dynamic filter based on nearby tourist spots
-- **Date-Based Availability**: Real-time availability checking with booking date filters
-  - **Features**: Date range selection, unit availability calculation, booking status indicators
-  - **Visual**: Color-coded availability badges (Green: Available, Orange: Limited, Red: Full)
+- **Advanced Date-Based Availability**: Complete overhaul with database-level filtering
+  - **Core Fix**: Resolved critical bug where fully booked products still appeared in results
+  - **Database Optimization**: LEFT JOIN with GROUP BY for efficient availability checking
+  - **Real-time Calculation**: Unit availability per date range with booking status validation
+  - **Automatic Filtering**: Fully booked products completely excluded from search results
+  - **Performance**: Single optimized query instead of multiple model iterations
+- **Interactive Availability Badges**: Smart visual indicators on villa cards
+  - **Badge Logic**:
+    - 🟢 **"Tersedia X unit"**: Sufficient availability (default state)
+    - 🟠 **"Hampir Penuh"**: Limited availability (≤2 units or ≤30% remaining)
+    - 🔴 **"Habis"**: Fully booked (automatically filtered, badge for reference)
+  - **Conditional Display**: Badges only appear when date filters are active
+  - **Real-time Updates**: Reflects current booking data instantly
 - **Advanced Sorting**: Relevance, price (low/high), rating, name (A-Z)
 - **Mobile-Responsive Filters**: Collapsible advanced filters on mobile devices
 - **Search Integration**: Combined text search with category and filter combinations
@@ -790,8 +808,14 @@ Cache::remember('cache_key', 3600, function () {
 - **Usage Tracking**: Real-time usage counting and limit management
 
 ### Data Consistency & Validation:
+- **Database Status Standardization**: Complete alignment with official documentation
+  - **Product Status**: Updated from `'publish'` to `'aktif'` across all controllers and models
+  - **Transaction Status**: Updated from `'REJECTED'` to `'dibatalkan'` in availability methods
+  - **Consistency Check**: All database operations now use documented status values
+  - **Files Updated**: `LandingPageController.php`, `Produk.php` model methods
 - **Availability Standardization**: Consistent availability checking across all controllers
   - **Methods**: `getBookedDates()`, `isFullyBookedForRange()`, `getAvailableUnitsForRange()`
+  - **Database Optimization**: LEFT JOIN queries for efficient availability filtering
   - **Usage**: Unified availability logic between `LandingPageController` and booking system
 - **Booking Validation**: Enhanced validation with inconsistency logging
   - **Features**: Price consistency checks, availability verification, unit limit validation
@@ -873,6 +897,32 @@ Cache::remember('cache_key', 3600, function () {
 - **Admin Workflow Improvement**: Complete product data management with all database fields accessible through admin interface
 - **Data Integrity**: Enhanced validation ensures data consistency and prevents invalid entries
 
+### Advanced Availability Filter & Badge System (November 2025):
+- **Complete Availability Filter Overhaul**: Fixed critical bug where fully booked products still appeared in search results
+  - **Root Cause**: Filter only checked products with existing bookings, missing fully booked products with no bookings
+  - **Solution**: Implemented LEFT JOIN with GROUP BY for database-level filtering of all products
+  - **Performance**: Optimized query using single database call instead of multiple model iterations
+  - **Files Updated**: `app/Http/Controllers/LandingPageController.php` (allProducts method)
+- **Database Status Standardization**: Updated all status references to match official documentation
+  - **Product Status**: Changed from `'publish'` to `'aktif'` across all controllers and models
+  - **Transaction Status**: Changed from `'REJECTED'` to `'dibatalkan'` in availability methods
+  - **Consistency**: All database operations now use documented status values
+  - **Files Updated**: `app/Http/Controllers/LandingPageController.php`, `app/Models/Produk/Produk.php`
+- **Interactive Availability Badges**: Implemented dynamic status badges on villa cards during date-based searches
+  - **Badge Types**:
+    - 🟢 **"Tersedia X unit"**: For products with sufficient availability
+    - 🟠 **"Hampir Penuh"**: For products with ≤2 units or ≤30% availability remaining
+    - 🔴 **"Habis"**: For fully booked products (automatically filtered out)
+  - **Smart Logic**: Automatic badge assignment based on real-time availability calculation
+  - **Visual Design**: Color-coded badges with appropriate icons (check/warning/cross)
+  - **Conditional Display**: Badges only appear when date filters are active
+  - **Files Updated**: `resources/views/components/villa-card.blade.php`, `resources/views/landing/all-products.blade.php`
+- **Enhanced User Experience**: Clear visual feedback for product availability status
+  - **Banner Info**: Updated availability banner with badge legend
+  - **Real-time Updates**: Badges reflect current booking data instantly
+  - **Mobile Responsive**: Optimized badge display for all screen sizes
+  - **Accessibility**: Proper ARIA labels and semantic HTML for screen readers
+
 ## Summary
 Dokumentasi ini telah diperbarui pada November 2025 untuk mencakup:
 - **Email & Notification System**: Complete automated email system with invoice notifications for customers and admins
@@ -896,3 +946,4 @@ Dokumentasi ini telah diperbarui pada November 2025 untuk mencakup:
 - **Empty State Handling**: Comprehensive empty data management across landing page components for improved user experience
 - **Testimonials Update**: Product name integration with actual villa names (FULL HOUSE BEST VIEW, Sunflowers Cabin Dieng, etc.) for enhanced authenticity
 - **Enhanced Product Management Form**: Complete form enhancement with all database fields (owner, fasilitas, rating, status, promo fields) for comprehensive villa/product data management
+- **Advanced Availability Filter & Badge System**: Complete overhaul of availability filtering with interactive status badges ("Hampir Penuh", "Habis") on villa cards, database status standardization, and real-time availability feedback for improved user experience

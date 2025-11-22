@@ -16,6 +16,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class LandingPageController extends Controller
 {
@@ -146,7 +147,15 @@ class LandingPageController extends Controller
 
     public function allProducts(Request $request)
     {
+        Log::info('allProducts: Starting product listing process', [
+            'request_params' => $request->all(),
+            'user_agent' => $request->userAgent(),
+            'ip' => $request->ip()
+        ]);
+
         $categories = ProdukCategory::orderBy('urutan')->get();
+        Log::info('allProducts: Retrieved categories', ['categories_count' => $categories->count()]);
+
         $searchQuery = $request->get('search');
         $activeCategory = $request->get('category');
         $isPromo = $request->get('promo') === 'true';
@@ -160,15 +169,35 @@ class LandingPageController extends Controller
         $attractions = $request->get('attractions');
         $sortBy = $request->get('sort');
 
+        Log::info('allProducts: Parsed request parameters', [
+            'searchQuery' => $searchQuery,
+            'activeCategory' => $activeCategory,
+            'isPromo' => $isPromo,
+            'bookingDate' => $bookingDate,
+            'nightsCount' => $nightsCount,
+            'priceRange' => $priceRange,
+            'capacity' => $capacity,
+            'rooms' => $rooms,
+            'attractions' => $attractions,
+            'sortBy' => $sortBy
+        ]);
+
         $produksQuery = Produk::with('images', 'category', 'wisatas')
             ->where('produks.status', 'publish');
+        Log::info('allProducts: Initialized produk query with eager loading');
 
         if ($activeCategory) {
             $selectedCategory = ProdukCategory::where('slug', $activeCategory)->firstOrFail();
             $produksQuery->where('category_id', $selectedCategory->id);
+            Log::info('allProducts: Applied category filter', [
+                'category_slug' => $activeCategory,
+                'category_id' => $selectedCategory->id,
+                'category_name' => $selectedCategory->name
+            ]);
         }
 
         if ($isPromo) {
+            Log::info('allProducts: Applying promo filter');
             // Filter produk yang memiliki active promo dari sistem baru
             $produksQuery->where(function ($query) {
                 $query->where('has_active_promo', true)
@@ -183,6 +212,7 @@ class LandingPageController extends Controller
         }
 
         if ($searchQuery) {
+            Log::info('allProducts: Applying search filter', ['search_query' => $searchQuery]);
             $produksQuery->where(function ($query) use ($searchQuery) {
                 $query->where('name', 'LIKE', '%' . $searchQuery . '%')
                     ->orWhere('lokasi', 'LIKE', '%' . $searchQuery . '%')
@@ -192,6 +222,7 @@ class LandingPageController extends Controller
 
         // Price range filter
         if ($priceRange) {
+            Log::info('allProducts: Applying price range filter', ['price_range' => $priceRange]);
             if ($priceRange === '0-500000') {
                 $produksQuery->whereBetween('harga_weekday', [0, 500000]);
             } elseif ($priceRange === '500000-1000000') {
@@ -205,6 +236,7 @@ class LandingPageController extends Controller
 
         // Capacity filter (minimum requirement)
         if ($capacity) {
+            Log::info('allProducts: Applying capacity filter', ['capacity' => $capacity]);
             if ($capacity === '1-2') {
                 $produksQuery->where('maks_orang', '>=', 1);
             } elseif ($capacity === '3-4') {
@@ -218,6 +250,7 @@ class LandingPageController extends Controller
 
         // Rooms filter (minimum requirement)
         if ($rooms) {
+            Log::info('allProducts: Applying rooms filter', ['rooms' => $rooms]);
             if ($rooms === '1') {
                 $produksQuery->where('kamar', '>=', 1);
             } elseif ($rooms === '2') {
@@ -231,9 +264,11 @@ class LandingPageController extends Controller
 
         // Attractions filter (using produk_wisatas table relationship)
         if ($attractions) {
+            Log::info('allProducts: Applying attractions filter', ['attractions_slug' => $attractions]);
             // Convert slug back to title case for matching
             $attractionName = str_replace('-', ' ', $attractions);
             $attractionName = ucwords($attractionName);
+            Log::info('allProducts: Converted attraction name', ['attraction_name' => $attractionName]);
 
             $produksQuery->whereHas('wisatas', function ($query) use ($attractionName) {
                 $query->where('name', 'LIKE', '%' . $attractionName . '%');
@@ -242,6 +277,7 @@ class LandingPageController extends Controller
 
         // Sort by
         if ($sortBy) {
+            Log::info('allProducts: Applying sorting', ['sort_by' => $sortBy]);
             if ($sortBy === 'price-low') {
                 $produksQuery->orderBy('harga_weekday', 'asc');
             } elseif ($sortBy === 'price-high') {
@@ -254,6 +290,7 @@ class LandingPageController extends Controller
                 $produksQuery->orderBy('urutan');
             }
         } else {
+            Log::info('allProducts: Using default sorting by urutan');
             $produksQuery->orderBy('urutan');
         }
 
@@ -262,14 +299,26 @@ class LandingPageController extends Controller
         $fullyBookedProductIds = [];
 
         if ($bookingDate && $nightsCount) {
+            Log::info('allProducts: Applying availability filter', [
+                'booking_date' => $bookingDate,
+                'nights_count' => $nightsCount
+            ]);
+
             $startDate = Carbon::parse($bookingDate);
+            Log::info('allProducts: Parsed start date', ['start_date' => $startDate->format('Y-m-d')]);
 
             // Handle nilai "8+" menjadi 8 hari
             $daysToAdd = $nightsCount === '8+' ? 8 : (int)$nightsCount;
             $endDate = $startDate->copy()->addDays($daysToAdd);
+            Log::info('allProducts: Calculated date range', [
+                'start_date' => $startDate->format('Y-m-d'),
+                'end_date' => $endDate->format('Y-m-d'),
+                'days_to_add' => $daysToAdd
+            ]);
 
             // Filter produk yang tidak fully booked menggunakan left join
             // Berdasarkan dokumentasi: status di transaksi_details bisa 'PENDING','APPROVED','REJECTED'
+            Log::info('allProducts: Applying availability join filter');
             $produksQuery->leftJoin('transaksi_details', function ($join) use ($startDate, $endDate) {
                 $join->on('produks.id', '=', 'transaksi_details.produk_id')
                      ->where('transaksi_details.status', '!=', 'REJECTED') // Exclude cancelled bookings
@@ -281,10 +330,18 @@ class LandingPageController extends Controller
             ->havingRaw('COALESCE(MAX(transaksi_details.unit), 0) < produks.unit');
         }
 
+        Log::info('allProducts: Executing paginated query');
         $produks = $produksQuery->paginate(12)->withQueryString();
+        Log::info('allProducts: Query executed', [
+            'total_products' => $produks->total(),
+            'current_page' => $produks->currentPage(),
+            'per_page' => $produks->perPage(),
+            'products_count' => $produks->count()
+        ]);
 
         // Hitung ketersediaan untuk setiap produk jika ada filter tanggal
         if ($bookingDate && $nightsCount) {
+            Log::info('allProducts: Calculating availability for products');
             $startDate = Carbon::parse($bookingDate);
             $daysToAdd = $nightsCount === '8+' ? 8 : (int)$nightsCount;
             $endDate = $startDate->copy()->addDays($daysToAdd);
@@ -301,9 +358,14 @@ class LandingPageController extends Controller
                     'percentage' => $produk->unit > 0 ? round(($availableUnits / $produk->unit) * 100) : 0
                 ];
             }
+            Log::info('allProducts: Availability calculation completed', [
+                'products_processed' => count($availability),
+                'availability_data' => $availability
+            ]);
         }
 
         // Get unique wisata list for filter dropdown
+        Log::info('allProducts: Fetching wisata list for filter dropdown');
         $wisataList = ProdukWisata::select('name')
             ->distinct()
             ->orderBy('name', 'asc')
@@ -315,6 +377,14 @@ class LandingPageController extends Controller
             ->unique()
             ->sort()
             ->values();
+        Log::info('allProducts: Wisata list processed', ['wisata_count' => $wisataList->count()]);
+
+        Log::info('allProducts: Returning view with all data', [
+            'categories_count' => $categories->count(),
+            'products_total' => $produks->total(),
+            'wisata_list_count' => $wisataList->count(),
+            'availability_count' => count($availability)
+        ]);
 
         return view('landing.all-products', [
             'categories' => $categories,
@@ -517,7 +587,7 @@ class LandingPageController extends Controller
             ->where('start_date', '<=', now())
             ->where('end_date', '>=', now())
             ->where(function ($query) {
-                $query->where('usage_limit', '>', \DB::raw('usage_count'))
+                $query->where('usage_limit', '>', DB::raw('usage_count'))
                     ->orWhereNull('usage_limit');
             })
             ->select(['id', 'name', 'promo_code', 'description', 'discount_type', 'discount_value', 'applicable_to'])
