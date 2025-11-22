@@ -316,18 +316,26 @@ class LandingPageController extends Controller
                 'days_to_add' => $daysToAdd
             ]);
 
-            // Filter produk yang tidak fully booked menggunakan left join
+            // Filter produk yang tidak fully booked menggunakan subquery untuk menghindari GROUP BY issues
             // Berdasarkan dokumentasi: status di transaksi_details bisa 'PENDING','APPROVED','REJECTED'
-            Log::info('allProducts: Applying availability join filter');
-            $produksQuery->leftJoin('transaksi_details', function ($join) use ($startDate, $endDate) {
-                $join->on('produks.id', '=', 'transaksi_details.produk_id')
-                     ->where('transaksi_details.status', '!=', 'REJECTED') // Exclude cancelled bookings
-                     ->whereBetween('transaksi_details.date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')]);
-            })
-            ->select('produks.*')
-            ->where('produks.status', 'publish')
-            ->groupBy('produks.id')
-            ->havingRaw('COALESCE(MAX(transaksi_details.unit), 0) < produks.unit');
+            Log::info('allProducts: Applying availability filter using subquery');
+            $availableProductIds = DB::table('produks')
+                ->select('produks.id', 'produks.unit')
+                ->leftJoin('transaksi_details', function ($join) use ($startDate, $endDate) {
+                    $join->on('produks.id', '=', 'transaksi_details.produk_id')
+                         ->where('transaksi_details.status', '!=', 'REJECTED') // Exclude cancelled bookings
+                         ->whereBetween('transaksi_details.date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')]);
+                })
+                ->where('produks.status', 'publish')
+                ->groupBy('produks.id', 'produks.unit')
+                ->havingRaw('COALESCE(MAX(transaksi_details.unit), 0) < produks.unit')
+                ->pluck('produks.id');
+
+            // Filter produk utama berdasarkan ID yang tersedia
+            $produksQuery->whereIn('produks.id', $availableProductIds);
+            Log::info('allProducts: Filtered products by available IDs', [
+                'available_product_count' => $availableProductIds->count()
+            ]);
         }
 
         Log::info('allProducts: Executing paginated query');
