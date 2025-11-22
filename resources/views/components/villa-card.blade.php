@@ -10,6 +10,7 @@
     'contentPadding' => 'p-3 sm:p-4',
     'showPopularBadge' => false,
     'showAvailabilityStatus' => false,
+    'availabilityText' => 'Tersedia',
     'availabilityClass' => 'bg-green-500',
     'showUnitInfo' => true,
     'availableUnits' => null
@@ -67,14 +68,14 @@
             <!-- Badge System - Top Left -->
             <div class="absolute top-2 left-2 z-20 flex flex-col gap-1.5 sm:gap-1">
                 <!-- Popular Badge -->
-                @if($showPopularBadge)
+                {{-- @if($showPopularBadge)
                 <span class="inline-flex items-center px-2.5 py-1.5 sm:px-2 sm:py-1 bg-accent-600 text-white text-xs font-semibold rounded">
                     <svg class="w-3.5 h-3.5 sm:w-3 sm:h-3 mr-1" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
                     </svg>
                     Populer
                 </span>
-                @endif
+                @endif --}}
 
                 <!-- Promo Badge -->
                 @if($isPromo)
@@ -95,6 +96,26 @@
                     </span>
                     @endif
                 </div>
+                @endif
+
+                <!-- Availability Badge -->
+                @if($showAvailabilityStatus)
+                <span class="inline-flex items-center px-2.5 py-1.5 sm:px-2 sm:py-1 {{ $availabilityClass }} text-white text-xs font-semibold rounded">
+                    @if($availabilityClass === 'bg-red-600')
+                        <svg class="w-3.5 h-3.5 sm:w-3 sm:h-3 mr-1" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                        </svg>
+                    @elseif($availabilityClass === 'bg-orange-600')
+                        <svg class="w-3.5 h-3.5 sm:w-3 sm:h-3 mr-1" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                        </svg>
+                    @else
+                        <svg class="w-3.5 h-3.5 sm:w-3 sm:h-3 mr-1" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                        </svg>
+                    @endif
+                    {{ $availabilityText }}
+                </span>
                 @endif
             </div>
         </a>

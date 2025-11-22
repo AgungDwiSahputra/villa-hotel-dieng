@@ -492,7 +492,7 @@
                 <!-- Villa Grid -->
                 <div class="grid grid-cols-2 lg:grid-cols-3 gap-2 md:gap-4 lg:gap-6 max-w-4xl mx-auto px-2 md:px-0" id="villaGrid">
                     @forelse ($produks as $produk)
-                    <x-villa-card :villa="$produk" :availableUnits="$produk->unit" />
+                    <x-villa-card :villa="$produk" :availableUnits="$produk->unit" :showAvailabilityStatus="true" />
                     @empty
                         <div class="col-span-full">
                             <div class="text-center py-16">

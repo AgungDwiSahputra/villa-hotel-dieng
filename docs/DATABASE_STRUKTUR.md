@@ -158,9 +158,8 @@ Soft Deletes:       3 tabel (users, produks, promos)
 | lokasi | varchar | Lokasi/alamat |
 | fasilitas | text | Deskripsi fasilitas |
 | kamar | int | Jumlah kamar |
-| gluten | varchar | Info tambahan |
 | rating | decimal | Rating produk |
-| status | varchar | Status (aktif/tidak aktif) |
+| status | varchar | Status (publish/draft) |
 | has_active_promo | boolean | Flag promo aktif |
 | promo_price_weekday | decimal | Harga promo hari kerja |
 | promo_price_weekend | decimal | Harga promo akhir pekan |
@@ -400,7 +399,7 @@ Soft Deletes:       3 tabel (users, produks, promos)
 | produk_id | bigint | Foreign key ke produks |
 | date | date | Tanggal pemesanan |
 | unit | int | Jumlah unit |
-| status | varchar | Status (pending/dikonfirmasi/dibatalkan) |
+| status | varchar | Status ('PENDING','APPROVED','REJECTED') |
 | created_at | timestamp | Timestamp pembuatan |
 | updated_at | timestamp | Timestamp pembaruan |
 

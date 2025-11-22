@@ -3,11 +3,13 @@
 namespace App\Models\Produk;
 
 use App\Models\Promo\Promo;
+use App\Models\Transaksi\Transaksi;
 use App\Models\Transaksi\TransaksiDetail;
 use Haruncpi\LaravelUserActivity\Traits\Loggable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class Produk extends Model
@@ -52,6 +54,15 @@ class Produk extends Model
     public function transaksi()
     {
         return $this->hasMany(TransaksiDetail::class, 'produk_id');
+    }
+    public function transaksi_details()
+    {
+        return $this->hasManyThrough(
+            TransaksiDetail::class,
+            Transaksi::class,
+            'produk_id',
+            'transaksi_id'
+        );
     }
 
     // Promo Relationships
@@ -223,7 +234,7 @@ class Produk extends Model
     public function getBookedDates()
     {
         return TransaksiDetail::where('produk_id', $this->id)
-            ->where('status', '!=', 'REJECTED')
+            ->where('status', '!=', 'REJECTED') // Berdasarkan dokumentasi: exclude cancelled bookings
             ->select('date', DB::raw('SUM(unit) as total'))
             ->groupBy('date')
             ->pluck('total', 'date');
@@ -232,20 +243,25 @@ class Produk extends Model
     public function isFullyBookedForRange($startDate, $endDate)
     {
         $bookingsPerDate = TransaksiDetail::where('produk_id', $this->id)
-            ->where('status', '!=', 'REJECTED')
+            ->where('status', '!=', 'REJECTED') // Berdasarkan dokumentasi: exclude cancelled bookings
             ->whereBetween('date', [$startDate, $endDate])
             ->select('date', DB::raw('SUM(unit) as daily_booked'))
             ->groupBy('date')
             ->get();
 
         $maxBookedInRange = $bookingsPerDate->max('daily_booked') ?? 0;
-        return $maxBookedInRange >= $this->unit;
+        $isFullyBooked = $maxBookedInRange >= $this->unit;
+
+        // Debug logging
+        Log::info("Produk {$this->id} ({$this->name}) availability check: unit={$this->unit}, max_booked={$maxBookedInRange}, range={$startDate} to {$endDate}, fully_booked=" . ($isFullyBooked ? 'YES' : 'NO'));
+
+        return $isFullyBooked;
     }
 
     public function getAvailableUnitsForRange($startDate, $endDate)
     {
         $bookingsPerDate = TransaksiDetail::where('produk_id', $this->id)
-            ->where('status', '!=', 'REJECTED')
+            ->where('status', '!=', 'REJECTED') // Berdasarkan dokumentasi: exclude cancelled bookings
             ->whereBetween('date', [$startDate, $endDate])
             ->select('date', DB::raw('SUM(unit) as daily_booked'))
             ->groupBy('date')

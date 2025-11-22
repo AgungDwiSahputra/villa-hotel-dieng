@@ -27,7 +27,7 @@ class LandingPageController extends Controller
         $selectedCategory = null;
 
         $produksQuery = Produk::with('images', 'category')
-            ->where('status', 'publish')
+            ->where('produks.status', 'publish')
             ->orderBy('urutan');
 
         if ($activeCategory) {
@@ -54,10 +54,10 @@ class LandingPageController extends Controller
         // Get popular villas (based on booking count and rating) - dengan cache
         $popularVillas = Cache::remember('landing_popular_villas', 3600, function () {
             return Produk::with('images', 'category')
-                ->withCount(['transaksi as booking_count' => function ($query) {
-                    $query->where('status', '!=', 'REJECTED'); // Exclude rejected bookings
+                ->withCount(['transaksi_details as booking_count' => function ($query) {
+                    $query->where('transaksi_details.status', '!=', 'REJECTED'); // Exclude rejected bookings
                 }])
-                ->where('status', 'publish')
+                ->where('produks.status', 'publish')
                 ->orderBy('booking_count', 'desc') // Prioritize by booking count
                 ->orderBy('rating', 'desc') // Then by rating
                 ->orderBy('harga_weekday', 'desc') // Finally by price
@@ -68,7 +68,7 @@ class LandingPageController extends Controller
         // Get best villas (high-rated properties with rating >= 4.5) - dengan cache
         $bestVillas = Cache::remember('landing_best_villas', 3600, function () {
             return Produk::with('images', 'category', 'fasilitases')
-                ->where('status', 'publish')
+                ->where('produks.status', 'publish')
                 ->where('rating', '>=', 4.5) // High rated products
                 ->orderBy('rating', 'desc')
                 ->orderBy('harga_weekday', 'desc') // Then by price
@@ -151,7 +151,7 @@ class LandingPageController extends Controller
         $activeCategory = $request->get('category');
         $isPromo = $request->get('promo') === 'true';
         $bookingDate = $request->get('booking_date');
-        $nightsCount = $request->get('nights_count');
+        $nightsCount = $request->get('nights');
 
         // Advanced filter parameters
         $priceRange = $request->get('price_range');
@@ -161,7 +161,7 @@ class LandingPageController extends Controller
         $sortBy = $request->get('sort');
 
         $produksQuery = Produk::with('images', 'category', 'wisatas')
-            ->where('status', 'publish');
+            ->where('produks.status', 'publish');
 
         if ($activeCategory) {
             $selectedCategory = ProdukCategory::where('slug', $activeCategory)->firstOrFail();
@@ -268,28 +268,17 @@ class LandingPageController extends Controller
             $daysToAdd = $nightsCount === '8+' ? 8 : (int)$nightsCount;
             $endDate = $startDate->copy()->addDays($daysToAdd);
 
-            // Ambil semua produk yang ada booking di range tanggal
-            $productsWithBookings = TransaksiDetail::where('status', '!=', 'REJECTED')
-                ->whereBetween('date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
-                ->select('produk_id')
-                ->distinct()
-                ->pluck('produk_id');
-
-            // Cek setiap produk apakah fully booked menggunakan method konsisten
-            foreach ($productsWithBookings as $produkId) {
-                $produk = Produk::find($produkId);
-                if (!$produk) continue;
-
-                // Gunakan method baru untuk cek fully booked
-                if ($produk->isFullyBookedForRange($startDate->format('Y-m-d'), $endDate->format('Y-m-d'))) {
-                    $fullyBookedProductIds[] = $produkId;
-                }
-            }
-
-            // Filter hanya produk yang fully booked
-            if (!empty($fullyBookedProductIds)) {
-                $produksQuery->whereNotIn('id', $fullyBookedProductIds);
-            }
+            // Filter produk yang tidak fully booked menggunakan left join
+            // Berdasarkan dokumentasi: status di transaksi_details bisa 'PENDING','APPROVED','REJECTED'
+            $produksQuery->leftJoin('transaksi_details', function ($join) use ($startDate, $endDate) {
+                $join->on('produks.id', '=', 'transaksi_details.produk_id')
+                     ->where('transaksi_details.status', '!=', 'REJECTED') // Exclude cancelled bookings
+                     ->whereBetween('transaksi_details.date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')]);
+            })
+            ->select('produks.*')
+            ->where('produks.status', 'publish')
+            ->groupBy('produks.id')
+            ->havingRaw('COALESCE(MAX(transaksi_details.unit), 0) < produks.unit');
         }
 
         $produks = $produksQuery->paginate(12)->withQueryString();
@@ -360,7 +349,7 @@ class LandingPageController extends Controller
 
         // mengambil data produk lainnya secara acak
         // dengan batas 3 produk dan tidak sama dengan produk yang sedang dibuka
-        $rekomendasis = Produk::with('images')->where('id', '!=', $produk->id)->where('status', 'publish')->inRandomOrder()->limit(3)->get();
+        $rekomendasis = Produk::with('images')->where('id', '!=', $produk->id)->where('produks.status', 'publish')->inRandomOrder()->limit(3)->get();
 
         // mengambil data semua produk yang memiliki koordinat untuk peta
         $produkData = Produk::whereNotNull('latitude')

@@ -202,26 +202,6 @@
                             <span class="font-medium">Check-in:</span> {{ \Carbon\Carbon::parse($bookingDate)->format('d M Y') }} •
                             <span class="font-medium">Durasi:</span> {{ $nightsCount === '8+' ? '8+' : $nightsCount }} malam
                         </p>
-                        <div class="flex flex-wrap gap-2 mt-3">
-                            <span class="inline-flex items-center px-2.5 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-lg">
-                                <svg class="w-3.5 h-3.5 mr-1" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-                                </svg>
-                                Banyak Unit
-                            </span>
-                            <span class="inline-flex items-center px-2.5 py-1 bg-orange-100 text-orange-800 text-xs font-medium rounded-lg">
-                                <svg class="w-3.5 h-3.5 mr-1" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
-                                </svg>
-                                Hampir Penuh
-                            </span>
-                            <span class="inline-flex items-center px-2.5 py-1 bg-red-100 text-red-800 text-xs font-medium rounded-lg">
-                                <svg class="w-3.5 h-3.5 mr-1" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
-                                </svg>
-                                Habis
-                            </span>
-                        </div>
                     </div>
                     <div class="flex-shrink-0">
                         <a href="{{ route('produk.all', array_filter(['search' => $searchQuery, 'category' => $activeCategory, 'price_range' => $priceRange, 'capacity' => $capacity, 'rooms' => $rooms, 'attractions' => $attractions, 'sort' => $sortBy, 'promo' => $isPromo ? 'true' : null])) }}"
@@ -265,24 +245,25 @@
                         $hasAvailabilityFilter = $bookingDate && $nightsCount;
                         $availabilityData = $hasAvailabilityFilter && isset($availability[$produk->id]) ? $availability[$produk->id] : null;
 
-                        // Determine badge color based on available units
+                        // Determine badge color and text based on available units
                         $badgeClass = 'bg-green-600'; // Default: tersedia
+                        $badgeText = 'Tersedia';
+
                         if ($availabilityData) {
                             $available = $availabilityData['available'];
+                            $total = $availabilityData['total'];
+                            $percentage = $availabilityData['percentage'];
+
                             if ($available == 0) {
                                 $badgeClass = 'bg-red-600'; // Habis
-                            } elseif ($available <= 2) {
-                                $badgeClass = 'bg-orange-600'; // Hampir penuh (1-2 unit)
-                            } elseif ($availabilityData['percentage'] <= 30) {
-                                $badgeClass = 'bg-orange-600'; // Hampir penuh (< 30%)
+                                $badgeText = 'Habis';
+                            } elseif ($available <= 2 || $percentage <= 30) {
+                                $badgeClass = 'bg-orange-600'; // Hampir penuh
+                                $badgeText = 'Hampir Penuh';
+                            } else {
+                                $badgeText = 'Tersedia ' . $available . ' unit';
                             }
                         }
-
-                        $badgeText = $availabilityData
-                            ? ($availabilityData['available'] > 0
-                                ? 'Tersedia ' . $availabilityData['available'] . ' unit'
-                                : 'Habis')
-                            : 'Tersedia';
                     @endphp
                     <x-villa-card
                         :villa="$produk"
