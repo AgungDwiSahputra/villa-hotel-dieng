@@ -188,7 +188,7 @@ class LandingPageController extends Controller
 
         if ($activeCategory) {
             $selectedCategory = ProdukCategory::where('slug', $activeCategory)->firstOrFail();
-            $produksQuery->where('category_id', $selectedCategory->id);
+            $produksQuery->where('produks.category_id', $selectedCategory->id);
             Log::info('allProducts: Applied category filter', [
                 'category_slug' => $activeCategory,
                 'category_id' => $selectedCategory->id,
@@ -200,7 +200,7 @@ class LandingPageController extends Controller
             Log::info('allProducts: Applying promo filter');
             // Filter produk yang memiliki active promo dari sistem baru
             $produksQuery->where(function ($query) {
-                $query->where('has_active_promo', true)
+                $query->where('produks.has_active_promo', true)
                     // Fallback ke legacy label system
                     ->orWhere(function ($subQuery) {
                         $subQuery->where('label', 'LIKE', '%promo%')
@@ -224,13 +224,13 @@ class LandingPageController extends Controller
         if ($priceRange) {
             Log::info('allProducts: Applying price range filter', ['price_range' => $priceRange]);
             if ($priceRange === '0-500000') {
-                $produksQuery->whereBetween('harga_weekday', [0, 500000]);
+                $produksQuery->whereBetween('produks.harga_weekday', [0, 500000]);
             } elseif ($priceRange === '500000-1000000') {
-                $produksQuery->whereBetween('harga_weekday', [500000, 1000000]);
+                $produksQuery->whereBetween('produks.harga_weekday', [500000, 1000000]);
             } elseif ($priceRange === '1000000-2000000') {
-                $produksQuery->whereBetween('harga_weekday', [1000000, 2000000]);
+                $produksQuery->whereBetween('produks.harga_weekday', [1000000, 2000000]);
             } elseif ($priceRange === '2000000+') {
-                $produksQuery->where('harga_weekday', '>', 2000000);
+                $produksQuery->where('produks.harga_weekday', '>', 2000000);
             }
         }
 
@@ -238,13 +238,13 @@ class LandingPageController extends Controller
         if ($capacity) {
             Log::info('allProducts: Applying capacity filter', ['capacity' => $capacity]);
             if ($capacity === '1-2') {
-                $produksQuery->where('maks_orang', '>=', 1);
+                $produksQuery->where('produks.maks_orang', '>=', 1);
             } elseif ($capacity === '3-4') {
-                $produksQuery->where('maks_orang', '>=', 3);
+                $produksQuery->where('produks.maks_orang', '>=', 3);
             } elseif ($capacity === '5-8') {
-                $produksQuery->where('maks_orang', '>=', 5);
+                $produksQuery->where('produks.maks_orang', '>=', 5);
             } elseif ($capacity === '9+') {
-                $produksQuery->where('maks_orang', '>=', 9);
+                $produksQuery->where('produks.maks_orang', '>=', 9);
             }
         }
 
@@ -252,13 +252,13 @@ class LandingPageController extends Controller
         if ($rooms) {
             Log::info('allProducts: Applying rooms filter', ['rooms' => $rooms]);
             if ($rooms === '1') {
-                $produksQuery->where('kamar', '>=', 1);
+                $produksQuery->where('produks.kamar', '>=', 1);
             } elseif ($rooms === '2') {
-                $produksQuery->where('kamar', '>=', 2);
+                $produksQuery->where('produks.kamar', '>=', 2);
             } elseif ($rooms === '3') {
-                $produksQuery->where('kamar', '>=', 3);
+                $produksQuery->where('produks.kamar', '>=', 3);
             } elseif ($rooms === '4+') {
-                $produksQuery->where('kamar', '>=', 4);
+                $produksQuery->where('produks.kamar', '>=', 4);
             }
         }
 
@@ -279,19 +279,19 @@ class LandingPageController extends Controller
         if ($sortBy) {
             Log::info('allProducts: Applying sorting', ['sort_by' => $sortBy]);
             if ($sortBy === 'price-low') {
-                $produksQuery->orderBy('harga_weekday', 'asc');
+                $produksQuery->orderBy('produks.harga_weekday', 'asc');
             } elseif ($sortBy === 'price-high') {
-                $produksQuery->orderBy('harga_weekday', 'desc');
+                $produksQuery->orderBy('produks.harga_weekday', 'desc');
             } elseif ($sortBy === 'rating') {
-                $produksQuery->orderBy('rating', 'desc');
+                $produksQuery->orderBy('produks.rating', 'desc');
             } elseif ($sortBy === 'name') {
-                $produksQuery->orderBy('name', 'asc');
+                $produksQuery->orderBy('produks.name', 'asc');
             } else {
-                $produksQuery->orderBy('urutan');
+                $produksQuery->orderBy('produks.urutan');
             }
         } else {
             Log::info('allProducts: Using default sorting by urutan');
-            $produksQuery->orderBy('urutan');
+            $produksQuery->orderBy('produks.urutan');
         }
 
         // Filter berdasarkan ketersediaan tanggal booking
