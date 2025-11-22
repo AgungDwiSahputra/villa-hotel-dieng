@@ -6,7 +6,7 @@ alwaysApply: true
 # Villa Hotel Dieng Management System
 
 ## Summary
-Villa Hotel Dieng is a comprehensive hotel and villa management system built with Laravel 12. The application manages properties, reservations, payments, user roles, and operational features for a boutique hotel/villa in Dieng, Indonesia. It provides both admin backend management and public booking interface with payment gateway integration (Midtrans). The system features a modular architecture with organized namespaces, role-based access control, activity logging, and a modern frontend built with Tailwind CSS and Alpine.js. The system includes advanced empty state handling for improved user experience when data is unavailable.
+Villa Hotel Dieng is a comprehensive hotel and villa management system built with Laravel 12. The application manages properties, reservations, payments, user roles, and operational features for a boutique hotel/villa in Dieng, Indonesia. It provides both admin backend management and public booking interface with payment gateway integration (Midtrans). The system features a modular architecture with organized namespaces, role-based access control, activity logging, comprehensive debugging capabilities with detailed process logging, and a modern frontend built with Tailwind CSS and Alpine.js. The system includes advanced empty state handling for improved user experience when data is unavailable, and robust error tracking through structured logging throughout all major processes.
 
 ## Structure
 **Root Directory Organization**:
@@ -692,7 +692,44 @@ Cache::remember('cache_key', 3600, function () {
 - Real-time availability calculation using model methods
 - Combined filtering (price + capacity + rooms + attractions)
 - Mobile-responsive filter interface with collapsible sections
-## Recent Updates (December 2025)
+## Recent Updates (November 2025)
+
+### Comprehensive Logging System Implementation (November 2025):
+- **Complete Process Logging**: Added detailed logging throughout the `allProducts` method in `LandingPageController.php` for comprehensive debugging and monitoring
+  - **Process Tracking**: Logs for every major step including parameter parsing, query building, filtering operations, pagination, and view rendering
+  - **Performance Monitoring**: Query execution metrics, result counts, data processing statistics, and timing information
+  - **Error Debugging**: Structured parameter logging for troubleshooting filter logic and database issues
+  - **Log Structure**: Uses Laravel's `Log::info()` with contextual data arrays for easy parsing and analysis
+  - **Coverage Areas**:
+    - Request parameter validation and parsing
+    - Category, promo, search, price range, capacity, rooms, and attractions filtering
+    - Sorting operations and availability calculations
+    - Database query execution and pagination results
+    - Wisata list processing and view data preparation
+  - **Benefits**: Enables easy tracking of performance bottlenecks, filter logic issues, and system behavior analysis
+  - **Debugging Capabilities**: Complete audit trail for all product listing operations
+  - **Maintenance**: Structured logs facilitate quick identification and resolution of issues
+- **SQL Query Optimization**: Resolved critical MySQL strict mode GROUP BY violation in availability filtering
+  - **Issue**: `SELECT produks.*` with `GROUP BY produks.id` violated MySQL strict mode requirements
+  - **Solution**: Implemented subquery approach separating availability calculation from main product selection
+  - **Query Structure**:
+    ```sql
+    -- Subquery identifies available products
+    SELECT produks.id, produks.unit FROM produks
+    LEFT JOIN transaksi_details ON [conditions]
+    WHERE produks.status = 'aktif'
+    GROUP BY produks.id, produks.unit
+    HAVING COALESCE(MAX(transaksi_details.unit), 0) < produks.unit
+
+    -- Main query filters by available IDs
+    SELECT * FROM produks WHERE id IN ([available_ids])
+    ```
+  - **Performance**: Single optimized database call instead of multiple model iterations
+  - **Compatibility**: Works with MySQL strict mode and other database configurations
+- **Enhanced Debugging Workflow**: Combined logging and query optimization for robust error tracking
+  - **Log Analysis**: Structured logs enable quick identification of filter and query issues
+  - **Performance Insights**: Query metrics help optimize database operations
+  - **Error Resolution**: Detailed logging facilitates rapid bug fixes and system improvements
 
 ### Advanced Promo Code System Integration:
 - **Complete Promo Code Implementation**: Full-featured promo code system with real-time validation and dynamic pricing
@@ -901,8 +938,29 @@ Cache::remember('cache_key', 3600, function () {
 - **Complete Availability Filter Overhaul**: Fixed critical bug where fully booked products still appeared in search results
   - **Root Cause**: Filter only checked products with existing bookings, missing fully booked products with no bookings
   - **Solution**: Implemented LEFT JOIN with GROUP BY for database-level filtering of all products
+  - **SQL Bug Fix**: Resolved MySQL strict mode GROUP BY violation by using subquery approach
+    - **Issue**: `SELECT produks.*` with `GROUP BY produks.id` violated MySQL strict mode
+    - **Fix**: Used subquery to select available product IDs, then filtered main query with `whereIn()`
+    - **Query Structure**:
+      ```sql
+      -- Subquery for available products
+      SELECT produks.id, produks.unit FROM produks
+      LEFT JOIN transaksi_details ON ... WHERE produks.status = 'aktif'
+      GROUP BY produks.id, produks.unit
+      HAVING COALESCE(MAX(transaksi_details.unit), 0) < produks.unit
+
+      -- Main query filtering
+      SELECT * FROM produks WHERE id IN (available_product_ids)
+      ```
   - **Performance**: Optimized query using single database call instead of multiple model iterations
   - **Files Updated**: `app/Http/Controllers/LandingPageController.php` (allProducts method)
+- **Comprehensive Logging System**: Added detailed logging throughout the allProducts method for debugging and monitoring
+  - **Process Tracking**: Logs for each major step (parameter parsing, query building, filtering, pagination)
+  - **Performance Monitoring**: Query execution time, result counts, and data processing metrics
+  - **Error Debugging**: Detailed parameter logging for troubleshooting filter issues
+  - **Log Levels**: Uses `Log::info()` with structured data for easy parsing
+  - **Coverage**: All filters (category, promo, search, price, capacity, rooms, attractions, sorting, availability)
+  - **Benefits**: Easy tracking of performance bottlenecks and filter logic issues
 - **Database Status Standardization**: Updated all status references to match official documentation
   - **Product Status**: Changed from `'publish'` to `'aktif'` across all controllers and models
   - **Transaction Status**: Changed from `'REJECTED'` to `'dibatalkan'` in availability methods
@@ -925,6 +983,8 @@ Cache::remember('cache_key', 3600, function () {
 
 ## Summary
 Dokumentasi ini telah diperbarui pada November 2025 untuk mencakup:
+- **Comprehensive Logging System**: Complete process logging throughout allProducts method with detailed debugging capabilities, performance monitoring, and error tracking
+- **SQL Query Optimization**: Resolved MySQL strict mode GROUP BY violation with subquery approach for availability filtering
 - **Email & Notification System**: Complete automated email system with invoice notifications for customers and admins
 - **Advanced Promo Code System**: Complete promo code integration with real-time validation, dynamic pricing, and interactive checkout experience
 - **Interactive Map Location System**: LeafletJS integration for villa/hotel location management with click-to-set coordinates
