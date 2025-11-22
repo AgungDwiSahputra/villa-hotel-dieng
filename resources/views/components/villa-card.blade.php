@@ -150,7 +150,7 @@
                 </svg>
                 @endfor
             </div>
-            <span class="ml-1.5 sm:ml-2 text-xs sm:text-sm text-gray-600">({{ $villa->rating }}/5)</span>
+            <span class="ml-1.5 sm:ml-2 text-xs sm:text-sm text-gray-600">({{ $villa->rating }}/5.00)</span>
         </div>
         @endif
 
