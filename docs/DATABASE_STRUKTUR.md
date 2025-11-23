@@ -3,23 +3,23 @@
 **Proyek**: Sistem Manajemen Villa Hotel Dieng
 **Mesin Database**: MySQL 8.0+ / MariaDB
 **ORM**: Laravel Eloquent
-**Terakhir Diperbarui**: Januari 2025
+**Terakhir Diperbarui**: November 2025
 
 ---
 
 ## 📋 Ringkasan
 
-Dokumentasi ini menyediakan dokumentasi komprehensif untuk struktur database Villa Hotel Dieng. Database ini dirancang untuk mendukung sistem manajemen villa/hotel lengkap dengan kemampuan pemesanan, pembayaran, promosi, dan manajemen pengguna.
+Dokumentasi ini menyediakan dokumentasi komprehensif untuk struktur database Villa Hotel Dieng. Database ini dirancang untuk mendukung sistem manajemen villa/hotel lengkap dengan kemampuan pemesanan, pembayaran, promosi, manajemen pengguna, serta Jeep Trip.
 
 ---
 
 ## 🗂️ Ringkasan Database
 
 ```
-Total Tabel:        28 tabel
-Tabel Bisnis Inti:  18 tabel
+Total Tabel:        37 tabel
+Tabel Bisnis Inti:  27 tabel
 Tabel Sistem Laravel: 10 tabel
-Total Relasi:       25+ relasi
+Total Relasi:       40+ relasi
 Soft Deletes:       3 tabel (users, produks, promos)
 ```
 
@@ -428,6 +428,198 @@ Soft Deletes:       3 tabel (users, produks, promos)
 
 ---
 
+
+## 🚙 Tabel Manajemen Jeep Trip
+
+### 30. jeep_trips
+**Tujuan**: Informasi paket Jeep Trip utama
+
+| Field | Tipe | Deskripsi |
+|-------|------|-------------|
+| id | uuid | Kunci primer |
+| kode | varchar(50) | Kode paket (unik, nullable) |
+| slug | varchar(150) | Slug URL-friendly (unik) |
+| nama_paket | varchar(150) | Nama paket Jeep Trip |
+| deskripsi_singkat | text | Deskripsi singkat (nullable) |
+| deskripsi_lengkap | longtext | Deskripsi lengkap (nullable) |
+| zona | varchar(50) | Zona operasi (nullable) |
+| durasi_jam | int unsigned | Durasi trip dalam jam (nullable) |
+| jam_berangkat_default | time | Jam berangkat default (nullable) |
+| kapasitas_ideal_per_jeep | int unsigned | Kapasitas ideal per jeep (default 4) |
+| kapasitas_max_per_jeep | int unsigned | Kapasitas maks per jeep (default 4) |
+| harga_weekday | decimal(15,2) | Harga hari kerja |
+| harga_weekend | decimal(15,2) | Harga akhir pekan |
+| rating | decimal(3,2) | Rating paket (nullable) |
+| is_active | boolean | Status aktif (default true) |
+| created_at | timestamp | Timestamp pembuatan |
+| updated_at | timestamp | Timestamp pembaruan |
+
+**Relasi**:
+- Memiliki banyak: jeep_trip_destinations, jeep_trip_includes, jeep_trip_excludes, jeep_trip_slots, jeep_trip_images, jeep_trip_booking_items
+
+**Indeks**:
+- PRIMARY KEY (id)
+- UNIQUE (kode)
+- UNIQUE (slug)
+
+---
+
+### 31. jeep_trip_destinations
+**Tujuan**: Destinasi kunjungan dalam paket Jeep Trip
+
+| Field | Tipe | Deskripsi |
+|-------|------|-------------|
+| id | uuid | Kunci primer |
+| jeep_trip_id | uuid | Foreign key ke jeep_trips |
+| nama_destinasi | varchar(150) | Nama destinasi |
+| urutan | int unsigned | Urutan tampilan (default 1) |
+| created_at | timestamp | Timestamp pembuatan |
+| updated_at | timestamp | Timestamp pembaruan |
+
+**Relasi**:
+- Dimiliki oleh: jeep_trips
+
+---
+
+### 32. jeep_trip_includes
+**Tujuan**: Fasilitas yang termasuk dalam paket
+
+| Field | Tipe | Deskripsi |
+|-------|------|-------------|
+| id | uuid | Kunci primer |
+| jeep_trip_id | uuid | Foreign key ke jeep_trips |
+| nama_item | varchar(150) | Nama item fasilitas |
+| created_at | timestamp | Timestamp pembuatan |
+| updated_at | timestamp | Timestamp pembaruan |
+
+**Relasi**:
+- Dimiliki oleh: jeep_trips
+
+---
+
+### 33. jeep_trip_excludes
+**Tujuan**: Fasilitas yang tidak termasuk dalam paket
+
+| Field | Tipe | Deskripsi |
+|-------|------|-------------|
+| id | uuid | Kunci primer |
+| jeep_trip_id | uuid | Foreign key ke jeep_trips |
+| nama_item | varchar(150) | Nama item fasilitas |
+| created_at | timestamp | Timestamp pembuatan |
+| updated_at | timestamp | Timestamp pembaruan |
+
+**Relasi**:
+- Dimiliki oleh: jeep_trips
+
+---
+
+### 34. jeep_trip_slots
+**Tujuan**: Slot waktu untuk Jeep Trip
+
+| Field | Tipe | Deskripsi |
+|-------|------|-------------|
+| id | uuid | Kunci primer |
+| jeep_trip_id | uuid | Foreign key ke jeep_trips |
+| nama_slot | varchar(100) | Nama slot (e.g. Pagi, Siang) |
+| jam_mulai | time | Jam mulai slot |
+| jam_selesai | time | Jam selesai slot |
+| is_active | boolean | Status aktif (default true) |
+| created_at | timestamp | Timestamp pembuatan |
+| updated_at | timestamp | Timestamp pembaruan |
+
+**Relasi**:
+- Dimiliki oleh: jeep_trips
+- Memiliki banyak: jeep_trip_availabilities, jeep_trip_booking_items
+
+**Indeks**:
+- FOREIGN KEY (jeep_trip_id) cascade
+
+---
+
+### 35. jeep_trip_images
+**Tujuan**: Galeri gambar Jeep Trip
+
+| Field | Tipe | Deskripsi |
+|-------|------|-------------|
+| id | uuid | Kunci primer |
+| jeep_trip_id | uuid | Foreign key ke jeep_trips |
+| image_path | varchar(255) | Path gambar |
+| judul | varchar(150) | Judul gambar (nullable) |
+| urutan | int unsigned | Urutan tampilan (default 1) |
+| created_at | timestamp | Timestamp pembuatan |
+| updated_at | timestamp | Timestamp pembaruan |
+
+**Relasi**:
+- Dimiliki oleh: jeep_trips
+
+---
+
+### 36. jeep_trip_bookings
+**Tujuan**: Pemesanan Jeep Trip
+
+| Field | Tipe | Deskripsi |
+|-------|------|-------------|
+| id | uuid | Kunci primer |
+| user_id | uuid | Foreign key ke users |
+| kode_booking | varchar(50) | Kode booking (unik) |
+| total_harga | decimal(15,2) | Total harga |
+| status | enum('pending','paid','cancelled','expired','done') | Status booking (default 'pending') |
+| payment_ref | varchar(100) | Referensi pembayaran (nullable) |
+| created_at | timestamp | Timestamp pembuatan |
+| updated_at | timestamp | Timestamp pembaruan |
+
+**Relasi**:
+- Dimiliki oleh: users
+- Memiliki banyak: jeep_trip_booking_items
+
+**Indeks**:
+- UNIQUE (kode_booking)
+
+---
+
+### 37. jeep_trip_booking_items
+**Tujuan**: Detail item dalam pemesanan Jeep Trip
+
+| Field | Tipe | Deskripsi |
+|-------|------|-------------|
+| id | uuid | Kunci primer |
+| jeep_trip_booking_id | uuid | Foreign key ke jeep_trip_bookings |
+| jeep_trip_id | uuid | Foreign key ke jeep_trips |
+| jeep_trip_slot_id | uuid | Foreign key ke jeep_trip_slots |
+| tanggal_trip | date | Tanggal trip |
+| jumlah_jeep | int unsigned | Jumlah jeep |
+| harga_satuan | decimal(15,2) | Harga per jeep |
+| subtotal | decimal(15,2) | Subtotal |
+| created_at | timestamp | Timestamp pembuatan |
+| updated_at | timestamp | Timestamp pembaruan |
+
+**Relasi**:
+- Dimiliki oleh: jeep_trip_bookings, jeep_trips, jeep_trip_slots
+
+---
+
+### 38. jeep_trip_availabilities
+**Tujuan**: Ketersediaan slot Jeep Trip per tanggal
+
+| Field | Tipe | Deskripsi |
+|-------|------|-------------|
+| id | uuid | Kunci primer |
+| jeep_trip_slot_id | uuid | Foreign key ke jeep_trip_slots |
+| tanggal | date | Tanggal |
+| quota_jeep | int unsigned | Kuota jeep |
+| quota_terpakai | int unsigned | Kuota terpakai (default 0) |
+| is_closed | boolean | Slot ditutup (default false) |
+| created_at | timestamp | Timestamp pembuatan |
+| updated_at | timestamp | Timestamp pembaruan |
+
+**Relasi**:
+- Dimiliki oleh: jeep_trip_slots
+
+**Indeks**:
+- UNIQUE (jeep_trip_slot_id, tanggal)
+- FOREIGN KEY cascade
+
+---
 ## ⚙️ Tabel Konfigurasi Sistem
 
 ### 20. settings
@@ -610,6 +802,15 @@ produk_categories → produks
 promos → promo_categories
 promos → promo_products
 transaksis → transaksi_details
+jeep_trips → jeep_trip_destinations
+jeep_trips → jeep_trip_includes
+jeep_trips → jeep_trip_excludes
+jeep_trips → jeep_trip_slots
+jeep_trips → jeep_trip_images
+jeep_trips → jeep_trip_booking_items
+jeep_trip_slots → jeep_trip_availabilities
+jeep_trip_bookings → jeep_trip_booking_items
+users → jeep_trip_bookings
 ```
 
 ### Relasi Many-to-Many
@@ -659,6 +860,9 @@ Semua tabel menyertakan kolom `created_at` dan `updated_at` untuk:
 - `transaksi_details (produk_id, date)` - Pencarian pemesanan cepat
 - `promos.promo_code` (UNIQUE) - Validasi promo cepat
 - `sessions (user_id, last_activity)` - Manajemen sesi
+- `jeep_trips.slug` (UNIQUE) - Pencarian paket Jeep Trip cepat
+- `jeep_trip_bookings.kode_booking` (UNIQUE) - Validasi booking cepat
+- `jeep_trip_availabilities (jeep_trip_slot_id, tanggal)` (UNIQUE) - Pemeriksaan ketersediaan slot cepat
 
 ---
 
@@ -741,7 +945,7 @@ Untuk pertanyaan terkait database:
 
 ---
 
-**Versi Dokumen**: 1.0
-**Terakhir Diperbarui**: Januari 2025
+**Versi Dokumen**: 1.1
+**Terakhir Diperbarui**: November 2025
 **Status**: ✅ Lengkap & Terkini
 **Status ERD**: ⚠️ Pembaruan manual diperlukan saat perubahan skema
