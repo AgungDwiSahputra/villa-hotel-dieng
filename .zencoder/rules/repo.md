@@ -6,7 +6,7 @@ alwaysApply: true
 # Villa Hotel Dieng Management System
 
 ## Summary
-Villa Hotel Dieng is a comprehensive hotel and villa management system built with Laravel 12. The application manages properties, reservations, payments, user roles, and operational features for a boutique hotel/villa in Dieng, Indonesia. It provides both admin backend management and public booking interface with payment gateway integration (Midtrans). The system features a modular architecture with organized namespaces, role-based access control, activity logging, comprehensive debugging capabilities with detailed process logging, and a modern frontend built with Tailwind CSS and Alpine.js. The system includes advanced empty state handling for improved user experience when data is unavailable, and robust error tracking through structured logging throughout all major processes.
+Villa Hotel Dieng is a comprehensive hotel and villa management system built with Laravel 12. The application manages properties, reservations, payments, user roles, and operational features for a boutique hotel/villa in Dieng, Indonesia. It provides both admin backend management and public booking interface with payment gateway integration (Midtrans). The system features a modular architecture with organized namespaces, role-based access control, activity logging, comprehensive debugging capabilities with detailed process logging, and a modern frontend built with Tailwind CSS and Alpine.js. The system includes advanced empty state handling for improved user experience when data is unavailable, and robust error tracking through structured logging throughout all major processes. **Recently expanded to include Jeep Trip services** - complete tour packages with slot-based availability management, real-time booking, and integrated payment processing.
 
 ## Structure
 **Root Directory Organization**:
@@ -28,25 +28,29 @@ Villa Hotel Dieng is a comprehensive hotel and villa management system built wit
   - `app/Models/Produk/` - Product-related models (Produk, ProdukCategory, ProdukFasilitas, ProdukImage, ProdukSyarat, ProdukWisata)
   - `app/Models/Promo/` - Promotion models (Promo, PromoCategory, PromoProduct)
   - `app/Models/Transaksi/` - Transaction models (Transaksi, TransaksiDetail)
+  - `app/Models/JeepTrip/` - Jeep Trip models (JeepTrip, JeepTripSlot, JeepTripAvailability, JeepTripBooking, JeepTripBookingItem, JeepTripDestination, JeepTripImage, JeepTripInclude, JeepTripExclude)
   - Root models: User, Setting, Availability, Rekening, ActivityLog
 - `app/Http/Controllers/` - Request handlers and business logic
   - `app/Http/Controllers/Admin/` - Admin panel controllers (Dashboard, Setting, ActivityLog, Rekening)
   - `app/Http/Controllers/Admin/Produk/` - Product management controllers
   - `app/Http/Controllers/Admin/Promo/` - Promotion management controllers
   - `app/Http/Controllers/Admin/Transaksi/` - Transaction management controllers
+  - `app/Http/Controllers/Admin/JeepTrip/` - Jeep Trip management controllers (JeepTripController)
   - `app/Http/Controllers/Admin/UserManagement/` - User, Role, Permission controllers
-  - Root controllers: LandingPageController, BookingController, ProfileController
+  - Root controllers: LandingPageController, BookingController, JeepTripController, ProfileController
 - `app/DataTables/` - Yajra DataTables configurations organized by feature
   - `app/DataTables/Admin/Produk/` - Product DataTables (Produk, Category, Fasilitas, Image, Syarat, Wisata)
   - `app/DataTables/Admin/Promo/` - PromoDataTable
   - `app/DataTables/Admin/Transaksi/` - TransaksiDataTable
+  - `app/DataTables/Admin/JeepTrip/` - JeepTripDataTable
   - `app/DataTables/Admin/UserManagement/` - User, Role, Permission DataTables
   - Root DataTables: ActivityLogDataTable, RekeningDataTable
 - `app/helpers.php` - Global helper functions for image/file storage
 - `app/View/` - View composers and view service providers
 - `resources/views/` - Blade template files organized by feature
-  - `resources/views/admin/` - Admin panel views (dashboard, produk, promo, transaksi, user-management, setting, rekening, activity-log)
+  - `resources/views/admin/` - Admin panel views (dashboard, produk, promo, transaksi, jeep-trip, user-management, setting, rekening, activity-log)
   - `resources/views/landing/` - Public landing page templates
+    - `resources/views/landing/jeep-trip/` - Jeep Trip public pages (index, show, checkout)
   - `resources/views/auth/` - Authentication views (login, register, password reset)
   - `resources/views/profile/` - User profile views
   - `resources/views/components/` - Reusable Blade components
@@ -151,6 +155,35 @@ The database schema is visualized in the ERD diagram located at the project root
 - **transaksi_details** - Transaction line items
   - Fields: id, transaksi_id, produk_id, date, unit, status, timestamps
 
+### Jeep Trip Management
+- **jeep_trips** - Jeep trip packages with pricing and details
+  - Fields: id, kode, slug, nama_paket, deskripsi_singkat, deskripsi_lengkap, zona, durasi_jam, jam_berangkat_default, kapasitas_ideal_per_jeep, kapasitas_max_per_jeep, harga_weekday, harga_weekend, rating, is_active, timestamps
+  - Relations: Has many destinations, includes, excludes, images, slots
+
+- **jeep_trip_destinations** - Trip destinations and itinerary
+  - Fields: id, jeep_trip_id, nama_destinasi, urutan, timestamps
+
+- **jeep_trip_includes** - Package inclusions
+  - Fields: id, jeep_trip_id, nama_item, timestamps
+
+- **jeep_trip_excludes** - Package exclusions
+  - Fields: id, jeep_trip_id, nama_item, timestamps
+
+- **jeep_trip_images** - Trip gallery images
+  - Fields: id, jeep_trip_id, image_path, judul, urutan, timestamps
+
+- **jeep_trip_slots** - Time slots for trips
+  - Fields: id, jeep_trip_id, nama_slot, jam_mulai, jam_selesai, is_active, timestamps
+
+- **jeep_trip_availabilities** - Slot availability per date
+  - Fields: id, jeep_trip_slot_id, tanggal, quota_jeep, quota_terpakai, is_closed, timestamps
+
+- **jeep_trip_bookings** - Jeep trip booking headers
+  - Fields: id, user_id, kode_booking, total_harga, status, payment_ref, timestamps
+
+- **jeep_trip_booking_items** - Jeep trip booking details
+  - Fields: id, jeep_trip_booking_id, jeep_trip_id, jeep_trip_slot_id, tanggal_trip, jumlah_jeep, harga_satuan, subtotal, timestamps
+
 ### Payment & Financial
 - **rekenings** - Bank account information for payments
   - Fields: id, name, image, timestamps
@@ -197,6 +230,11 @@ The database schema is visualized in the ERD diagram located at the project root
 - Transaksis → User (belongs to)
 - Transaksis → TransaksiDetails (has many)
 - TransaksiDetails → Produk (belongs to)
+- JeepTrips → Destinations, Includes, Excludes, Images, Slots (has many)
+- JeepTripSlots → JeepTripAvailabilities (has many)
+- JeepTripBookings → JeepTripBookingItems (has many)
+- JeepTripBookings → User (belongs to)
+- JeepTripBookingItems → JeepTrip, JeepTripSlot (belongs to)
 
 **Soft Deletes Enabled**:
 - users (deleted_at)
@@ -325,6 +363,7 @@ php artisan migrate:fresh --seed
 **Application Entry**: `public/index.php` - Bootstrap entry point for all HTTP requests
 **Artisan Console**: `artisan` - CLI tool for database, queue, and utility commands
 **Web Routes**: `routes/web.php` - Public and authenticated web routes (landing page, dashboard, admin)
+  - Jeep Trip Routes: `/jeep-trip/*` - Jeep trip listing, detail, and booking
 **API Routes**: `routes/api.php` - RESTful API endpoints with Sanctum authentication
   - `GET /api/promos/active` - Retrieve active promo codes for checkout display
   - `POST /api/promos/preview` - Preview promo code discount calculation
@@ -446,6 +485,21 @@ MAIL_FROM_NAME="Villa Hotel Dieng"
 - `Transaksi` - Booking and reservation management with payment tracking
 - `TransaksiDetail` - Detailed transaction items linking products and pricing
 
+*Jeep Trip Management*:
+- `JeepTrip` - Jeep trip package management with slot-based availability and pricing
+  - Slot-based availability management with quota tracking
+  - Dynamic weekday/weekend pricing calculations
+  - Multi-slot support per package (Sunrise, Siang, Full Day)
+  - Image gallery and destination management
+- `JeepTripSlot` - Time slot definitions for jeep trips
+- `JeepTripAvailability` - Date-specific availability and quota management
+- `JeepTripBooking` - Jeep trip booking headers with payment integration
+- `JeepTripBookingItem` - Detailed booking items with pricing breakdown
+- `JeepTripDestination` - Trip itinerary and destination management
+- `JeepTripImage` - Trip gallery image management
+- `JeepTripInclude` - Package inclusions tracking
+- `JeepTripExclude` - Package exclusions tracking
+
 *Core System*:
 - `User` - User management with role-based permissions
 - `Availability` - Property availability calendar management
@@ -529,6 +583,29 @@ MAIL_FROM_NAME="Villa Hotel Dieng"
 - Payment confirmation handling via callback
 - Transaction history and reporting
 - Invoice generation
+
+**Jeep Trip Management System**:
+- **Complete Jeep Trip Package Management**: Full CRUD operations for jeep tour packages
+  - Multi-slot availability (Sunrise, Siang, Full Day)
+  - Dynamic weekday/weekend pricing
+  - Destination itinerary management
+  - Image gallery with ordering
+  - Package inclusions/exclusions
+- **Advanced Availability Management**: Slot-based quota system per date
+  - Real-time availability checking
+  - Automatic quota reduction on booking
+  - Admin quota management interface
+  - Date-specific availability overrides
+- **Seamless Booking Flow**: End-to-end jeep trip booking process
+  - Interactive slot selection
+  - Real-time price calculation
+  - Midtrans payment integration
+  - Booking confirmation and status tracking
+- **Admin Dashboard**: Comprehensive jeep trip management
+  - Package CRUD with rich form fields
+  - Availability calendar management
+  - Booking monitoring and reporting
+  - DataTable integration with export capabilities
 
 **User Management & Security**:
 - Role-based access control (RBAC) using Spatie Laravel Permission
@@ -692,6 +769,82 @@ Cache::remember('cache_key', 3600, function () {
 - Real-time availability calculation using model methods
 - Combined filtering (price + capacity + rooms + attractions)
 - Mobile-responsive filter interface with collapsible sections
+## Recent Updates (November 2025)
+
+### Complete Jeep Trip Module Implementation (November 2025):
+- **Full Jeep Trip Management System**: Complete implementation of jeep tour services as new business line
+  - **Database Schema**: 9 new tables (jeep_trips, jeep_trip_slots, jeep_trip_availabilities, jeep_trip_bookings, jeep_trip_booking_items, jeep_trip_destinations, jeep_trip_images, jeep_trip_includes, jeep_trip_excludes)
+  - **Models**: 9 Eloquent models with comprehensive relationships and business logic methods
+  - **Admin Interface**: Full CRUD operations for jeep trip packages with DataTable integration
+  - **Public Interface**: Landing pages for jeep trip listing, detail, and booking flow
+
+#### Advanced Frontend Implementation Features:
+
+**Jeep Card Component (`resources/views/components/jeep-card.blade.php`)**:
+- **Flexible Props System**: Configurable display options (showRating, showPrice, showDetailedPrice, showButton, buttonText, cardClass, imageHeight, contentPadding)
+- **Dynamic Image Handling**: Fallback to default image when no gallery images exist
+- **Interactive Hover Effects**: Smooth transform and shadow transitions
+- **Responsive Design**: Mobile-first approach with adaptive sizing
+- **Rating Display**: Star-based rating system with customizable display
+- **Price Formatting**: Indonesian Rupiah formatting with weekday/weekend pricing display
+
+**Jeep Trip Index Page (`resources/views/landing/jeep-trip/index.blade.php`)**:
+- **Hero Section**: Gradient background with animated floating elements and statistics cards
+- **Advanced Filter System**:
+  - **Desktop Filters**: Sticky positioned filter card with glassmorphism effect
+  - **Mobile Filter Modal**: Full-screen modal with backdrop blur and smooth animations
+  - **Filter Options**: Search by name/zona, zona selection, durasi filtering, sorting (rating, price-low, price-high, name)
+  - **Active Filter Display**: Visual filter tags with remove buttons
+  - **Reset Functionality**: One-click filter reset with preserved URL state
+- **Results Display**: Dynamic result count and pagination with query parameter preservation
+- **Empty State Handling**: Informative empty state with call-to-action buttons
+- **Loading States**: Animated loading indicators for filter submissions
+- **Mobile Optimization**: Touch-friendly interfaces with proper spacing and button sizes
+
+**Jeep Trip Detail Page (`resources/views/landing/jeep-trip/show.blade.php`)**:
+- **Image Gallery**: Flickity carousel with auto-play, navigation controls, and GLightbox integration
+- **Tabbed Information System**:
+  - **Destinations Tab**: Expandable destination list with "Show More/Less" functionality
+  - **Include/Exclude Tab**: Categorized package inclusions and exclusions with visual indicators
+  - **Slots Tab**: Time slot display with capacity information
+- **FullCalendar Integration**: Interactive calendar for date selection with custom styling
+- **Dynamic Booking Form**:
+  - **Slot Selection**: Visual slot cards with radio button integration
+  - **Quantity Controls**: Increment/decrement buttons with validation
+  - **Real-time Pricing**: Automatic price calculation based on weekday/weekend rates
+  - **Form Validation**: Client-side validation with error display
+- **Floating Price Section**: Sticky bottom pricing display with responsive design
+- **Animation System**: Intersection Observer-based scroll animations for performance
+- **Mobile Responsiveness**: Optimized layouts for all screen sizes
+
+**Technical Implementation Details**:
+- **JavaScript Libraries**: FullCalendar 6.1.8, Flickity carousel, GLightbox
+- **Animation Framework**: CSS transitions with Intersection Observer API
+- **State Management**: Vanilla JavaScript for booking state management
+- **Form Handling**: AJAX-ready form submissions with loading states
+- **Responsive Design**: Tailwind CSS with custom breakpoints and utilities
+- **Performance Optimization**: Debounced inputs, throttled scroll events, lazy loading considerations
+
+- **Advanced Availability Management**: Slot-based quota system with date-specific availability
+  - Real-time availability checking and quota reduction
+  - Multi-slot support per package (Sunrise, Siang, Full Day)
+  - Admin availability management interface
+- **Seamless Booking Integration**: End-to-end booking process with Midtrans payment gateway
+  - Interactive slot selection and real-time pricing
+  - Session-based booking flow with validation
+  - Payment callback handling and status updates
+- **Rich Package Management**: Comprehensive package configuration
+  - Destination itinerary with ordering
+  - Image gallery with upload management
+  - Package inclusions/exclusions tracking
+  - Dynamic weekday/weekend pricing
+- **Error Resolution**: Fixed "Cannot access offset of type Illuminate\Support\Carbon on array" error in show.blade.php
+  - Removed problematic availability data encoding
+  - Optimized JavaScript data handling
+- **Route Management**: Dedicated route groups for admin and public jeep trip operations
+- **Permission System**: Integrated RBAC permissions for jeep trip management
+- **Data Seeding**: Sample data for testing and demonstration
+
 ## Recent Updates (November 2025)
 
 ### Comprehensive Logging System Implementation (November 2025):
@@ -981,8 +1134,24 @@ Cache::remember('cache_key', 3600, function () {
   - **Mobile Responsive**: Optimized badge display for all screen sizes
   - **Accessibility**: Proper ARIA labels and semantic HTML for screen readers
 
+### Jeep Trip Button Conditional Display (November 2025):
+- **Smart Button Visibility**: Implemented conditional display for Jeep Trip button on landing page based on active jeep trip packages
+  - **Logic**: Button only appears when there are active jeep trip packages (`is_active = true`)
+  - **Database Query**: Uses `JeepTrip::active()->get()` to fetch only active packages
+  - **Controller Integration**: Added jeep_trips data to landing page view in `LandingPageController.php`
+  - **View Implementation**: Conditional rendering using `@if($jeepTrips->count() > 0)` in `resources/views/landing/index.blade.php`
+  - **User Experience**: Clean interface that only shows relevant services when available
+  - **Performance**: Efficient query with scope-based filtering
+  - **Files Updated**:
+    - `app/Http/Controllers/LandingPageController.php` - Added jeep_trips query and data passing
+    - `resources/views/landing/index.blade.php` - Added conditional button display
+  - **Benefits**: Prevents confusion by hiding unavailable services, maintains clean UI, improves user experience
+
 ## Summary
 Dokumentasi ini telah diperbarui pada November 2025 untuk mencakup:
+- **Complete Jeep Trip Module Implementation**: Full jeep tour management system with 9 database tables, comprehensive admin interface, and advanced public booking flow with modern frontend components
+- **Advanced Jeep Trip Frontend Features**: Jeep Card component with flexible props, advanced filtering system with desktop/mobile modals, interactive detail pages with tabbed content, FullCalendar integration, dynamic booking forms, and floating price sections
+- **Technical Implementation Details**: FullCalendar 6.1.8, Flickity carousel, GLightbox integration, Intersection Observer animations, responsive Tailwind CSS design, and performance optimizations
 - **Comprehensive Logging System**: Complete process logging throughout allProducts method with detailed debugging capabilities, performance monitoring, and error tracking
 - **SQL Query Optimization**: Resolved MySQL strict mode GROUP BY violation with subquery approach for availability filtering
 - **Email & Notification System**: Complete automated email system with invoice notifications for customers and admins
@@ -1007,3 +1176,9 @@ Dokumentasi ini telah diperbarui pada November 2025 untuk mencakup:
 - **Testimonials Update**: Product name integration with actual villa names (FULL HOUSE BEST VIEW, Sunflowers Cabin Dieng, etc.) for enhanced authenticity
 - **Enhanced Product Management Form**: Complete form enhancement with all database fields (owner, fasilitas, rating, status, promo fields) for comprehensive villa/product data management
 - **Advanced Availability Filter & Badge System**: Complete overhaul of availability filtering with interactive status badges ("Hampir Penuh", "Habis") on villa cards, database status standardization, and real-time availability feedback for improved user experience
+- **Jeep Trip Button Conditional Display**: Smart button visibility based on active jeep trip packages, preventing confusion by hiding unavailable services and maintaining clean UI
+
+---
+
+**Versi Dokumen**: 2.2
+**Terakhir Diperbarui**: November 2025

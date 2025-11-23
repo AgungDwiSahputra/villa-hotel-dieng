@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Landing\ProdukFinalRequest;
 use App\Models\ActivityLog;
 use App\Models\Availability;
+use App\Models\JeepTrip\JeepTrip;
 use App\Models\Produk\Produk;
 use App\Models\Produk\ProdukCategory;
 use App\Models\Produk\ProdukWisata;
@@ -26,6 +27,9 @@ class LandingPageController extends Controller
         $searchQuery = $request->get('search');
         $activeCategory = $request->get('category');
         $selectedCategory = null;
+
+        // Get active jeep trips
+        $jeepTrips = JeepTrip::active()->get();
 
         $produksQuery = Produk::with('images', 'category')
             ->where('produks.status', 'publish')
@@ -142,7 +146,7 @@ class LandingPageController extends Controller
             ->sort()
             ->values();
 
-        return view('landing.index', compact('categories', 'selectedCategory', 'produks', 'activeCategory', 'popularVillas', 'bestVillas', 'testimonials', 'wisataList'));
+        return view('landing.index', compact('categories', 'selectedCategory', 'produks', 'activeCategory', 'popularVillas', 'bestVillas', 'testimonials', 'wisataList', 'jeepTrips'));
     }
 
     public function allProducts(Request $request)

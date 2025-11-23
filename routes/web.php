@@ -26,6 +26,16 @@ Route::prefix('booking')->group(function () {
 Route::get('/tentang-kami', [App\Http\Controllers\LandingPageController::class, 'about'])->name('tentang-kami');
 Route::get('/sk', [App\Http\Controllers\LandingPageController::class, 'terms'])->name('sk');
 
+// Jeep Trip Routes
+Route::prefix('jeep-trip')->as('jeep-trip.')->group(function () {
+    Route::get('/', [App\Http\Controllers\JeepTripController::class, 'index'])->name('index');
+    Route::get('/{slug}', [App\Http\Controllers\JeepTripController::class, 'show'])->name('show');
+    Route::post('/booking', [App\Http\Controllers\JeepTripController::class, 'booking'])->name('booking');
+    Route::get('/checkout', [App\Http\Controllers\JeepTripController::class, 'checkout'])->name('checkout');
+    Route::post('/final', [App\Http\Controllers\JeepTripController::class, 'final'])->name('final');
+    Route::post('/callback', [App\Http\Controllers\JeepTripController::class, 'handleCallback'])->name('callback');
+});
+
 Route::middleware(['auth', 'verified'])->prefix('admin')->as('admin.')->group(function () {
     // Dashboard Route
     Route::get('dashboard', App\Http\Controllers\Admin\DashboardController::class . '@index')->name('dashboard');
@@ -61,6 +71,27 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->as('admin.')->group(fu
         Route::post('user-access', [App\Http\Controllers\Admin\UserManagement\UserController::class, 'access'])->name('user.access');
         Route::resource('role', App\Http\Controllers\Admin\UserManagement\RoleController::class);
         Route::resource('permission', App\Http\Controllers\Admin\UserManagement\PermissionController::class)->only(['index', 'store', 'edit', 'destroy']);
+    });
+
+    // Jeep Trip Routes
+    Route::prefix('jeep-trip')->as('jeep-trip.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\JeepTrip\JeepTripController::class, 'index'])->name('index');
+        Route::get('/create', [App\Http\Controllers\Admin\JeepTrip\JeepTripController::class, 'create'])->name('create');
+        Route::post('/', [App\Http\Controllers\Admin\JeepTrip\JeepTripController::class, 'store'])->name('store');
+
+        // Jeep Trip Image Routes (harus di atas route parameter {id})
+        Route::prefix('image')->as('image.')->group(function () {
+            Route::get('/', [App\Http\Controllers\Admin\JeepTrip\JeepTripImageController::class, 'index'])->name('index');
+            Route::post('/', [App\Http\Controllers\Admin\JeepTrip\JeepTripImageController::class, 'store'])->name('store');
+            Route::get('/{id}/edit', [App\Http\Controllers\Admin\JeepTrip\JeepTripImageController::class, 'edit'])->name('edit');
+            Route::delete('/{id}', [App\Http\Controllers\Admin\JeepTrip\JeepTripImageController::class, 'destroy'])->name('destroy');
+        });
+
+        // Route dengan parameter {id} harus di bawah route statis
+        Route::get('/{id}', [App\Http\Controllers\Admin\JeepTrip\JeepTripController::class, 'show'])->name('show');
+        Route::get('/{id}/edit', [App\Http\Controllers\Admin\JeepTrip\JeepTripController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [App\Http\Controllers\Admin\JeepTrip\JeepTripController::class, 'update'])->name('update');
+        Route::delete('/{id}', [App\Http\Controllers\Admin\JeepTrip\JeepTripController::class, 'destroy'])->name('destroy');
     });
 
     // Activity Log Routes

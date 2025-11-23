@@ -2,67 +2,109 @@
 
 // Initialize slider:
 $(document).ready(function () {
+  // Only initialize if slider element exists
+  var rangeSlider = document.getElementById('slider-range');
+  if (!rangeSlider) {
+    return; // Exit if slider element doesn't exist
+  }
+
   $('.noUi-handle').on('click', function () {
     $(this).width(50);
   });
-  var rangeSlider = document.getElementById('slider-range');
+
   var moneyFormat = wNumb({
     decimals: 0,
     thousand: ',',
     prefix: '$'
   });
-  noUiSlider.create(rangeSlider, {
-    start: [0, 2000],
-    step: 1,
-    range: {
-      'min': [30],
-      'max': [2000]
-    },
-    format: moneyFormat,
-    connect: true
-  });
-  // Set visual min and max values and also update value hidden form inputs
-  rangeSlider.noUiSlider.on('update', function (values, handle) {
-    document.getElementById('slider-range-value1').innerHTML = values[0];
-    document.getElementById('slider-range-value2').innerHTML = values[1];
-    document.getElementsByName('min-value').value = moneyFormat.from(
-      values[0]);
-    document.getElementsByName('max-value').value = moneyFormat.from(
-      values[1]);
-  });
+
+  try {
+    noUiSlider.create(rangeSlider, {
+      start: [0, 2000],
+      step: 1,
+      range: {
+        'min': [30],
+        'max': [2000]
+      },
+      format: moneyFormat,
+      connect: true
+    });
+
+    // Set visual min and max values and also update value hidden form inputs
+    rangeSlider.noUiSlider.on('update', function (values, handle) {
+      var value1Element = document.getElementById('slider-range-value1');
+      var value2Element = document.getElementById('slider-range-value2');
+
+      if (value1Element) value1Element.innerHTML = values[0];
+      if (value2Element) value2Element.innerHTML = values[1];
+
+      // Update hidden form inputs safely
+      var minValueInputs = document.getElementsByName('min-value');
+      var maxValueInputs = document.getElementsByName('max-value');
+
+      if (minValueInputs.length > 0) {
+        minValueInputs[0].value = moneyFormat.from(values[0]);
+      }
+      if (maxValueInputs.length > 0) {
+        maxValueInputs[0].value = moneyFormat.from(values[1]);
+      }
+    });
+  } catch (error) {
+    console.warn('Failed to initialize slider-range:', error);
+  }
 });
 
 $(document).ready(function () {
-  if($("#slider-range2").length > 0){
+  // Only initialize if slider element exists
+  if($("#slider-range2").length === 0){
+    return; // Exit if slider element doesn't exist
+  }
+
   $('.noUi-handle2').on('click', function () {
     $(this).width(50);
   });
+
   var rangeSlider = document.getElementById('slider-range2');
   var moneyFormat = wNumb({
     decimals: 0,
     thousand: ',',
     prefix: ''
   });
-  noUiSlider.create(rangeSlider, {
-    start: [0, 50000],
-    step: 1,
-    range: {
-      'min': [0],
-      'max': [50000]
-    },
-    format: moneyFormat,
-    connect: true
-  });
-  // Set visual min and max values and also update value hidden form inputs
-  rangeSlider.noUiSlider.on('update', function (values, handle) {
-    document.getElementById('slider-range-value01').innerHTML = values[0];
-    document.getElementById('slider-range-value02').innerHTML = values[1];
-    document.getElementsByName('min-value2').value = moneyFormat.from(
-      values[0]);
-    document.getElementsByName('max-value2').value = moneyFormat.from(
-      values[1]);
-  });
-}
+
+  try {
+    noUiSlider.create(rangeSlider, {
+      start: [0, 50000],
+      step: 1,
+      range: {
+        'min': [0],
+        'max': [50000]
+      },
+      format: moneyFormat,
+      connect: true
+    });
+
+    // Set visual min and max values and also update value hidden form inputs
+    rangeSlider.noUiSlider.on('update', function (values, handle) {
+      var value01Element = document.getElementById('slider-range-value01');
+      var value02Element = document.getElementById('slider-range-value02');
+
+      if (value01Element) value01Element.innerHTML = values[0];
+      if (value02Element) value02Element.innerHTML = values[1];
+
+      // Update hidden form inputs safely
+      var minValue2Inputs = document.getElementsByName('min-value2');
+      var maxValue2Inputs = document.getElementsByName('max-value2');
+
+      if (minValue2Inputs.length > 0) {
+        minValue2Inputs[0].value = moneyFormat.from(values[0]);
+      }
+      if (maxValue2Inputs.length > 0) {
+        maxValue2Inputs[0].value = moneyFormat.from(values[1]);
+      }
+    });
+  } catch (error) {
+    console.warn('Failed to initialize slider-range2:', error);
+  }
 });
 
 

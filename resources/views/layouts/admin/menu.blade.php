@@ -11,8 +11,16 @@
                                 <li class="{{ request()->is('admin/produk/category') ? 'mm-active' : '' }}"><a href="{{ route('admin.produk.category.index') }}" key="t-produk-category">Category</a></li>
                             @endcan
                             @can('Produk (Index)')
-                                <li class="{{ request()->is('admin/produk/produk') ? 'mm-active' : '' }}"><a href="{{ route('admin.produk.produk.index') }}" key="t-produk-produk">Produk</a></li>
+                                <li class="{{ request()->is('admin/produk/produk') ? 'mm-active' : '' }}"><a href="{{ route('admin.produk.produk.index') }}" key="t-produk-produk">Produk Villa/Hotel</a></li>
                             @endcan
+                            @canany(['Jeep Trip (Index)', 'Jeep Trip (Create)', 'Jeep Trip (Edit)', 'Jeep Trip (Delete)'])
+                                <li>
+                                    <a href="{{ route('admin.jeep-trip.index') }}" class="waves-effect">
+                                        {{-- <i class="bx bx-car"></i> --}}
+                                        <span key="t-jeep-trip">Jeep Trip</span>
+                                    </a>
+                                </li>
+                            @endcanany
                         </ul>
                     </li>
                 @endcanany
