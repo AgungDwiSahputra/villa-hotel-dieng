@@ -59,6 +59,16 @@ class JeepTripBooking extends Model
         return $query->where('status', 'cancelled');
     }
 
+    public function scopeDraft($query)
+    {
+        return $query->where('status', 'draft');
+    }
+
+    public function scopeExpired($query)
+    {
+        return $query->where('status', 'expired');
+    }
+
     // Helper Methods
     public function isPending()
     {

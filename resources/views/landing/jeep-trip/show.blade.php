@@ -295,7 +295,7 @@
                                             </div>
                                             <div class="flex-1">
                                                 <h6 class="font-semibold text-gray-900">{{ $slot->nama_slot }}</h6>
-                                                <p class="text-sm text-gray-600">{{ $slot->jam_mulai }} - {{ $slot->jam_selesai }}</p>
+                                                <p class="text-sm text-gray-600">{{ \Carbon\Carbon::parse($slot->jam_mulai)->format('H:i') }} - {{ \Carbon\Carbon::parse($slot->jam_selesai)->format('H:i') }}</p>
                                             </div>
                                             <div class="text-right">
                                                 <div class="text-sm text-gray-500">Kapasitas</div>
@@ -396,11 +396,11 @@
                                                 <input type="radio" name="slot_id" value="{{ $slot->id }}" class="mr-3 w-4 h-4 text-blue-600 focus:ring-blue-500" required>
                                                 <div class="flex-1">
                                                     <div class="font-medium text-gray-900">{{ $slot->nama_slot }}</div>
-                                                    <div class="text-sm text-gray-600">{{ $slot->jam_mulai }} - {{ $slot->jam_selesai }}</div>
+                                                    <div class="text-sm text-gray-600">{{ \Carbon\Carbon::parse($slot->jam_mulai)->format('H:i') }} - {{ \Carbon\Carbon::parse($slot->jam_selesai)->format('H:i') }}</div>
                                                 </div>
                                                 <div class="text-right">
                                                     <div class="text-sm text-gray-500">Kapasitas</div>
-                                                    <div class="font-semibold text-gray-900">{{ $slot->kapasitas_jeep ?? 'Tersedia' }} jeep</div>
+                                                    <div class="font-semibold text-gray-900">{{ $slot->kapasitas_jeep ?? 'Tersedia' }}</div>
                                                 </div>
                                             </div>
                                         @empty

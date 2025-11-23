@@ -3,6 +3,7 @@
 namespace App\Models\JeepTrip;
 
 use Haruncpi\LaravelUserActivity\Traits\Loggable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -10,7 +11,7 @@ use Illuminate\Support\Str;
 
 class JeepTrip extends Model
 {
-    use Loggable;
+    use HasFactory, Loggable;
 
     protected $fillable = [
         'kode', 'slug', 'nama_paket', 'deskripsi_singkat', 'deskripsi_lengkap',

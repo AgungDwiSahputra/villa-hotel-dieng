@@ -6,7 +6,7 @@ alwaysApply: true
 # Villa Hotel Dieng Management System
 
 ## Summary
-Villa Hotel Dieng is a comprehensive hotel and villa management system built with Laravel 12. The application manages properties, reservations, payments, user roles, and operational features for a boutique hotel/villa in Dieng, Indonesia. It provides both admin backend management and public booking interface with payment gateway integration (Midtrans). The system features a modular architecture with organized namespaces, role-based access control, activity logging, comprehensive debugging capabilities with detailed process logging, and a modern frontend built with Tailwind CSS and Alpine.js. The system includes advanced empty state handling for improved user experience when data is unavailable, and robust error tracking through structured logging throughout all major processes. **Recently expanded to include Jeep Trip services** - complete tour packages with slot-based availability management, real-time booking, and integrated payment processing.
+Villa Hotel Dieng is a comprehensive hotel and villa management system built with Laravel 12. The application manages properties, reservations, payments, user roles, and operational features for a boutique hotel/villa in Dieng, Indonesia. It provides both admin backend management and public booking interface with payment gateway integration (Midtrans). The system features a modular architecture with organized namespaces, role-based access control, activity logging, comprehensive debugging capabilities with detailed process logging, and a modern frontend built with Tailwind CSS and Alpine.js. The system includes advanced empty state handling for improved user experience when data is unavailable, and robust error tracking through structured logging throughout all major processes. **Recently expanded to include Jeep Trip services** - complete tour packages with slot-based availability management, real-time booking, race condition prevention, draft booking system, and integrated payment processing with comprehensive testing coverage.
 
 ## Structure
 **Root Directory Organization**:
@@ -403,6 +403,13 @@ php artisan test --coverage
 
 **Testing Environment**: Tests use in-memory caching, array mail driver, and sync queue processing for isolation
 
+**Jeep Trip Testing Coverage**:
+- **Unit Tests**: 8 comprehensive tests covering booking workflow, availability logic, price calculations, and Midtrans integration
+- **Test Assertions**: 48 total assertions ensuring system reliability
+- **Coverage Areas**: Availability checking, draft booking system, session management, payment callbacks, signature validation
+- **Race Condition Testing**: Database lock functionality verification
+- **Midtrans Integration**: Payment success/failure/pending status handling with signature validation
+
 ## Configuration
 
 **Environment Configuration**: `.env` file with database, mail, payment, and app settings
@@ -592,14 +599,20 @@ MAIL_FROM_NAME="Villa Hotel Dieng"
   - Image gallery with ordering
   - Package inclusions/exclusions
 - **Advanced Availability Management**: Slot-based quota system per date
-  - Real-time availability checking
-  - Automatic quota reduction on booking
+  - Real-time availability checking with race condition prevention
+  - Automatic quota reduction on booking with database locks
   - Admin quota management interface
   - Date-specific availability overrides
+- **Robust Booking System**: Production-ready booking process with comprehensive safeguards
+  - Draft booking workflow with 30-minute expiry for session independence
+  - Race condition prevention using database pessimistic locking
+  - Price consistency validation to prevent manipulation
+  - Comprehensive logging throughout booking process
+  - Session management with automatic cleanup of expired drafts
 - **Seamless Booking Flow**: End-to-end jeep trip booking process
   - Interactive slot selection
   - Real-time price calculation
-  - Midtrans payment integration
+  - Midtrans payment integration with callback handling
   - Booking confirmation and status tracking
 - **Admin Dashboard**: Comprehensive jeep trip management
   - Package CRUD with rich form fields
@@ -770,6 +783,16 @@ Cache::remember('cache_key', 3600, function () {
 - Combined filtering (price + capacity + rooms + attractions)
 - Mobile-responsive filter interface with collapsible sections
 ## Recent Updates (November 2025)
+
+### Jeep Trip Booking System Overhaul (November 2025):
+- **Race Condition Prevention**: Implemented database locks (`lockForUpdate()`) in booking finalization to prevent double-bookings during concurrent requests
+- **Draft Booking System**: Added draft booking workflow with 30-minute expiry to handle session dependencies and provide seamless booking experience
+- **Comprehensive Logging**: Added detailed logging throughout booking process for debugging and monitoring (parameter validation, availability checks, price calculations)
+- **Price Consistency Validation**: Enhanced price validation between session and database to prevent manipulation attacks
+- **Session Management**: Improved session handling with draft booking persistence and automatic cleanup of expired bookings
+- **Database Schema Enhancement**: Added 'draft' status to jeep_trip_bookings enum for better booking state management
+- **Midtrans Integration Testing**: Comprehensive test coverage for payment callbacks (success, failure, pending, signature validation)
+- **Performance Optimization**: Single optimized database queries for availability checking with proper indexing
 
 ### Complete Jeep Trip Module Implementation (November 2025):
 - **Full Jeep Trip Management System**: Complete implementation of jeep tour services as new business line
@@ -1149,6 +1172,12 @@ Cache::remember('cache_key', 3600, function () {
 
 ## Summary
 Dokumentasi ini telah diperbarui pada November 2025 untuk mencakup:
+- **Jeep Trip Booking System Overhaul**: Complete system redesign with race condition prevention, draft booking workflow, comprehensive logging, and production-ready reliability
+- **Race Condition Prevention**: Database locks implementation to prevent double-bookings during concurrent requests
+- **Draft Booking System**: Session-independent booking with 30-minute expiry and automatic cleanup
+- **Comprehensive Logging**: Detailed audit trail throughout booking process for debugging and monitoring
+- **Midtrans Integration Testing**: Full test coverage for payment callbacks (success/failure/pending/signature validation)
+- **Database Schema Enhancement**: Added 'draft' status to jeep_trip_bookings for better state management
 - **Complete Jeep Trip Module Implementation**: Full jeep tour management system with 9 database tables, comprehensive admin interface, and advanced public booking flow with modern frontend components
 - **Advanced Jeep Trip Frontend Features**: Jeep Card component with flexible props, advanced filtering system with desktop/mobile modals, interactive detail pages with tabbed content, FullCalendar integration, dynamic booking forms, and floating price sections
 - **Technical Implementation Details**: FullCalendar 6.1.8, Flickity carousel, GLightbox integration, Intersection Observer animations, responsive Tailwind CSS design, and performance optimizations
@@ -1180,5 +1209,6 @@ Dokumentasi ini telah diperbarui pada November 2025 untuk mencakup:
 
 ---
 
-**Versi Dokumen**: 2.2
+**Versi Dokumen**: 2.3
 **Terakhir Diperbarui**: November 2025
+**Status**: ✅ Lengkap & Terkini dengan Jeep Trip Booking System Overhaul
