@@ -1059,7 +1059,7 @@
 
     /* Optimize button */
     .best-villas-carousel .carousel-cell article a[href*="/produk/"] {
-        padding: 0.5rem 0.75rem !important;
+        padding: 0 !important;
         font-size: 0.75rem !important;
     }
 

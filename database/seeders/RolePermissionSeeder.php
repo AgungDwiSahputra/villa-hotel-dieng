@@ -20,6 +20,10 @@ class RolePermissionSeeder extends Seeder
             'Setting Apps (Index)',
             'Activity Log (Index)',
             'Activity Log (Delete)',
+            'promo view',
+            'promo create',
+            'promo edit',
+            'promo delete',
         ];
 
         $moduls  = [
