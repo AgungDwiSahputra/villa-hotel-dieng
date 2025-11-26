@@ -10,13 +10,9 @@ Route::get('/all-produk', [App\Http\Controllers\LandingPageController::class, 'a
 Route::get('/produk/{slug}', [App\Http\Controllers\LandingPageController::class, 'produk'])->name('produk');
 Route::post('/booking', [App\Http\Controllers\LandingPageController::class, 'produkBooking'])->name('produk.booking');
 Route::get('/checkout', [App\Http\Controllers\LandingPageController::class, 'checkout'])->name('produk.checkout');
-Route::get('/checkout', [App\Http\Controllers\LandingPageController::class, 'checkout'])->name('produk.checkout');
 Route::post('/api/promos/preview', [App\Http\Controllers\LandingPageController::class, 'previewPromo'])->name('api.promos.preview');
 Route::post('/midtrans-callback', [App\Http\Controllers\BookingController::class, 'handleCallback'])->name('midtrans.callback');
 Route::get('/api/promos/active', [App\Http\Controllers\LandingPageController::class, 'getActivePromos'])->name('api.promos.active');
-Route::post('/midtrans-callback', [App\Http\Controllers\BookingController::class, 'handleCallback'])->name('midtrans.callback');
-Route::get('/checkout', [App\Http\Controllers\LandingPageController::class, 'checkout'])->name('produk.checkout');
-Route::post('/midtrans-callback', [App\Http\Controllers\BookingController::class, 'handleCallback'])->name('midtrans.callback');
 
 // Booking Routes
 Route::prefix('booking')->group(function () {
@@ -29,11 +25,11 @@ Route::get('/sk', [App\Http\Controllers\LandingPageController::class, 'terms'])-
 // Jeep Trip Routes
 Route::prefix('jeep-trip')->as('jeep-trip.')->group(function () {
     Route::get('/', [App\Http\Controllers\JeepTripController::class, 'index'])->name('index');
-    Route::get('/{slug}', [App\Http\Controllers\JeepTripController::class, 'show'])->name('show');
     Route::post('/booking', [App\Http\Controllers\JeepTripController::class, 'booking'])->name('booking');
     Route::get('/checkout', [App\Http\Controllers\JeepTripController::class, 'checkout'])->name('checkout');
     Route::post('/final', [App\Http\Controllers\JeepTripController::class, 'final'])->name('final');
     Route::post('/callback', [App\Http\Controllers\JeepTripController::class, 'handleCallback'])->name('callback');
+    Route::get('/{slug}', [App\Http\Controllers\JeepTripController::class, 'show'])->name('show');
 });
 
 Route::middleware(['auth', 'verified'])->prefix('admin')->as('admin.')->group(function () {

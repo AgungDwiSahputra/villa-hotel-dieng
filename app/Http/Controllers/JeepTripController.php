@@ -8,6 +8,7 @@ use App\Models\JeepTrip\JeepTripBooking;
 use App\Models\JeepTrip\JeepTripBookingItem;
 use App\Models\JeepTrip\JeepTripSlot;
 use App\Models\Rekening;
+use App\Models\Setting;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -121,8 +122,12 @@ class JeepTripController extends Controller
         Log::info('Jeep Trip Booking Process Started', [
             'request_data' => $request->all(),
             'user_id' => auth()->check() ? auth()->id() : null,
-            'ip' => $request->ip()
+            'user_authenticated' => auth()->check(),
+            'ip' => $request->ip(),
+            'user_agent' => $request->userAgent()
         ]);
+
+        // Allow booking without authentication (similar to villa booking)
 
         $request->validate([
             'jeep_trip_id' => 'required|uuid|exists:jeep_trips,id',
@@ -131,15 +136,28 @@ class JeepTripController extends Controller
             'jumlah_jeep' => 'required|integer|min:1',
         ]);
 
-        $jeepTrip = JeepTrip::findOrFail($request->jeep_trip_id);
-        $slot = JeepTripSlot::findOrFail($request->slot_id);
+        Log::info('Jeep Trip Booking: Validation rules passed');
 
-        Log::info('Jeep Trip Booking Validation Passed', [
-            'jeep_trip_id' => $jeepTrip->id,
-            'slot_id' => $slot->id,
-            'tanggal_trip' => $request->tanggal_trip,
-            'jumlah_jeep' => $request->jumlah_jeep
-        ]);
+        try {
+            $jeepTrip = JeepTrip::findOrFail($request->jeep_trip_id);
+            $slot = JeepTripSlot::findOrFail($request->slot_id);
+
+            Log::info('Jeep Trip Booking: Models loaded successfully', [
+                'jeep_trip_id' => $jeepTrip->id,
+                'jeep_trip_name' => $jeepTrip->nama_paket,
+                'slot_id' => $slot->id,
+                'slot_name' => $slot->nama_slot,
+                'tanggal_trip' => $request->tanggal_trip,
+                'jumlah_jeep' => $request->jumlah_jeep
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Jeep Trip Booking: Failed to load models', [
+                'error' => $e->getMessage(),
+                'jeep_trip_id' => $request->jeep_trip_id,
+                'slot_id' => $request->slot_id
+            ]);
+            return back()->withErrors('Data jeep trip atau slot tidak ditemukan.');
+        }
 
         // Validate slot belongs to jeep trip
         if ($slot->jeep_trip_id !== $jeepTrip->id) {
@@ -208,9 +226,16 @@ class JeepTripController extends Controller
 
             DB::commit();
 
-            // Store minimal data in session (just booking ID)
+            // Calculate DP consistently
+            $dpPercentage = $this->getDpPercentage();
+            $dpAmount = round($totalHarga * ($dpPercentage / 100), 2); // Round to 2 decimal places
+
+            // Store booking data with DP info in session
             $sessionData = [
                 'booking_id' => $draftBooking->id,
+                'dp_percentage' => $dpPercentage,
+                'dp_amount' => $dpAmount,
+                'total_harga' => $totalHarga,
                 'expires_at' => now()->addMinutes(30)->toISOString(), // 30 minutes expiry
             ];
 
@@ -220,7 +245,8 @@ class JeepTripController extends Controller
                 'draft_booking_id' => $draftBooking->id,
                 'user_id' => auth()->id(),
                 'jeep_trip_id' => $jeepTrip->id,
-                'total_harga' => $totalHarga
+                'total_harga' => $totalHarga,
+                'session_data' => $sessionData
             ]);
 
             return redirect()->route('jeep-trip.checkout');
@@ -229,8 +255,11 @@ class JeepTripController extends Controller
             DB::rollBack();
             Log::error('Jeep Trip Booking: Failed to create draft booking', [
                 'error' => $e->getMessage(),
+                'error_file' => $e->getFile(),
+                'error_line' => $e->getLine(),
                 'user_id' => auth()->id(),
-                'jeep_trip_id' => $jeepTrip->id
+                'jeep_trip_id' => $jeepTrip->id,
+                'trace' => $e->getTraceAsString()
             ]);
 
             return back()->withErrors('Terjadi kesalahan saat memproses booking. Silakan coba lagi.');
@@ -242,33 +271,91 @@ class JeepTripController extends Controller
      */
     public function checkout()
     {
+        Log::info('Jeep Trip Checkout Page Access', [
+            'user_id' => auth()->check() ? auth()->id() : null,
+            'user_email' => auth()->check() ? auth()->user()->email : null,
+            'session_has_booking' => session()->has('jeep_trip_booking'),
+            'session_data' => session('jeep_trip_booking'),
+            'ip' => request()->ip(),
+            'user_agent' => request()->userAgent()
+        ]);
+
         if (!session('jeep_trip_booking') || !isset(session('jeep_trip_booking')['booking_id'])) {
+            Log::warning('Jeep Trip Checkout: No booking data in session', [
+                'session_all' => session()->all(),
+                'user_id' => auth()->check() ? auth()->id() : null
+            ]);
             return redirect()->route('jeep-trip.index')->withErrors('Data booking tidak ditemukan.');
         }
 
         $sessionData = session('jeep_trip_booking');
+        Log::info('Jeep Trip Checkout: Session data found', [
+            'session_booking_id' => $sessionData['booking_id'] ?? null,
+            'session_expires_at' => $sessionData['expires_at'] ?? null,
+            'current_time' => now()->toISOString()
+        ]);
 
         // Check if draft booking has expired
         if (isset($sessionData['expires_at']) && now()->isAfter($sessionData['expires_at'])) {
+            Log::warning('Jeep Trip Checkout: Draft booking expired', [
+                'booking_id' => $sessionData['booking_id'],
+                'expires_at' => $sessionData['expires_at'],
+                'current_time' => now()->toISOString()
+            ]);
+
             // Clean up expired draft booking
             $expiredBooking = JeepTripBooking::find($sessionData['booking_id']);
             if ($expiredBooking && $expiredBooking->status === 'draft') {
                 $expiredBooking->update(['status' => 'expired']);
+                Log::info('Jeep Trip Checkout: Expired draft booking cleaned up', [
+                    'booking_id' => $expiredBooking->id
+                ]);
             }
             session()->forget('jeep_trip_booking');
             return redirect()->route('jeep-trip.index')->withErrors('Sesi booking telah kedaluwarsa. Silakan mulai booking dari awal.');
         }
 
-        // Load draft booking from database
+        // Load draft booking from database (allow booking without user login)
         $draftBooking = JeepTripBooking::with('bookingItems.jeepTrip', 'bookingItems.slot')
             ->where('id', $sessionData['booking_id'])
             ->where('status', 'draft')
-            ->where('user_id', auth()->id())
             ->first();
 
+        Log::info('Jeep Trip Checkout: Database query result', [
+            'booking_found' => $draftBooking ? true : false,
+            'booking_id' => $draftBooking ? $draftBooking->id : null,
+            'booking_status' => $draftBooking ? $draftBooking->status : null,
+            'booking_user_id' => $draftBooking ? $draftBooking->user_id : null,
+            'current_user_id' => auth()->id(),
+            'booking_items_count' => $draftBooking ? $draftBooking->bookingItems->count() : 0
+        ]);
+
         if (!$draftBooking || !$draftBooking->bookingItems->count()) {
+            Log::error('Jeep Trip Checkout: Draft booking not found or invalid', [
+                'session_booking_id' => $sessionData['booking_id'],
+                'user_id' => auth()->id(),
+                'booking_exists' => JeepTripBooking::find($sessionData['booking_id']) ? true : false
+            ]);
             session()->forget('jeep_trip_booking');
             return redirect()->route('jeep-trip.index')->withErrors('Data booking tidak valid.');
+        }
+
+        // Validate consistency between session and database data
+        $bookingItem = $draftBooking->bookingItems->first();
+        $dbTotalHarga = $bookingItem->subtotal;
+        $sessionTotalHarga = $sessionData['total_harga'] ?? null;
+
+        if ($sessionTotalHarga && abs($dbTotalHarga - $sessionTotalHarga) > 0.01) {
+            Log::warning('Jeep Trip Checkout: Data inconsistency detected between session and database', [
+                'session_total' => $sessionTotalHarga,
+                'db_total' => $dbTotalHarga,
+                'difference' => abs($dbTotalHarga - $sessionTotalHarga),
+                'booking_id' => $draftBooking->id
+            ]);
+            // Update session with correct data from database
+            $sessionData['total_harga'] = $dbTotalHarga;
+            $sessionData['dp_amount'] = round($dbTotalHarga * (($sessionData['dp_percentage'] ?? 50) / 100), 2);
+            session()->put('jeep_trip_booking', $sessionData);
         }
 
         $bookingItem = $draftBooking->bookingItems->first();
@@ -295,9 +382,34 @@ class JeepTripController extends Controller
             ]
         ];
 
-        $rekenings = Rekening::orderBy('name')->get();
+        // Use DP data from session if available, otherwise calculate
+        if ($sessionData && isset($sessionData['dp_percentage']) && isset($sessionData['dp_amount'])) {
+            $dpPercentage = $sessionData['dp_percentage'];
+            $dpAmount = $sessionData['dp_amount'];
+            Log::info('Jeep Trip Checkout: Using DP from session', [
+                'dp_percentage' => $dpPercentage,
+                'dp_amount' => $dpAmount
+            ]);
+        } else {
+            $dpPercentage = $this->getDpPercentage();
+            $dpAmount = round($bookingData['total_harga'] * ($dpPercentage / 100), 2);
+            Log::info('Jeep Trip Checkout: Calculating DP (session data not found)', [
+                'dp_percentage' => $dpPercentage,
+                'dp_amount' => $dpAmount
+            ]);
+        }
 
-        return view('landing.jeep-trip.checkout', compact('rekenings', 'jeepTrip', 'bookingData'));
+        Log::info('Jeep Trip Checkout: View data prepared', [
+            'jeep_trip_id' => $jeepTrip->id,
+            'jeep_trip_name' => $jeepTrip->nama_paket,
+            'booking_data_keys' => array_keys($bookingData),
+            'booking_total_harga' => $bookingData['total_harga'] ?? null,
+            'dp_percentage' => $dpPercentage,
+            'dp_amount' => $dpAmount,
+            'session_will_be_cleared' => false
+        ]);
+
+        return view('landing.jeep-trip.checkout', compact('jeepTrip', 'bookingData', 'dpPercentage', 'dpAmount'));
     }
 
     /**
@@ -308,20 +420,47 @@ class JeepTripController extends Controller
         Log::info('Jeep Trip Final Booking Process Started', [
             'request_data' => $request->all(),
             'user_id' => auth()->check() ? auth()->id() : null,
+            'user_email' => auth()->check() ? auth()->user()->email : null,
             'session_has_booking' => session()->has('jeep_trip_booking'),
-            'ip' => $request->ip()
+            'session_data' => session('jeep_trip_booking'),
+            'ip' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+            'csrf_token_provided' => $request->has('_token'),
+            'csrf_token_valid' => $request->_token === csrf_token()
         ]);
+
+        // Validate CSRF token
+        if (!$request->has('_token') || $request->_token !== csrf_token()) {
+            Log::warning('Jeep Trip Final Booking: Invalid CSRF token', [
+                'has_token' => $request->has('_token'),
+                'token_valid' => $request->has('_token') ? ($request->_token === csrf_token()) : false,
+                'user_id' => auth()->check() ? auth()->id() : null,
+                'ip' => $request->ip()
+            ]);
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Sesi tidak valid. Silakan refresh halaman.'
+            ], 419); // CSRF token mismatch status
+        }
 
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
             'no_wa' => 'required|string|max:20',
-            'payment_method' => 'required|string',
             'total' => 'required|numeric|min:0',
         ]);
 
+        Log::info('Jeep Trip Final Booking: Validation passed', [
+            'name' => $request->name,
+            'email' => $request->email,
+            'total' => $request->total
+        ]);
+
         if (!session('jeep_trip_booking') || !isset(session('jeep_trip_booking')['booking_id'])) {
-            Log::error('Jeep Trip Final Booking: No booking data in session');
+            Log::error('Jeep Trip Final Booking: No booking data in session', [
+                'session_all' => session()->all(),
+                'user_id' => auth()->check() ? auth()->id() : null
+            ]);
             return response()->json([
                 'status' => 'error',
                 'message' => 'Data booking tidak ditemukan.'
@@ -330,11 +469,41 @@ class JeepTripController extends Controller
 
         $sessionData = session('jeep_trip_booking');
 
-        // Load draft booking from database
+        // Validate session integrity
+        $sessionValidationErrors = [];
+        if (!isset($sessionData['dp_amount']) || !is_numeric($sessionData['dp_amount'])) {
+            $sessionValidationErrors[] = 'DP amount missing or invalid';
+        }
+        if (!isset($sessionData['dp_percentage']) || !is_numeric($sessionData['dp_percentage'])) {
+            $sessionValidationErrors[] = 'DP percentage missing or invalid';
+        }
+        if (!isset($sessionData['total_harga']) || !is_numeric($sessionData['total_harga'])) {
+            $sessionValidationErrors[] = 'Total harga missing or invalid';
+        }
+        if (!isset($sessionData['expires_at'])) {
+            $sessionValidationErrors[] = 'Session expiry missing';
+        } elseif (now()->isAfter($sessionData['expires_at'])) {
+            $sessionValidationErrors[] = 'Session expired';
+        }
+
+        if (!empty($sessionValidationErrors)) {
+            Log::error('Jeep Trip Final Booking: Session data integrity validation failed', [
+                'session_data' => $sessionData,
+                'validation_errors' => $sessionValidationErrors,
+                'user_id' => auth()->check() ? auth()->id() : null,
+                'current_time' => now()->toISOString()
+            ]);
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Sesi booking tidak valid. Silakan mulai ulang proses booking.',
+                'errors' => $sessionValidationErrors
+            ], 422);
+        }
+
+        // Load draft booking from database (allow booking without user login)
         $draftBooking = JeepTripBooking::with('bookingItems.jeepTrip', 'bookingItems.slot')
             ->where('id', $sessionData['booking_id'])
             ->where('status', 'draft')
-            ->where('user_id', auth()->id())
             ->first();
 
         if (!$draftBooking || !$draftBooking->bookingItems->count()) {
@@ -359,35 +528,29 @@ class JeepTripController extends Controller
             'total_harga' => $draftBooking->total_harga
         ]);
 
-        // Validate availability again with pessimistic locking to prevent race conditions
+        // Begin transaction for atomic operations
         DB::beginTransaction();
 
         try {
-            $availableUnits = $this->getAvailableUnitsForSlot($slot, $bookingItem->tanggal_trip->format('Y-m-d'), true); // Use lock
-            Log::info('Jeep Trip Final Booking: Final availability check with lock', [
-                'available_units' => $availableUnits,
-                'requested_units' => $bookingItem->jumlah_jeep,
-                'slot_id' => $slot->id,
-                'tanggal' => $bookingItem->tanggal_trip->format('Y-m-d')
-            ]);
 
-            if ($availableUnits < $bookingItem->jumlah_jeep) {
+            // Validate DP amount consistency using session data
+            $sessionData = session('jeep_trip_booking');
+            if (!$sessionData || !isset($sessionData['dp_amount'])) {
                 DB::rollBack();
-                Log::warning('Jeep Trip Final Booking: Insufficient availability on final check', [
-                    'available' => $availableUnits,
-                    'requested' => $bookingItem->jumlah_jeep
+                Log::error('Jeep Trip Final Booking: DP data not found in session', [
+                    'session_data' => $sessionData
                 ]);
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'Maaf, unit jeep yang tersedia sudah berubah. Silakan ulangi booking.'
+                    'message' => 'Data DP tidak ditemukan. Silakan mulai ulang proses booking.'
                 ], 422);
             }
 
-            // Validate price consistency
-            $expectedTotal = $draftBooking->total_harga;
-            $priceDifference = abs($request->total - $expectedTotal);
-            Log::info('Jeep Trip Final Booking: Price validation', [
-                'expected_total' => $expectedTotal,
+            $expectedDpAmount = $sessionData['dp_amount'];
+            $priceDifference = abs($request->total - $expectedDpAmount);
+            Log::info('Jeep Trip Final Booking: DP validation using session data', [
+                'session_dp_amount' => $expectedDpAmount,
+                'session_dp_percentage' => $sessionData['dp_percentage'] ?? null,
                 'request_total' => $request->total,
                 'difference' => $priceDifference,
                 'threshold' => 0.01
@@ -395,14 +558,30 @@ class JeepTripController extends Controller
 
             if ($priceDifference > 0.01) {
                 DB::rollBack();
-                Log::warning('Jeep Trip Final Booking: Price inconsistency detected', [
-                    'expected' => $expectedTotal,
+
+                // Detailed logging for debugging
+                Log::warning('Jeep Trip Final Booking: DP amount inconsistency detected', [
+                    'expected_dp' => $expectedDpAmount,
                     'received' => $request->total,
-                    'difference' => $priceDifference
+                    'difference' => $priceDifference,
+                    'threshold' => 0.01,
+                    'session_data' => $sessionData,
+                    'draft_booking_id' => $draftBooking->id,
+                    'draft_booking_total' => $draftBooking->total_harga,
+                    'user_id' => auth()->id(),
+                    'user_ip' => $request->ip(),
+                    'user_agent' => $request->userAgent(),
+                    'request_all' => $request->all(),
+                    'csrf_token_valid' => $request->_token === csrf_token(),
+                    'current_time' => now()->toISOString(),
+                    'session_expires_at' => $sessionData['expires_at'] ?? null,
+                    'time_since_booking' => isset($sessionData['expires_at']) ?
+                        now()->diffInMinutes(\Carbon\Carbon::parse($sessionData['expires_at'])->subMinutes(30)) : null
                 ]);
+
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'Total harga tidak sesuai. Silakan refresh halaman.'
+                    'message' => 'Jumlah DP tidak sesuai. Silakan refresh halaman atau mulai ulang booking.'
                 ], 422);
             }
 
@@ -418,22 +597,34 @@ class JeepTripController extends Controller
                 'payment_ref' => $orderId,
             ]);
 
-            // Update availability (already locked)
-            $availability = JeepTripAvailability::where('jeep_trip_slot_id', $slot->id)
+            // Update availability with atomic operation to prevent race conditions
+            $availabilityUpdated = JeepTripAvailability::where('jeep_trip_slot_id', $slot->id)
                 ->where('tanggal', $bookingItem->tanggal_trip->format('Y-m-d'))
-                ->lockForUpdate()
-                ->first();
+                ->where('is_closed', false)
+                ->whereRaw('quota_jeep - quota_terpakai >= ?', [$bookingItem->jumlah_jeep])
+                ->increment('quota_terpakai', $bookingItem->jumlah_jeep);
 
-            if ($availability) {
-                $availability->increment('quota_terpakai', $bookingItem->jumlah_jeep);
-                Log::info('Jeep Trip Availability Updated', [
+            if ($availabilityUpdated === 0) {
+                // No rows were updated, meaning availability check failed
+                DB::rollBack();
+                Log::warning('Jeep Trip Final Booking: Atomic availability update failed', [
                     'slot_id' => $slot->id,
                     'tanggal' => $bookingItem->tanggal_trip->format('Y-m-d'),
-                    'quota_terpakai_before' => $availability->quota_terpakai - $bookingItem->jumlah_jeep,
-                    'quota_terpakai_after' => $availability->quota_terpakai,
-                    'increment_amount' => $bookingItem->jumlah_jeep
+                    'requested_jeep' => $bookingItem->jumlah_jeep,
+                    'availability_updated' => $availabilityUpdated
                 ]);
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Maaf, unit jeep yang tersedia sudah berubah. Silakan ulangi booking.'
+                ], 422);
             }
+
+            Log::info('Jeep Trip Availability Updated Atomically', [
+                'slot_id' => $slot->id,
+                'tanggal' => $bookingItem->tanggal_trip->format('Y-m-d'),
+                'increment_amount' => $bookingItem->jumlah_jeep,
+                'rows_affected' => $availabilityUpdated
+            ]);
 
             // Prepare Midtrans payment parameters
             $itemDetails = [
@@ -459,7 +650,46 @@ class JeepTripController extends Controller
                 'enabled_payments' => ['gopay', 'bank_transfer'],
             ];
 
-            $snapToken = \Midtrans\Snap::getSnapToken($params);
+            Log::info('Jeep Trip Final Booking: Midtrans parameters prepared', [
+                'order_id' => $orderId,
+                'gross_amount' => (int) $request->total,
+                'customer_name' => $request->name,
+                'customer_email' => $request->email,
+                'customer_phone' => $request->no_wa,
+                'item_count' => count($itemDetails),
+                'midtrans_config' => [
+                    'server_key_set' => !empty(config('midtrans.server_key')),
+                    'client_key_set' => !empty(config('midtrans.client_key')),
+                    'is_production' => config('midtrans.is_production'),
+                    'is_sanitized' => config('midtrans.is_sanitized'),
+                    'is_3ds' => config('midtrans.is_3ds'),
+                ]
+            ]);
+
+            try {
+                $snapToken = \Midtrans\Snap::getSnapToken($params);
+                Log::info('Jeep Trip Final Booking: Midtrans snap token generated successfully', [
+                    'order_id' => $orderId,
+                    'snap_token_length' => strlen($snapToken),
+                    'snap_token_preview' => substr($snapToken, 0, 20) . '...'
+                ]);
+            } catch (\Exception $e) {
+                Log::error('Jeep Trip Final Booking: Midtrans snap token generation failed', [
+                    'order_id' => $orderId,
+                    'error_message' => $e->getMessage(),
+                    'error_code' => $e->getCode(),
+                    'midtrans_config' => [
+                        'server_key_length' => strlen(config('midtrans.server_key')),
+                        'client_key_length' => strlen(config('midtrans.client_key')),
+                        'is_production' => config('midtrans.is_production'),
+                    ]
+                ]);
+                DB::rollBack();
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Gagal menghubungi payment gateway. Silakan coba lagi.'
+                ], 500);
+            }
 
             DB::commit();
 
@@ -631,6 +861,15 @@ class JeepTripController extends Controller
         ]);
 
         return response()->json(['message' => 'Notification processed successfully'], 200);
+    }
+
+    /**
+     * Get DP percentage from settings
+     */
+    private function getDpPercentage()
+    {
+        $dpSetting = Setting::where('key', 'dp')->first();
+        return $dpSetting ? (float) $dpSetting->value : 50.0; // Default 50% if not set
     }
 
     /**

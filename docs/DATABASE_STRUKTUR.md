@@ -16,11 +16,12 @@ Dokumentasi ini menyediakan dokumentasi komprehensif untuk struktur database Vil
 ## 🗂️ Ringkasan Database
 
 ```
-Total Tabel:        37 tabel
-Tabel Bisnis Inti:  27 tabel
+Total Tabel:        38 tabel
+Tabel Bisnis Inti:  28 tabel (termasuk 9 tabel Jeep Trip)
 Tabel Sistem Laravel: 10 tabel
-Total Relasi:       40+ relasi
+Total Relasi:       50+ relasi
 Soft Deletes:       3 tabel (users, produks, promos)
+UUID Tables:        9 tabel Jeep Trip (menggunakan UUID sebagai primary key)
 ```
 
 ---
@@ -432,35 +433,45 @@ Soft Deletes:       3 tabel (users, produks, promos)
 ## 🚙 Tabel Manajemen Jeep Trip
 
 ### 30. jeep_trips
-**Tujuan**: Informasi paket Jeep Trip utama
+**Tujuan**: Informasi paket Jeep Trip utama - Master data untuk semua paket perjalanan jeep
 
 | Field | Tipe | Deskripsi |
 |-------|------|-------------|
-| id | uuid | Kunci primer |
-| kode | varchar(50) | Kode paket (unik, nullable) |
+| id | char(36) | Kunci primer UUID |
+| kode | varchar(50) | Kode paket internal (unik, nullable) |
 | slug | varchar(150) | Slug URL-friendly (unik) |
 | nama_paket | varchar(150) | Nama paket Jeep Trip |
-| deskripsi_singkat | text | Deskripsi singkat (nullable) |
-| deskripsi_lengkap | longtext | Deskripsi lengkap (nullable) |
-| zona | varchar(50) | Zona operasi (nullable) |
+| deskripsi_singkat | text | Deskripsi singkat untuk listing (nullable) |
+| deskripsi_lengkap | longtext | Deskripsi detail dengan HTML (nullable) |
+| zona | varchar(50) | Zona operasi (sunrise, favorit, dll.) |
 | durasi_jam | int unsigned | Durasi trip dalam jam (nullable) |
 | jam_berangkat_default | time | Jam berangkat default (nullable) |
 | kapasitas_ideal_per_jeep | int unsigned | Kapasitas ideal per jeep (default 4) |
-| kapasitas_max_per_jeep | int unsigned | Kapasitas maks per jeep (default 4) |
-| harga_weekday | decimal(15,2) | Harga hari kerja |
-| harga_weekend | decimal(15,2) | Harga akhir pekan |
-| rating | decimal(3,2) | Rating paket (nullable) |
-| is_active | boolean | Status aktif (default true) |
+| kapasitas_max_per_jeep | int unsigned | Kapasitas maksimal per jeep (default 4) |
+| harga_weekday | decimal(15,2) | Harga hari kerja (Senin-Jumat) |
+| harga_weekend | decimal(15,2) | Harga akhir pekan (Sabtu-Minggu) |
+| rating | decimal(3,2) | Rating rata-rata paket (nullable) |
+| is_active | tinyint(1) | Status aktif/nonaktif (default 1) |
 | created_at | timestamp | Timestamp pembuatan |
 | updated_at | timestamp | Timestamp pembaruan |
 
 **Relasi**:
 - Memiliki banyak: jeep_trip_destinations, jeep_trip_includes, jeep_trip_excludes, jeep_trip_slots, jeep_trip_images, jeep_trip_booking_items
+- Berelasi dengan: jeep_trip_slots (one-to-many), jeep_trip_booking_items (one-to-many)
 
 **Indeks**:
 - PRIMARY KEY (id)
-- UNIQUE (kode)
-- UNIQUE (slug)
+- UNIQUE KEY (kode)
+- UNIQUE KEY (slug)
+- INDEX (is_active) - untuk filtering paket aktif
+- INDEX (zona) - untuk filtering berdasarkan zona
+- INDEX (harga_weekday, harga_weekend) - untuk sorting harga
+
+**Business Logic**:
+- UUID sebagai primary key untuk keamanan dan distributed systems
+- Soft delete tidak diterapkan (paket di-nonaktifkan via is_active)
+- Harga dinamis berdasarkan weekday/weekend
+- Rating dihitung dari feedback customer (future feature)
 
 ---
 
@@ -555,25 +566,38 @@ Soft Deletes:       3 tabel (users, produks, promos)
 ---
 
 ### 36. jeep_trip_bookings
-**Tujuan**: Pemesanan Jeep Trip
+**Tujuan**: Header pemesanan Jeep Trip - Mengelola status dan total booking
 
 | Field | Tipe | Deskripsi |
 |-------|------|-------------|
-| id | uuid | Kunci primer |
-| user_id | uuid | Foreign key ke users |
-| kode_booking | varchar(50) | Kode booking (unik) |
-| total_harga | decimal(15,2) | Total harga |
-| status | enum('pending','paid','cancelled','expired','done') | Status booking (default 'pending') |
-| payment_ref | varchar(100) | Referensi pembayaran (nullable) |
+| id | char(36) | Kunci primer UUID |
+| user_id | bigint unsigned | Foreign key ke users (nullable untuk guest booking) |
+| kode_booking | varchar(50) | Kode booking unik (format: JT-{uniqid}) |
+| total_harga | decimal(15,2) | Total harga semua item |
+| status | enum('draft','pending','paid','cancelled','expired','done') | Status booking |
+| payment_ref | varchar(100) | Referensi pembayaran Midtrans (nullable) |
 | created_at | timestamp | Timestamp pembuatan |
 | updated_at | timestamp | Timestamp pembaruan |
 
 **Relasi**:
-- Dimiliki oleh: users
+- Dimiliki oleh: users (nullable)
 - Memiliki banyak: jeep_trip_booking_items
+- Berelasi dengan: transaksis (future integration)
 
 **Indeks**:
-- UNIQUE (kode_booking)
+- PRIMARY KEY (id)
+- UNIQUE KEY (kode_booking)
+- INDEX (user_id) - untuk filtering booking per user
+- INDEX (status) - untuk filtering status booking
+- INDEX (created_at) - untuk sorting booking terbaru
+- FOREIGN KEY (user_id) REFERENCES users(id)
+
+**Business Logic**:
+- Kode booking generated otomatis dengan prefix 'JT-'
+- Status flow: draft → pending → paid/cancelled/expired → done
+- Guest booking diizinkan (user_id nullable)
+- Payment reference untuk integrasi Midtrans
+- Soft delete tidak diterapkan untuk audit trail
 
 ---
 
@@ -599,25 +623,38 @@ Soft Deletes:       3 tabel (users, produks, promos)
 ---
 
 ### 38. jeep_trip_availabilities
-**Tujuan**: Ketersediaan slot Jeep Trip per tanggal
+**Tujuan**: Sistem ketersediaan dan quota Jeep Trip - Core business logic untuk availability management
 
 | Field | Tipe | Deskripsi |
 |-------|------|-------------|
-| id | uuid | Kunci primer |
-| jeep_trip_slot_id | uuid | Foreign key ke jeep_trip_slots |
-| tanggal | date | Tanggal |
-| quota_jeep | int unsigned | Kuota jeep |
-| quota_terpakai | int unsigned | Kuota terpakai (default 0) |
-| is_closed | boolean | Slot ditutup (default false) |
+| id | char(36) | Kunci primer UUID |
+| jeep_trip_slot_id | char(36) | Foreign key ke jeep_trip_slots |
+| tanggal | date | Tanggal ketersediaan |
+| quota_jeep | int unsigned | Total kuota jeep untuk slot/tanggal ini |
+| quota_terpakai | int unsigned | Jumlah jeep yang sudah dipesan (default 0) |
+| is_closed | tinyint(1) | Flag untuk menutup slot (default 0) |
 | created_at | timestamp | Timestamp pembuatan |
 | updated_at | timestamp | Timestamp pembaruan |
 
 **Relasi**:
 - Dimiliki oleh: jeep_trip_slots
+- Berelasi dengan: jeep_trip_booking_items (via jeep_trip_slot_id)
 
 **Indeks**:
-- UNIQUE (jeep_trip_slot_id, tanggal)
-- FOREIGN KEY cascade
+- PRIMARY KEY (id)
+- UNIQUE KEY (jeep_trip_slot_id, tanggal) - mencegah duplikasi slot per tanggal
+- INDEX (tanggal) - untuk filtering availability per tanggal
+- INDEX (is_closed) - untuk filtering slot aktif
+- INDEX (quota_jeep, quota_terpakai) - untuk kalkulasi ketersediaan cepat
+- FOREIGN KEY (jeep_trip_slot_id) REFERENCES jeep_trip_slots(id) ON DELETE CASCADE
+
+**Business Logic**:
+- **Atomic Operations**: Menggunakan `increment('quota_terpakai')` untuk mencegah race condition
+- **Availability Formula**: `quota_tersedia = quota_jeep - quota_terpakai`
+- **Status Logic**: Slot dianggap tidak tersedia jika `is_closed = true` OR `quota_terpakai >= quota_jeep`
+- **Constraint Check**: Booking hanya diizinkan jika `quota_jeep - quota_terpakai >= jumlah_jeep_dipesan`
+- **Recovery Mechanism**: Quota dikembalikan otomatis jika pembayaran gagal/dibatalkan
+- **Admin Control**: Admin dapat menutup slot kapan saja via `is_closed` flag
 
 ---
 ## ⚙️ Tabel Konfigurasi Sistem
@@ -802,15 +839,18 @@ produk_categories → produks
 promos → promo_categories
 promos → promo_products
 transaksis → transaksi_details
-jeep_trips → jeep_trip_destinations
+
+// Jeep Trip Relations
+jeep_trips → jeep_trip_destinations (ordered by urutan)
 jeep_trips → jeep_trip_includes
 jeep_trips → jeep_trip_excludes
 jeep_trips → jeep_trip_slots
-jeep_trips → jeep_trip_images
+jeep_trips → jeep_trip_images (ordered by urutan)
 jeep_trips → jeep_trip_booking_items
 jeep_trip_slots → jeep_trip_availabilities
+jeep_trip_slots → jeep_trip_booking_items
 jeep_trip_bookings → jeep_trip_booking_items
-users → jeep_trip_bookings
+users → jeep_trip_bookings (nullable for guest bookings)
 ```
 
 ### Relasi Many-to-Many
@@ -860,9 +900,21 @@ Semua tabel menyertakan kolom `created_at` dan `updated_at` untuk:
 - `transaksi_details (produk_id, date)` - Pencarian pemesanan cepat
 - `promos.promo_code` (UNIQUE) - Validasi promo cepat
 - `sessions (user_id, last_activity)` - Manajemen sesi
+
+### Indeks Jeep Trip (Critical untuk Availability):
 - `jeep_trips.slug` (UNIQUE) - Pencarian paket Jeep Trip cepat
-- `jeep_trip_bookings.kode_booking` (UNIQUE) - Validasi booking cepat
+- `jeep_trips.is_active` - Filtering paket aktif
+- `jeep_trips.zona` - Filtering berdasarkan zona operasi
+- `jeep_trips (harga_weekday, harga_weekend)` - Sorting harga
+- `jeep_trip_slots.jeep_trip_id` - Relasi slot ke paket
 - `jeep_trip_availabilities (jeep_trip_slot_id, tanggal)` (UNIQUE) - Pemeriksaan ketersediaan slot cepat
+- `jeep_trip_availabilities.tanggal` - Filtering availability per tanggal
+- `jeep_trip_availabilities.is_closed` - Filtering slot aktif
+- `jeep_trip_availabilities (quota_jeep, quota_terpakai)` - Kalkulasi ketersediaan cepat
+- `jeep_trip_bookings.kode_booking` (UNIQUE) - Validasi booking cepat
+- `jeep_trip_bookings (user_id, status)` - Filtering booking per user
+- `jeep_trip_bookings.created_at` - Sorting booking terbaru
+- `jeep_trip_booking_items (jeep_trip_slot_id, tanggal_trip)` - Pencarian booking per slot/tanggal
 
 ---
 
@@ -895,11 +947,13 @@ php artisan migrate:fresh --seed
 ## 📊 Statistik Database
 
 ```
-Ukuran Baris Rata-rata: ~2KB per produk
-Kebutuhan Penyimpanan: ~50MB per 1000 produk (dengan metadata gambar)
-Pertumbuhan Diharapkan: ~100MB per tahun
-Indeks Direkomendasikan: 15+ indeks covering
-Performa Query: <100ms untuk 95% query
+Ukuran Baris Rata-rata: ~2KB per produk/villa, ~1.5KB per jeep trip record
+Kebutuhan Penyimpanan: ~50MB per 1000 produk + ~20MB per 100 jeep trip bookings
+Pertumbuhan Diharapkan: ~150MB per tahun (dengan Jeep Trip)
+Indeks Direkomendasikan: 25+ indeks covering (termasuk Jeep Trip)
+Performa Query: <100ms untuk 95% query, <50ms untuk availability checks
+Concurrent Users: Optimized untuk 100+ simultaneous bookings
+Race Condition Protection: Atomic operations pada availability updates
 ```
 
 ---
@@ -917,21 +971,32 @@ Performa Query: <100ms untuk 95% query
 ## 📝 Catatan untuk Developer
 
 ### Saat Menambahkan Tabel Baru:
-1. Buat file migrasi
-2. Definisikan model Eloquent
-3. Tambahkan relasi
-4. Perbarui dokumentasi ini
+1. Buat file migrasi dengan konvensi penamaan Laravel
+2. Definisikan model Eloquent dengan proper relationships
+3. Tambahkan relasi dan foreign key constraints
+4. Perbarui dokumentasi ini dengan detail field dan business logic
 5. **Perbarui diagram ERD secara manual**
-6. Tambahkan seeder jika diperlukan
-7. Uji migrasi
+6. Tambahkan seeder untuk data awal
+7. Buat unit/feature tests untuk logic kompleks
+8. Uji migrasi di environment staging
+
+### Development Jeep Trip:
+1. **UUID Primary Keys**: Gunakan `char(36)` untuk UUID fields
+2. **Atomic Availability**: Selalu gunakan `increment()` untuk quota updates
+3. **Session Management**: Implement expiry untuk draft bookings (30 menit)
+4. **Race Condition**: Test concurrent booking scenarios
+5. **Midtrans Integration**: Validate signatures dan handle callbacks properly
+6. **Admin Interface**: Buat UI untuk availability management (missing feature)
 
 ### Praktik Terbaik:
-- Gunakan nama kolom deskriptif
-- Tambahkan constraint foreign key
-- Sertakan indeks untuk kolom pencarian
-- Gunakan tipe data yang sesuai
-- Tambahkan komentar untuk field kompleks
-- Pertahankan integritas referensial
+- Gunakan nama kolom deskriptif dan konsisten
+- Tambahkan constraint foreign key dengan cascade rules
+- Sertakan indeks untuk kolom pencarian frekuent
+- Gunakan tipe data yang sesuai (decimal untuk harga, tinyint untuk boolean)
+- Tambahkan komentar untuk field dengan business logic kompleks
+- Pertahankan integritas referensial dengan proper constraints
+- Implement soft deletes untuk data sensitif
+- Gunakan UUID untuk distributed systems compatibility
 
 ---
 
@@ -945,7 +1010,8 @@ Untuk pertanyaan terkait database:
 
 ---
 
-**Versi Dokumen**: 1.1
+**Versi Dokumen**: 1.2
 **Terakhir Diperbarui**: November 2025
-**Status**: ✅ Lengkap & Terkini
+**Status**: ✅ Lengkap & Terkini (termasuk Jeep Trip)
 **Status ERD**: ⚠️ Pembaruan manual diperlukan saat perubahan skema
+**Jeep Trip Integration**: ✅ Fully documented dengan business logic

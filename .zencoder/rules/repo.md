@@ -6,7 +6,7 @@ alwaysApply: true
 # Villa Hotel Dieng Management System
 
 ## Summary
-Villa Hotel Dieng is a comprehensive hotel and villa management system built with Laravel 12. The application manages properties, reservations, payments, user roles, and operational features for a boutique hotel/villa in Dieng, Indonesia. It provides both admin backend management and public booking interface with payment gateway integration (Midtrans). The system features a modular architecture with organized namespaces, role-based access control, activity logging, comprehensive debugging capabilities with detailed process logging, and a modern frontend built with Tailwind CSS and Alpine.js. The system includes advanced empty state handling for improved user experience when data is unavailable, and robust error tracking through structured logging throughout all major processes. **Recently expanded to include Jeep Trip services** - complete tour packages with slot-based availability management, real-time booking, race condition prevention, draft booking system, and integrated payment processing with comprehensive testing coverage.
+Villa Hotel Dieng is a comprehensive hotel and villa management system built with Laravel 12. The application manages properties, reservations, payments, user roles, and operational features for a boutique hotel/villa in Dieng, Indonesia. It provides both admin backend management and public booking interface with payment gateway integration (Midtrans). The system features a modular architecture with organized namespaces, role-based access control, activity logging, comprehensive debugging capabilities with detailed process logging, and a modern frontend built with Tailwind CSS and Alpine.js. The system includes advanced empty state handling for improved user experience when data is unavailable, and robust error tracking through structured logging throughout all major processes. **Recently expanded to include Jeep Trip services** - complete tour packages with slot-based availability management, real-time booking, race condition prevention, draft booking system, and integrated payment processing with comprehensive testing coverage. **Critical DP Amount validation fix implemented** - resolved checkout form data inconsistency where total harga was sent instead of DP amount, preventing payment validation failures and ensuring secure transaction processing.
 
 ## Structure
 **Root Directory Organization**:
@@ -1170,8 +1170,30 @@ Cache::remember('cache_key', 3600, function () {
     - `resources/views/landing/index.blade.php` - Added conditional button display
   - **Benefits**: Prevents confusion by hiding unavailable services, maintains clean UI, improves user experience
 
+### DP Amount Validation Critical Fix (November 2025):
+- **DP Amount Bug Resolution**: Fixed critical bug where checkout form sent total harga instead of DP amount, causing validation failures
+- **Root Cause**: Hidden form field `total` was populated with `$bookingData['total_harga']` (500,000) instead of `$dpAmount` (125,000)
+- **Frontend Fix**: Updated `resources/views/landing/jeep-trip/checkout.blade.php` to send DP amount in hidden field
+- **Backend Validation**: Enhanced DP amount validation with detailed logging and session consistency checks
+- **Session Integrity**: Added automatic session correction when data inconsistency detected between session and database
+- **Error Prevention**: Implemented comprehensive validation to prevent DP amount manipulation attacks
+- **User Experience**: Added client-side DP validation with clear error messages and recovery options
+- **Security Enhancement**: CSRF token validation and session expiry checks to prevent unauthorized access
+- **Race Condition Prevention**: Atomic database operations using `increment()` with conditions to prevent double-bookings
+- **Production Security**: Removed sensitive debug information from error responses in production environment
+- **Files Updated**:
+  - `resources/views/landing/jeep-trip/checkout.blade.php` - Fixed hidden field to send DP amount
+  - `app/Http/Controllers/JeepTripController.php` - Enhanced validation and session management
+- **Benefits**: Eliminates DP validation failures, improves payment security, enhances user experience with proper error handling
+
 ## Summary
 Dokumentasi ini telah diperbarui pada November 2025 untuk mencakup:
+- **DP Amount Validation Critical Fix**: Resolved critical bug where checkout form sent total harga instead of DP amount, causing validation failures and preventing successful payments
+- **Root Cause Resolution**: Fixed hidden form field inconsistency where `$bookingData['total_harga']` was sent instead of `$dpAmount`, eliminating payment validation errors
+- **Security Enhancement**: Implemented comprehensive validation to prevent DP amount manipulation attacks with session integrity checks and CSRF protection
+- **User Experience Improvement**: Added client-side DP validation with clear error messages and recovery options for failed transactions
+- **Production Security**: Removed sensitive debug information from error responses in production environment
+- **Race Condition Prevention**: Enhanced atomic database operations using `increment()` with conditions to prevent double-bookings
 - **Jeep Trip Booking System Overhaul**: Complete system redesign with race condition prevention, draft booking workflow, comprehensive logging, and production-ready reliability
 - **Race Condition Prevention**: Database locks implementation to prevent double-bookings during concurrent requests
 - **Draft Booking System**: Session-independent booking with 30-minute expiry and automatic cleanup
@@ -1209,6 +1231,6 @@ Dokumentasi ini telah diperbarui pada November 2025 untuk mencakup:
 
 ---
 
-**Versi Dokumen**: 2.3
+**Versi Dokumen**: 2.4
 **Terakhir Diperbarui**: November 2025
-**Status**: ✅ Lengkap & Terkini dengan Jeep Trip Booking System Overhaul
+**Status**: ✅ Lengkap & Terkini dengan DP Amount Validation Critical Fix

@@ -57,7 +57,7 @@
                         @csrf
 
                         <!-- Hidden fields -->
-                        <input type="hidden" name="total" value="{{ $bookingData['total_harga'] }}">
+                        <input type="hidden" name="total" value="{{ $dpAmount }}">
 
                         <!-- Customer Information -->
                         <div class="space-y-6">
@@ -92,29 +92,6 @@
                                 @enderror
                             </div>
 
-                            <!-- Payment Method -->
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-3">Metode Pembayaran</label>
-                                <div class="space-y-3">
-                                    @foreach($rekenings as $rekening)
-                                        <div class="flex items-center">
-                                            <input type="radio" id="payment_{{ $rekening->id }}" name="payment_method"
-                                                   value="{{ $rekening->name }}" class="mr-3" required>
-                                            <label for="payment_{{ $rekening->id }}" class="flex items-center cursor-pointer">
-                                                @if($rekening->image)
-                                                    <img src="{{ asset('storage/' . $rekening->image) }}"
-                                                         alt="{{ $rekening->name }}"
-                                                         class="w-8 h-8 mr-3 rounded">
-                                                @endif
-                                                <span class="font-medium text-gray-900">{{ $rekening->name }}</span>
-                                            </label>
-                                        </div>
-                                    @endforeach
-                                </div>
-                                @error('payment_method')
-                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                @enderror
-                            </div>
 
                             <!-- Terms and Conditions -->
                             <div class="flex items-start">
@@ -207,9 +184,9 @@
                         <!-- DP Section -->
                         <div class="bg-blue-50 rounded-lg p-3 mb-4">
                             <div class="flex justify-between items-center">
-                                <span class="text-sm text-gray-600">DP (Down Payment) 50%</span>
+                                <span class="text-sm text-gray-600">DP (Down Payment) {{ $dpPercentage }}%</span>
                                 <span class="font-semibold text-blue-600">
-                                    Rp {{ number_format($bookingData['total_harga'] * 0.5, 0, ',', '.') }}
+                                    Rp {{ number_format($dpAmount, 0, ',', '.') }}
                                 </span>
                             </div>
                             <p class="text-xs text-gray-500 mt-1">
@@ -222,7 +199,7 @@
                         <div class="flex justify-between items-center">
                             <span class="text-lg font-semibold text-gray-900">Total Pembayaran</span>
                             <span class="text-xl font-bold text-blue-600">
-                                Rp {{ number_format($bookingData['total_harga'] * 0.5, 0, ',', '.') }}
+                                Rp {{ number_format($dpAmount, 0, ',', '.') }}
                             </span>
                         </div>
                     </div>
@@ -234,9 +211,9 @@
                             <div>
                                 <h3 class="font-medium text-yellow-800 mb-2">Instruksi Pembayaran</h3>
                                 <ul class="text-sm text-yellow-700 space-y-1">
-                                    <li>• Transfer DP 50% ke rekening yang dipilih</li>
-                                    <li>• Kirim bukti transfer ke WhatsApp admin</li>
-                                    <li>• Konfirmasi pembayaran maksimal 1x24 jam</li>
+                                    <li>• Bayar DP {{ $dpPercentage }}% melalui Midtrans</li>
+                                    <li>• Pilih metode pembayaran yang tersedia (GoPay, Bank Transfer)</li>
+                                    <li>• Konfirmasi pembayaran otomatis</li>
                                     <li>• Pelunasan dilakukan saat trip berlangsung</li>
                                 </ul>
                             </div>
@@ -254,6 +231,21 @@
                        class="w-full bg-gray-200 text-gray-700 py-3 px-6 rounded-lg font-medium text-center hover:bg-gray-300 transition-colors mt-3 inline-block">
                         <i class="bx bx-arrow-back mr-2"></i>Kembali ke Detail
                     </a>
+
+                    <!-- Error Recovery Section (hidden by default) -->
+                    <div id="error-recovery" class="hidden mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+                        <h4 class="font-medium text-red-800 mb-2">Mengalami Masalah?</h4>
+                        <div class="flex space-x-2">
+                            <button type="button" onclick="window.location.reload()"
+                                    class="bg-blue-600 text-white px-4 py-2 rounded text-sm hover:bg-blue-700">
+                                <i class="bx bx-refresh mr-1"></i>Refresh Halaman
+                            </button>
+                            <a href="{{ route('jeep-trip.booking') }}?restart=1"
+                               class="bg-gray-600 text-white px-4 py-2 rounded text-sm hover:bg-gray-700">
+                                <i class="bx bx-restart mr-1"></i>Mulai Ulang Booking
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -276,6 +268,27 @@
                     return false;
                 }
 
+                // Validate DP amount before submission
+                const expectedDpAmount = {{ $dpAmount }};
+                const formTotal = parseFloat(document.getElementById('checkout-form').total.value);
+
+                console.log('DP Amount validation:', {
+                    expected: expectedDpAmount,
+                    received: formTotal,
+                    totalHarga: {{ $bookingData['total_harga'] }},
+                    dpPercentage: {{ $dpPercentage }}
+                });
+
+                if (Math.abs(formTotal - expectedDpAmount) > 0.01) {
+                    console.error('DP Amount validation failed:', {
+                        expected: expectedDpAmount,
+                        received: formTotal,
+                        difference: Math.abs(formTotal - expectedDpAmount)
+                    });
+                    alert('Terjadi kesalahan pada perhitungan DP. Silakan refresh halaman.');
+                    return false;
+                }
+
                 // Show loading state
                 const button = this;
                 button.disabled = true;
@@ -295,6 +308,8 @@
                 })
                 .then(response => response.json())
                 .then(data => {
+                    console.log('Booking response:', data);
+
                     if (data.status === 'success') {
                         snapToken = data.snap_token;
 
@@ -319,14 +334,25 @@
                             }
                         });
                     } else {
+                        console.error('Booking failed:', data);
                         alert(data.message || 'Terjadi kesalahan saat memproses booking.');
+
+                        // Show error recovery options for specific errors
+                        if (data.message && (data.message.includes('DP') || data.message.includes('sesi'))) {
+                            document.getElementById('error-recovery').classList.remove('hidden');
+                        }
+
                         button.disabled = false;
                         button.innerHTML = '<i class="bx bx-credit-card mr-2"></i>Bayar DP & Pesan Jeep Trip';
                     }
                 })
                 .catch(error => {
-                    console.error('Error:', error);
-                    alert('Terjadi kesalahan. Silakan coba lagi.');
+                    console.error('Network/JS Error:', error);
+                    alert('Terjadi kesalahan jaringan. Silakan coba lagi.');
+
+                    // Show error recovery for network errors
+                    document.getElementById('error-recovery').classList.remove('hidden');
+
                     button.disabled = false;
                     button.innerHTML = '<i class="bx bx-credit-card mr-2"></i>Bayar DP & Pesan Jeep Trip';
                 });
