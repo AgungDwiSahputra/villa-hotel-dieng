@@ -35,6 +35,7 @@ class RolePermissionSeeder extends Seeder
             'Produk Syarat',
             'Jeep Trip',
             'Jeep Trip Image',
+            'Jeep Trip Availability',
             'Transaksi',
             'Rekening',
             'User Management User',

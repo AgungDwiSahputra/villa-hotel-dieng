@@ -35,20 +35,20 @@ Villa Hotel Dieng is a comprehensive hotel and villa management system built wit
   - `app/Http/Controllers/Admin/Produk/` - Product management controllers
   - `app/Http/Controllers/Admin/Promo/` - Promotion management controllers
   - `app/Http/Controllers/Admin/Transaksi/` - Transaction management controllers
-  - `app/Http/Controllers/Admin/JeepTrip/` - Jeep Trip management controllers (JeepTripController)
+  - `app/Http/Controllers/Admin/JeepTrip/` - Jeep Trip management controllers (JeepTripController, JeepTripAvailabilityController)
   - `app/Http/Controllers/Admin/UserManagement/` - User, Role, Permission controllers
   - Root controllers: LandingPageController, BookingController, JeepTripController, ProfileController
 - `app/DataTables/` - Yajra DataTables configurations organized by feature
   - `app/DataTables/Admin/Produk/` - Product DataTables (Produk, Category, Fasilitas, Image, Syarat, Wisata)
   - `app/DataTables/Admin/Promo/` - PromoDataTable
   - `app/DataTables/Admin/Transaksi/` - TransaksiDataTable
-  - `app/DataTables/Admin/JeepTrip/` - JeepTripDataTable
+  - `app/DataTables/Admin/JeepTrip/` - JeepTripDataTable, JeepTripAvailabilityDataTable
   - `app/DataTables/Admin/UserManagement/` - User, Role, Permission DataTables
   - Root DataTables: ActivityLogDataTable, RekeningDataTable
 - `app/helpers.php` - Global helper functions for image/file storage
 - `app/View/` - View composers and view service providers
 - `resources/views/` - Blade template files organized by feature
-  - `resources/views/admin/` - Admin panel views (dashboard, produk, promo, transaksi, jeep-trip, user-management, setting, rekening, activity-log)
+  - `resources/views/admin/` - Admin panel views (dashboard, produk, promo, transaksi, jeep-trip, jeep-trip/availability, user-management, setting, rekening, activity-log)
   - `resources/views/landing/` - Public landing page templates
     - `resources/views/landing/jeep-trip/` - Jeep Trip public pages (index, show, checkout)
   - `resources/views/auth/` - Authentication views (login, register, password reset)
@@ -365,8 +365,9 @@ php artisan migrate:fresh --seed
 **Web Routes**: `routes/web.php` - Public and authenticated web routes (landing page, dashboard, admin)
   - Jeep Trip Routes: `/jeep-trip/*` - Jeep trip listing, detail, and booking
 **API Routes**: `routes/api.php` - RESTful API endpoints with Sanctum authentication
-  - `GET /api/promos/active` - Retrieve active promo codes for checkout display
-  - `POST /api/promos/preview` - Preview promo code discount calculation
+   - `GET /api/promos/active` - Retrieve active promo codes for checkout display
+   - `POST /api/promos/preview` - Preview promo code discount calculation
+   - `GET /api/jeep-trip/availability` - Check jeep trip slot availability for specific date
 **Authentication Routes**: `routes/auth.php` - Login, registration, password reset routes
 **Configuration Bootstrap**: `bootstrap/app.php` - Application kernel and service provider setup
 
@@ -536,6 +537,7 @@ MAIL_FROM_NAME="Villa Hotel Dieng"
 - Separate stylesheets for admin (app.css) and landing page (SCSS-based)
 - **Mobile-optimized components** with touch-friendly interactions and responsive typography
 - **Advanced Villa Card Component**: Dynamic promo badges, availability status, mobile-first design
+- **Dynamic Jeep Input Validation**: Real-time adjustment of maximum jeep quantity based on slot availability, preventing overbooking with instant user feedback
 
 **Landing Page Layout Design** (Updated 2025):
 - **Centered content layout** with maximum width of 1024px (tablet size) for improved readability
@@ -641,6 +643,7 @@ MAIL_FROM_NAME="Villa Hotel Dieng"
 - Bank account (rekening) management
 - Site settings configuration
 - DataTables with search, sort, filter, and export
+- **Jeep Trip Availability Management**: Complete CRUD interface for managing jeep trip quotas per date/slot with real-time validation
 
 **Landing Page Features**:
 - Property showcase with search and filtering

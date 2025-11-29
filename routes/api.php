@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AvailabilityController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\ReservationController;
+use App\Http\Controllers\JeepTripController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -15,6 +16,9 @@ Route::post('/login', [\App\Http\Controllers\Api\AuthController::class, 'login']
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
+
+// Jeep Trip Availability (public access for booking form)
+Route::get('/jeep-trip/availability', [JeepTripController::class, 'getAvailability']);
 
 Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
     // Products

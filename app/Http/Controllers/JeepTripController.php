@@ -882,6 +882,40 @@ class JeepTripController extends Controller
     }
 
     /**
+     * Get availability data for a specific slot and date
+     */
+    public function getAvailability(Request $request)
+    {
+        $request->validate([
+            'slot_id' => 'required|string|exists:jeep_trip_slots,id',
+            'tanggal' => 'required|date|after_or_equal:today'
+        ]);
+
+        $slot = JeepTripSlot::findOrFail($request->slot_id);
+        $availability = $slot->getAvailabilityForDate($request->tanggal);
+
+        if (!$availability) {
+            return response()->json([
+                'available' => false,
+                'quota_jeep' => 0,
+                'quota_terpakai' => 0,
+                'quota_tersedia' => 0,
+                'is_closed' => false,
+                'message' => 'Tidak ada availability untuk tanggal ini'
+            ]);
+        }
+
+        return response()->json([
+            'available' => true,
+            'quota_jeep' => $availability->quota_jeep,
+            'quota_terpakai' => $availability->quota_terpakai,
+            'quota_tersedia' => $availability->getQuotaTersedia(),
+            'is_closed' => $availability->is_closed,
+            'message' => $availability->is_closed ? 'Slot ditutup' : 'Slot tersedia'
+        ]);
+    }
+
+    /**
      * Get availability status text
      */
     private function getAvailabilityStatus($available, $total)

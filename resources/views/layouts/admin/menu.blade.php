@@ -14,11 +14,13 @@
                                 <li class="{{ request()->is('admin/produk/produk') ? 'mm-active' : '' }}"><a href="{{ route('admin.produk.produk.index') }}" key="t-produk-produk">Produk Villa/Hotel</a></li>
                             @endcan
                             @canany(['Jeep Trip (Index)', 'Jeep Trip (Create)', 'Jeep Trip (Edit)', 'Jeep Trip (Delete)'])
-                                <li>
-                                    <a href="{{ route('admin.jeep-trip.index') }}" class="waves-effect">
-                                        {{-- <i class="bx bx-car"></i> --}}
-                                        <span key="t-jeep-trip">Jeep Trip</span>
-                                    </a>
+                                <li><a href="#" class="has-arrow waves-effect"><i class="bx bx-car"></i><span key="t-jeep-trip">Jeep Trip</span></a>
+                                    <ul class="sub-menu" aria-expanded="true">
+                                        <li class="{{ request()->is('admin/jeep-trip') && !request()->is('admin/jeep-trip/availability*') ? 'mm-active' : '' }}"><a href="{{ route('admin.jeep-trip.index') }}" key="t-jeep-trip-paket">Paket Jeep Trip</a></li>
+                                        @canany(['Jeep Trip Availability (Index)', 'Jeep Trip Availability (Create)', 'Jeep Trip Availability (Edit)', 'Jeep Trip Availability (Delete)'])
+                                            <li class="{{ request()->is('admin/jeep-trip/availability*') ? 'mm-active' : '' }}"><a href="{{ route('admin.jeep-trip.availability.index') }}" key="t-jeep-trip-availability">Kelola Quota Jeep</a></li>
+                                        @endcanany
+                                    </ul>
                                 </li>
                             @endcanany
                         </ul>

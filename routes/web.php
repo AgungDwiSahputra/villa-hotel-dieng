@@ -75,6 +75,16 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->as('admin.')->group(fu
         Route::get('/create', [App\Http\Controllers\Admin\JeepTrip\JeepTripController::class, 'create'])->name('create');
         Route::post('/', [App\Http\Controllers\Admin\JeepTrip\JeepTripController::class, 'store'])->name('store');
 
+        // Jeep Trip Availability Routes (harus di atas route parameter {id})
+        Route::prefix('availability')->as('availability.')->group(function () {
+            Route::get('/', [App\Http\Controllers\Admin\JeepTrip\JeepTripAvailabilityController::class, 'index'])->name('index');
+            Route::post('/', [App\Http\Controllers\Admin\JeepTrip\JeepTripAvailabilityController::class, 'store'])->name('store');
+            Route::get('/{id}', [App\Http\Controllers\Admin\JeepTrip\JeepTripAvailabilityController::class, 'show'])->name('show');
+            Route::get('/{id}/edit', [App\Http\Controllers\Admin\JeepTrip\JeepTripAvailabilityController::class, 'edit'])->name('edit');
+            Route::put('/{id}', [App\Http\Controllers\Admin\JeepTrip\JeepTripAvailabilityController::class, 'update'])->name('update');
+            Route::delete('/{id}', [App\Http\Controllers\Admin\JeepTrip\JeepTripAvailabilityController::class, 'destroy'])->name('destroy');
+        });
+
         // Jeep Trip Image Routes (harus di atas route parameter {id})
         Route::prefix('image')->as('image.')->group(function () {
             Route::get('/', [App\Http\Controllers\Admin\JeepTrip\JeepTripImageController::class, 'index'])->name('index');
@@ -111,4 +121,4 @@ Route::middleware('auth')->group(function () {
 
 require __DIR__ . '/auth.php';
 
-// require __DIR__ .'/api.php';
+require __DIR__ .'/api.php';

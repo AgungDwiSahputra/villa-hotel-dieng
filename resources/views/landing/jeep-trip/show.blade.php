@@ -398,10 +398,10 @@
                                                     <div class="font-medium text-gray-900">{{ $slot->nama_slot }}</div>
                                                     <div class="text-sm text-gray-600">{{ \Carbon\Carbon::parse($slot->jam_mulai)->format('H:i') }} - {{ \Carbon\Carbon::parse($slot->jam_selesai)->format('H:i') }}</div>
                                                 </div>
-                                                <div class="text-right">
+                                                {{-- <div class="text-right">
                                                     <div class="text-sm text-gray-500">Kapasitas</div>
                                                     <div class="font-semibold text-gray-900">{{ $slot->kapasitas_jeep ?? 'Tersedia' }}</div>
-                                                </div>
+                                                </div> --}}
                                             </div>
                                         @empty
                                             <div class="text-center py-8 text-gray-500">
@@ -774,7 +774,12 @@
                                 // Reset slot selection when date changes
                                 $('.slot-option').removeClass('selected');
                                 $('.slot-option input[type="radio"]').prop('checked', false);
+                                $('.slot-status').remove(); // Remove availability status
                                 selectedSlotId = null;
+
+                                // Reset jumlah jeep to default
+                                $('#jumlahJeep').attr('max', 10).val(1);
+                                updateJeepButtons(1);
 
                                 showBookingSummary();
                                 updateTotalHarga();
@@ -808,6 +813,12 @@
                     radioBtn.prop('checked', true);
 
                     selectedSlotId = slotId;
+
+                    // Get availability data for selected slot and date
+                    if (selectedDate) {
+                        getAvailabilityData(slotId, selectedDate);
+                    }
+
                     updateTotalHarga();
                 });
 
@@ -820,6 +831,12 @@
                     slotOption.addClass('selected');
 
                     selectedSlotId = slotId;
+
+                    // Get availability data for selected slot and date
+                    if (selectedDate) {
+                        getAvailabilityData(slotId, selectedDate);
+                    }
+
                     updateTotalHarga();
                 });
 
@@ -850,6 +867,74 @@
                     updateJeepButtons(newValue);
                     updateTotalHarga();
                 });
+
+                // Get availability data from API
+                function getAvailabilityData(slotId, date) {
+                    const dateStr = date.toISOString().split('T')[0]; // Format to YYYY-MM-DD
+
+                    $.get(`/api/jeep-trip/availability?slot_id=${slotId}&tanggal=${dateStr}`)
+                        .done(function(data) {
+                            if (data.available) {
+                                // Update max attribute based on available quota
+                                $('#jumlahJeep').attr('max', data.quota_tersedia);
+
+                                // Reset current value if it exceeds new max
+                                const currentValue = parseInt($('#jumlahJeep').val()) || 1;
+                                if (currentValue > data.quota_tersedia) {
+                                    $('#jumlahJeep').val(data.quota_tersedia);
+                                }
+
+                                // Update button states
+                                updateJeepButtons(parseInt($('#jumlahJeep').val()) || 1);
+
+                                // Show availability info
+                                showAvailabilityInfo(data);
+                            } else {
+                                // No availability, set max to 0
+                                $('#jumlahJeep').attr('max', 0);
+                                $('#jumlahJeep').val(0);
+                                updateJeepButtons(0);
+                                showAvailabilityInfo({quota_jeep: 0, quota_terpakai: 0, quota_tersedia: 0, is_closed: true, message: data.message});
+                            }
+                        })
+                        .fail(function(xhr) {
+                            console.error('Failed to get availability data:', xhr);
+                            // Fallback: set max to default
+                            $('#jumlahJeep').attr('max', 10);
+                            updateJeepButtons(parseInt($('#jumlahJeep').val()) || 1);
+                        });
+                }
+
+                // Show availability information
+                function showAvailabilityInfo(data) {
+                    let statusClass = 'text-green-600';
+                    let statusText = 'Tersedia';
+
+                    if (data.is_closed) {
+                        statusClass = 'text-red-600';
+                        statusText = 'Ditutup';
+                    } else if (data.quota_tersedia === 0) {
+                        statusClass = 'text-orange-600';
+                        statusText = 'Penuh';
+                    } else if (data.quota_tersedia <= 2) {
+                        statusClass = 'text-yellow-600';
+                        statusText = 'Hampir Penuh';
+                    }
+
+                    // Update slot status display
+                    const selectedSlot = $(`.slot-option[data-slot-id="${selectedSlotId}"]`);
+                    if (selectedSlot.length) {
+                        // Remove existing status
+                        selectedSlot.find('.slot-status').remove();
+
+                        // Add new status
+                        selectedSlot.append(`
+                            <div class="slot-status mt-2 text-xs ${statusClass} font-medium">
+                                ${statusText} (${data.quota_tersedia} jeep)
+                            </div>
+                        `);
+                    }
+                }
 
                 function updateJeepButtons(value) {
                     const minValue = parseInt($('#jumlahJeep').attr('min')) || 1;
