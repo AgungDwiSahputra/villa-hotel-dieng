@@ -222,5 +222,24 @@ class ReservationController extends Controller
         // Kirim email notifikasi jika perlu
         return response()->json(['message' => 'Reservation rejected']);
     }
+
+    public function delete($id)
+    {
+        $transaksiDetail = TransaksiDetail::where('id', $id)->first();
+        $transaksi = Transaksi::where('id', $transaksiDetail->transaksi_id)->first();
+
+        if (!$transaksi) {
+            return response()->json(['message' => 'Transaksi not found'], 404);
+        }
+
+        // Hapus semua detail transaksi terlebih dahulu
+        TransaksiDetail::where('transaksi_id', $transaksi->id)->delete();
+
+        // Hapus transaksi
+        $transaksi->delete();
+
+        // Kirim email notifikasi jika perlu
+        return response()->json(['message' => 'Transaksi and all details deleted']);
+    }
 }
 

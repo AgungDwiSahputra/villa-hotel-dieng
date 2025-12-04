@@ -44,4 +44,5 @@ Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
     Route::post('/reservations/{transaksi_id}/{date?}/rejectAll', [ReservationController::class, 'rejectAll']);
     Route::post('/reservations/{id}/accept', [ReservationController::class, 'accept']);
     Route::post('/reservations/{id}/reject', [ReservationController::class, 'reject']);
+    Route::delete('/reservations/{id}/delete', [ReservationController::class, 'delete']);
 });
