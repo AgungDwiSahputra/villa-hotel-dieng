@@ -1249,7 +1249,7 @@
         }
         @media (max-width: 640px) {
             body { 
-                padding-bottom: 140px; 
+                padding-bottom: 76px; 
             }
         }
         
