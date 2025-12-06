@@ -1,10 +1,11 @@
 <x-app-landing-layout>
-    <section class="relative py-12 bg-gradient-to-br from-blue-50 via-white to-green-50">
+    <section class="relative py-5 lg:py-12 bg-gradient-to-br from-blue-50 via-white to-green-50">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100 animate-fade-in-up">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 lg:gap-8">
+                <!-- Detail Unit -->
+                <div class="bg-white rounded-2xl shadow-xl p-2 lg:p-8 border border-gray-100 animate-fade-in-up">
                     <div class="relative mb-8">
-                        <div class="main-carousel rounded-2xl overflow-hidden shadow-2xl" data-flickity='{ "cellAlign": "center", "contain": true, "prevNextButtons": true, "pageDots": true, "autoPlay": 5000, "pauseAutoPlayOnHover": false, "wrapAround": true, "adaptiveHeight": false, "imagesLoaded": true }'>
+                        <div class="main-carousel rounded-2xl overflow-hidden shadow-2xl max-h-48 lg:max-h-64" data-flickity='{ "cellAlign": "center", "contain": true, "prevNextButtons": true, "pageDots": true, "autoPlay": 5000, "pauseAutoPlayOnHover": false, "wrapAround": true, "adaptiveHeight": false, "imagesLoaded": true }'>
                             @forelse ($produk->images as $image)
                                 <div class="carousel-cell relative">
                                     <div class="relative aspect-[4/3]">
@@ -17,7 +18,7 @@
                                         @endif
                                         <a href="{{ asset('storage/' . $image->image) }}" class="glightbox block group" data-gallery="gallery1">
                                             <img src="{{ asset('storage/' . $image->image) }}" alt="{{ $image->name }}"
-                                                class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                                                class="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105">
                                             <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                                         </a>
                                     </div>
@@ -34,7 +35,7 @@
                                         @endif
                                         <a href="{{ asset('images/produk/default.jpg') }}" class="glightbox block group" data-gallery="gallery1">
                                             <img src="{{ asset('images/produk/default.jpg') }}" alt="Gambar Default Produk"
-                                                class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                                                class="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105">
                                             <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                                         </a>
                                     </div>
@@ -44,7 +45,7 @@
                     </div>
                     
                     @if(isset($produk->category))
-                        <div class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 mb-6">
+                        <div class="inline-flex items-center px-3 py-1 rounded-full text-xs lg:text-sm font-medium bg-blue-100 text-blue-800 mb-3">
                             <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
                                 <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
                             </svg>
@@ -52,95 +53,83 @@
                         </div>
                     @endif
                     
-                    <h4 class="text-3xl font-bold mb-6 text-gray-900 leading-tight">{{ $produk->name }}</h4>
+                    <h4 class="text-lg sm:text-3xl font-bold mb-2 lg:mb-6 text-gray-900 leading-tight">{{ $produk->name }}</h4>
                     
-                    <div class="space-y-4">
-                        <div class="flex items-center p-4 bg-gray-50 rounded-xl">
-                            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-4">
-                                <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                                    <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"></path>
-                                </svg>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-600">Ideal Untuk</p>
-                                <p class="font-semibold text-gray-900">{{ $produk->orang }} orang</p>
+                    <div class="space-y-2">
+                        <!-- Product Details Grid -->
+                        <div class="bg-white rounded-lg border border-gray-100 shadow-sm p-3 lg:p-6">
+                            <div class="grid grid-cols-2 gap-6">
+                                <div class="flex items-start space-x-3">
+                                    <div>
+                                        <p class="text-xs text-gray-500 uppercase tracking-wider font-medium">Ideal Untuk</p>
+                                        <p class="text-sm font-semibold text-gray-900">{{ $produk->orang }} orang</p>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-start space-x-3">
+                                    <div>
+                                        <p class="text-xs text-gray-500 uppercase tracking-wider font-medium">Kapasitas Maksimal</p>
+                                        <p class="text-sm font-semibold text-gray-900">{{ $produk->maks_orang }} orang</p>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-start space-x-3">
+
+                                    <div>
+                                        <p class="text-xs text-gray-500 uppercase tracking-wider font-medium">Jumlah Kamar</p>
+                                        <p class="text-sm font-semibold text-gray-900">{{ $produk->kamar }} kamar</p>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-start space-x-3">
+                                    <div class="flex-1">
+                                        <p class="text-xs text-gray-500 uppercase tracking-wider font-medium">Lokasi</p>
+                                        <p class="text-sm font-semibold text-gray-900">{{ $produk->lokasi }}</p>
+                                        <button onclick="showMapModal()" class="mt-1 text-xs text-blue-600 hover:text-blue-800 underline transition-colors duration-200">
+                                            Lihat di Peta
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="flex items-center p-4 bg-gray-50 rounded-xl">
-                            <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mr-4">
-                                <svg class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                                </svg>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-600">Kapasitas Maksimal</p>
-                                <p class="font-semibold text-gray-900">{{ $produk->maks_orang }} orang</p>
-                            </div>
-                        </div>
-
-                        <div class="flex items-center p-4 bg-gray-50 rounded-xl">
-                            <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center mr-4">
-                                <svg class="w-5 h-5 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
-                                    <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
-                                </svg>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-600">Jumlah Kamar</p>
-                                <p class="font-semibold text-gray-900">{{ $produk->kamar }} kamar</p>
+                        <!-- Rating Section -->
+                        <div class="bg-white rounded-lg border border-gray-100 shadow-sm p-3 py-2 lg:p-6">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <span class="text-sm font-medium text-gray-700">Rating</span>
+                                </div>
+                                <div class="flex items-center space-x-1">
+                                    @for ($i = 1; $i <= 5; $i++)
+                                        <svg class="w-5 h-5 {{ $i <= $produk->rating ? 'text-yellow-400 fill-current' : 'text-gray-300' }}" viewBox="0 0 20 20">
+                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                        </svg>
+                                    @endfor
+                                    <span class="ml-2 text-sm font-semibold text-gray-900">{{ $produk->rating }}/5</span>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="flex items-center p-4 bg-gray-50 rounded-xl">
-                            <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center mr-4">
-                                <svg class="w-5 h-5 text-red-600" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path>
-                                </svg>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-600">Lokasi</p>
-                                <p class="font-semibold text-gray-900">{{ $produk->lokasi }}</p>
-                                <!-- Button show modal peta leafletjs -->
-                                <button onclick="showMapModal()"
-                                        class="mt-2 inline-flex items-center px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors duration-200 border border-blue-200">
-                                    <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path>
+                        <!-- Description Section -->
+                        <div class="bg-white rounded-lg border border-gray-100 shadow-sm p-3 lg:p-6">
+                            <div class="flex items-center space-x-3 mb-2">
+                                <div class="flex-shrink-0 w-8 h-8 bg-gray-50 rounded-full flex items-center justify-center">
+                                    <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                                     </svg>
-                                    Lihat di Peta
-                                </button>
+                                </div>
+                                <h5 class="text-sm font-semibold text-gray-900">Deskripsi</h5>
                             </div>
-                        </div>
-
-                        <div class="flex items-center p-4 bg-yellow-50 rounded-xl">
-                            <div class="flex text-yellow-400 mr-4">
-                                @for ($i = 1; $i <= 5; $i++)
-                                    <svg class="w-6 h-6 {{ $i <= $produk->rating ? 'fill-current' : 'text-gray-300' }}" fill="currentColor" viewBox="0 0 20 20">
-                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                                    </svg>
-                                @endfor
-                            </div>
-                            <div>
-                                <p class="font-semibold text-gray-900">{{ $produk->rating }}/5</p>
-                                {{-- <p class="text-sm text-gray-600">{{ $produk->review_count ?? 0 }} ulasan</p> --}}
-                            </div>
-                        </div>
-
-                        <div class="border-t pt-6 mt-6">
-                            <h5 class="text-lg font-semibold text-gray-900 mb-3 flex items-center">
-                                <svg class="w-5 h-5 mr-2 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
-                                </svg>
-                                Deskripsi
-                            </h5>
-                            <p class="text-gray-700 leading-relaxed">{{ $produk->deskripsi ?? 'Belum ada deskripsi yang tersedia.' }}</p>
+                            <p class="text-xs lg:text-sm text-gray-700 leading-relaxed">{{ $produk->deskripsi ?? 'Belum ada deskripsi yang tersedia.' }}</p>
                         </div>
                     </div>
                 </div>
 
+                <!-- Informasi Fasilitas -->
                 <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden animate-fade-in-up">
                     <div class="bg-gray-50 border-b border-gray-200">
                         <nav class="flex">
-                            <button class="tab-button active flex-1 py-4 px-6 text-center font-semibold text-sm transition-all duration-200 border-b-2 border-blue-500 text-blue-600 bg-white"
+                            <button class="tab-button active flex-1 py-2 lg:py-4 px-6 text-center font-semibold text-xs lg:text-sm transition-all duration-200 border-b-2 border-blue-500 text-blue-600 bg-white"
                                     id="fasilitas-tab" data-bs-toggle="tab" data-bs-target="#fasilitas"
                                     type="button" role="tab" aria-controls="fasilitas" aria-selected="true">
                                 <svg class="w-5 h-5 mx-auto mb-1" fill="currentColor" viewBox="0 0 20 20">
@@ -148,7 +137,7 @@
                                 </svg>
                                 Fasilitas
                             </button>
-                            <button class="tab-button flex-1 py-4 px-6 text-center font-semibold text-sm transition-all duration-200 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+                            <button class="tab-button flex-1 py-2 lg:py-4 px-6 text-center font-semibold text-xs lg:text-sm transition-all duration-200 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-100"
                                     id="wisata-tab" data-bs-toggle="tab" data-bs-target="#wisata"
                                     type="button" role="tab" aria-controls="wisata" aria-selected="false">
                                 <svg class="w-5 h-5 mx-auto mb-1" fill="currentColor" viewBox="0 0 20 20">
@@ -156,7 +145,7 @@
                                 </svg>
                                 Wisata
                             </button>
-                            <button class="tab-button flex-1 py-4 px-6 text-center font-semibold text-sm transition-all duration-200 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+                            <button class="tab-button flex-1 py-2 lg:py-4 px-6 text-center font-semibold text-xs lg:text-sm transition-all duration-200 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-100"
                                     id="syarat-tab" data-bs-toggle="tab" data-bs-target="#syarat"
                                     type="button" role="tab" aria-controls="syarat" aria-selected="false">
                                 <svg class="w-5 h-5 mx-auto mb-1" fill="currentColor" viewBox="0 0 20 20">
@@ -170,27 +159,27 @@
                     <!-- Enhanced Tab Content -->
                     <div class="tab-content">
                         {{-- Fasilitas --}}
-                        <div class="tab-pane fade show active p-8" id="fasilitas" role="tabpanel"
+                        <div class="tab-pane fade show active p-2 lg:p-8" id="fasilitas" role="tabpanel"
                             aria-labelledby="fasilitas-tab">
                             @if ($produk->fasilitases->isNotEmpty())
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="fasilitas-list">
+                                <div class="grid grid-cols-2 gap-2" id="fasilitas-list">
                                     @foreach ($produk->fasilitases as $index => $fasilitas)
-                                        <div class="flex items-start p-4 bg-blue-50 rounded-xl {{ $index >= 6 ? 'hidden extra-fasilitas' : '' }} transition-all duration-200 hover:bg-blue-100">
-                                            <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
-                                                <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                        <div class="flex items-center p-2 lg:p-3 bg-gray-50 rounded-lg {{ $index >= 6 ? 'hidden extra-fasilitas' : '' }} transition-all duration-200 hover:bg-gray-100">
+                                            <div class="flex-shrink-0 w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center mr-3">
+                                                <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                                                     <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
                                                 </svg>
                                             </div>
-                                            <span class="font-medium text-gray-800">{{ $fasilitas->name }}</span>
+                                            <span class="text-xs lg:text-sm font-medium text-gray-700">{{ $fasilitas->name }}</span>
                                         </div>
                                     @endforeach
                                 </div>
-                                @if ($produk->fasilitases->count() > 6)
-                                    <div class="mt-6 text-center">
-                                        <button class="text-blue-600 hover:text-blue-800 font-medium transition-colors duration-200 flex items-center mx-auto"
+                                @if ($produk->fasilitases->count() > 10)
+                                    <div class="mt-2 lg:mt-4 text-center">
+                                        <button class="text-sm text-blue-600 hover:text-blue-800 font-medium transition-colors duration-200 inline-flex items-center"
                                             onclick="toggleItems('fasilitas')">
-                                            <span class="toggle-text">Lihat Selengkapnya</span>
-                                            <svg class="w-4 h-4 ml-2 transition-transform duration-200" fill="currentColor" viewBox="0 0 20 20">
+                                            <span class="text-xs lg:text-sm toggle-text">Lihat Selengkapnya</span>
+                                            <svg class="w-4 h-4 ml-1 transition-transform duration-200" fill="currentColor" viewBox="0 0 20 20">
                                                 <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
                                             </svg>
                                         </button>
@@ -207,26 +196,26 @@
                         </div>
 
                         {{-- Wisata --}}
-                        <div class="tab-pane fade p-8 hidden" id="wisata" role="tabpanel" aria-labelledby="wisata-tab">
+                        <div class="tab-pane fade p-2 lg:p-8 hidden" id="wisata" role="tabpanel" aria-labelledby="wisata-tab">
                             @if ($produk->wisatas->isNotEmpty())
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="wisata-list">
+                                <div class="grid grid-cols-2 gap-2" id="wisata-list">
                                     @foreach ($produk->wisatas as $index => $wisata)
-                                        <div class="flex items-start p-4 bg-green-50 rounded-xl {{ $index >= 6 ? 'hidden extra-wisata' : '' }} transition-all duration-200 hover:bg-green-100">
-                                            <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
-                                                <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                        <div class="flex items-center p-2 lg:p-3 bg-gray-50 rounded-lg {{ $index >= 6 ? 'hidden extra-wisata' : '' }} transition-all duration-200 hover:bg-gray-100">
+                                            <div class="flex-shrink-0 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center mr-3">
+                                                <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                                                     <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path>
                                                 </svg>
                                             </div>
-                                            <span class="font-medium text-gray-800">{{ $wisata->name }}</span>
+                                            <span class="text-xs lg:text-sm font-medium text-gray-700">{{ $wisata->name }}</span>
                                         </div>
                                     @endforeach
                                 </div>
-                                @if ($produk->wisatas->count() > 6)
-                                    <div class="mt-6 text-center">
-                                        <button class="text-green-600 hover:text-green-800 font-medium transition-colors duration-200 flex items-center mx-auto"
+                                @if ($produk->wisatas->count() > 10)
+                                    <div class="mt-2 lg:mt-4 text-center">
+                                        <button class="text-xs lg:text-sm text-green-600 hover:text-green-800 font-medium transition-colors duration-200 inline-flex items-center"
                                             onclick="toggleItems('wisata')">
                                             <span class="toggle-text">Lihat Selengkapnya</span>
-                                            <svg class="w-4 h-4 ml-2 transition-transform duration-200" fill="currentColor" viewBox="0 0 20 20">
+                                            <svg class="w-4 h-4 ml-1 transition-transform duration-200" fill="currentColor" viewBox="0 0 20 20">
                                                 <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
                                             </svg>
                                         </button>
@@ -243,32 +232,32 @@
                         </div>
 
                         {{-- Syarat --}}
-                        <div class="tab-pane fade p-8 hidden" id="syarat" role="tabpanel" aria-labelledby="syarat-tab">
-                            <div class="space-y-3" id="syarat-list">
+                        <div class="tab-pane fade p-2 lg:p-8 hidden" id="syarat" role="tabpanel" aria-labelledby="syarat-tab">
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-2" id="syarat-list">
                                 @forelse ($produk->syarats as $index => $syarat)
-                                    <div class="flex items-start p-4 bg-yellow-50 rounded-xl {{ $index >= 6 ? 'hidden extra-syarat' : '' }} transition-all duration-200 hover:bg-yellow-100">
-                                        <div class="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
-                                            <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                    <div class="flex items-center p-2 lg:p-3 bg-gray-50 rounded-lg {{ $index >= 6 ? 'hidden extra-syarat' : '' }} transition-all duration-200 hover:bg-gray-100">
+                                        <div class="flex-shrink-0 w-5 h-5 bg-yellow-500 rounded-full flex items-center justify-center mr-3">
+                                            <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                                                 <path fill-rule="evenodd" d="M18 8a6 6 0 01-7.743 5.743L10 14l-1 1-1 1H6v2H2v-4l4.257-4.257A6 6 0 1118 8zm-6-4a1 1 0 100 2 2 2 0 012 2 1 1 0 102 0 4 4 0 00-4-4z" clip-rule="evenodd"></path>
                                             </svg>
                                         </div>
-                                        <span class="font-medium text-gray-800">{{ $syarat->name }}</span>
+                                        <span class="text-xs lg:text-sm font-medium text-gray-700">{{ $syarat->name }}</span>
                                     </div>
                                 @empty
-                                    <div class="text-center py-8 text-gray-500">
-                                        <svg class="w-12 h-12 mx-auto mb-4 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+                                    <div class="col-span-full text-center py-6 text-gray-500">
+                                        <svg class="w-8 h-8 mx-auto mb-3 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
                                             <path fill-rule="evenodd" d="M18 8a6 6 0 01-7.743 5.743L10 14l-1 1-1 1H6v2H2v-4l4.257-4.257A6 6 0 1118 8zm-6-4a1 1 0 100 2 2 2 0 012 2 1 1 0 102 0 4 4 0 00-4-4z" clip-rule="evenodd"></path>
                                         </svg>
-                                        <p class="italic">Belum ada informasi syarat & ketentuan.</p>
+                                        <p class="text-sm italic">Belum ada informasi syarat & ketentuan.</p>
                                     </div>
                                 @endforelse
                             </div>
-                            @if ($produk->syarats->count() > 6)
-                                <div class="mt-6 text-center">
-                                    <button class="text-yellow-600 hover:text-yellow-800 font-medium transition-colors duration-200 flex items-center mx-auto"
+                            @if ($produk->syarats->count() > 10)
+                                <div class="mt-2 lg:mt-4 text-center">
+                                    <button class="text-xs lg:text-sm text-yellow-600 hover:text-yellow-800 font-medium transition-colors duration-200 inline-flex items-center"
                                         onclick="toggleItems('syarat')">
                                         <span class="toggle-text">Lihat Selengkapnya</span>
-                                        <svg class="w-4 h-4 ml-2 transition-transform duration-200" fill="currentColor" viewBox="0 0 20 20">
+                                        <svg class="w-4 h-4 ml-1 transition-transform duration-200" fill="currentColor" viewBox="0 0 20 20">
                                             <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
                                         </svg>
                                     </button>
@@ -281,12 +270,12 @@
         </div>
     </section>
 
-    <section class="py-12 bg-gradient-to-br from-gray-50 to-blue-50 animate-fade-in-up">
+    <section class="py-5 pt-0 bg-gradient-to-br from-gray-50 to-blue-50 animate-fade-in-up">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
-                    <h5 class="text-2xl font-bold mb-6 text-gray-900 flex items-center">
-                        <svg class="w-6 h-6 mr-3 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 lg:gap-8">
+                <div class="bg-white rounded-2xl shadow-xl p-2 lg:p-8 border border-gray-100">
+                    <h5 class="text-sm sm:text-2xl font-bold mb-2 lg:mb-6 text-gray-900 flex items-center">
+                        <svg class="w-5 h-5 lg:w-6 lg:h-6 mr-2 lg:mr-3 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path>
                         </svg>
                         Pilih Tanggal
@@ -294,99 +283,93 @@
                     <div id="calendar" class="bg-white rounded-xl border border-gray-200 overflow-hidden"></div>
                 </div>
 
-                <div class="space-y-6">
+                <div class="space-y-4 lg:space-y-6">
                     <form action="{{ route('produk.booking') }}" method="POST" id="bookingForm">
                         @csrf
-                        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-8 border border-blue-200" id="bookingInfoText">
+                        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-2 lg:p-8 border border-blue-200" id="bookingInfoText">
                             <div class="text-center">
-                                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <svg class="w-8 h-8 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                <div class="w-12 h-12 lg:w-16 lg:h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-2 lg:mb-4">
+                                    <svg class="w-6 h-6 lg:w-8 lg:h-8 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
                                     </svg>
                                 </div>
-                                <h3 class="text-lg font-semibold text-gray-900 mb-2">Cara Booking</h3>
-                                <p class="text-gray-600 text-sm leading-relaxed">
+                                <h3 class="text-sm sm:text-lg font-semibold text-gray-900 mb-2">Cara Booking</h3>
+                                <p class="text-xs sm:text-sm text-gray-600 leading-relaxed">
                                     Pilih tanggal check-in dan check-out untuk melihat info harga sesuai tanggal,
                                     kemudian klik <span class="font-bold text-blue-600">"Booking Sekarang"</span>
                                 </p>
                             </div>
                         </div>
 
-                        <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100 hidden" id="bookingSummary">
-                            <h5 class="text-2xl font-bold mb-6 text-gray-900 flex items-center">
-                                <svg class="w-6 h-6 mr-3 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                        <div class="bg-white rounded-2xl shadow-xl p-2 lg:p-8 border border-gray-100 hidden" id="bookingSummary">
+                            <h5 class="text-sm sm:text-2xl font-bold mb-2 lg:mb-6 text-gray-900 flex items-center">
+                                <svg class="w-5 h-5 lg:w-6 lg:h-6 mr-2 lg:mr-3 text-green-600" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
                                 </svg>
                                 Ringkasan Booking
                             </h5>
-                            <div class="space-y-4">
-                                <div class="flex justify-between items-center p-4 bg-gray-50 rounded-xl">
-                                    <span class="font-medium text-gray-700 flex items-center">
-                                        <svg class="w-5 h-5 mr-2 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                            <div class="space-y-2 lg:space-y-4">
+                                <div class="flex justify-between items-center p-2 lg:p-4 bg-gray-50 rounded-xl">
+                                    <span class="text-xs lg:text-sm font-medium text-gray-700 flex items-center">
+                                        <svg class="w-4 h-4 lg:w-5 lg:h-5 mr-2 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
                                             <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path>
                                         </svg>
                                         Check-in
                                     </span>
-                                    <input type="date" name="start_date" id="startDateInput"
-                                            class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium" readonly>
+                                    <input type="date" name="start_date" id="startDateInput" class="px-3 lg:px-4 py-2 bg-white border border-gray-300 rounded-lg text-xs lg:text-sm font-medium" readonly="">
                                 </div>
-                                <div class="flex justify-between items-center p-4 bg-gray-50 rounded-xl">
-                                    <span class="font-medium text-gray-700 flex items-center">
-                                        <svg class="w-5 h-5 mr-2 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                                <div class="flex justify-between items-center p-2 lg:p-4 bg-gray-50 rounded-xl">
+                                    <span class="text-xs lg:text-sm font-medium text-gray-700 flex items-center">
+                                        <svg class="w-4 h-4 lg:w-5 lg:h-5 mr-2 text-red-500" fill="currentColor" viewBox="0 0 20 20">
                                             <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path>
                                         </svg>
                                         Check-out
                                     </span>
-                                    <input type="date" name="end_date" id="endDateInput"
-                                            class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium" readonly>
+                                    <input type="date" name="end_date" id="endDateInput" class="px-3 lg:px-4 py-2 bg-white border border-gray-300 rounded-lg text-xs lg:text-sm font-medium" readonly="">
                                 </div>
-                                <div class="flex justify-between items-center p-4 bg-gray-50 rounded-xl">
-                                    <span class="font-medium text-gray-700 flex items-center">
-                                        <svg class="w-5 h-5 mr-2 text-purple-500" fill="currentColor" viewBox="0 0 20 20">
+                                <div class="flex justify-between items-center p-2 lg:p-4 bg-gray-50 rounded-xl">
+                                    <span class="text-xs lg:text-sm font-medium text-gray-700 flex items-center">
+                                        <svg class="w-4 h-4 lg:w-5 lg:h-5 mr-2 text-purple-500" fill="currentColor" viewBox="0 0 20 20">
                                             <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
                                         </svg>
                                         Jumlah Malam
                                     </span>
-                                    <input type="number" name="night" id="nightInput"
-                                            class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium w-20 text-center" readonly>
+                                    <input type="number" name="night" id="nightInput" class="px-3 lg:px-4 py-2 bg-white border border-gray-300 rounded-lg text-xs lg:text-sm font-medium w-16 lg:w-20 text-center" readonly="">
                                 </div>
-                                <div class="flex justify-between items-center p-4 bg-gray-50 rounded-xl">
-                                    <span class="font-medium text-gray-700 flex items-center">
-                                        <svg class="w-5 h-5 mr-2 text-indigo-500" fill="currentColor" viewBox="0 0 20 20">
+                                <div class="flex justify-between items-center p-2 lg:p-4 bg-gray-50 rounded-xl">
+                                    <span class="text-xs lg:text-sm font-medium text-gray-700 flex items-center">
+                                        <svg class="w-4 h-4 lg:w-5 lg:h-5 mr-2 text-indigo-500" fill="currentColor" viewBox="0 0 20 20">
                                             <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"></path>
                                         </svg>
                                         Jumlah Unit
                                     </span>
-                                    <input type="number" name="unit" id="unit" min="1" value="1"
-                                           class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium w-20 text-center focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                    <input type="number" name="unit" id="unit" min="1" value="1" class="px-3 lg:px-4 py-2 border border-gray-300 rounded-lg text-xs lg:text-sm font-medium w-16 lg:w-20 text-center focus:ring-2 focus:ring-blue-500 focus:border-transparent" max="3">
                                 </div>
-                                <div class="flex justify-between items-center p-4 bg-yellow-50 rounded-xl">
-                                    <span class="font-medium text-gray-700 flex items-center">
-                                        <svg class="w-5 h-5 mr-2 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                                <div class="flex justify-between items-center p-2 lg:p-4 bg-yellow-50 rounded-xl">
+                                    <span class="text-xs lg:text-sm font-medium text-gray-700 flex items-center">
+                                        <svg class="w-4 h-4 lg:w-5 lg:h-5 mr-2 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
                                             <path d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z"></path>
                                         </svg>
-                                        DP ({{ $settings['dp'] ?? null }} %)
+                                        DP (25 %)
                                     </span>
-                                    <input type="number" name="dp" id="dpInput"
-                                            class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium w-32 text-right" readonly>
+                                    <input type="number" name="dp" id="dpInput" class="px-3 lg:px-4 py-2 bg-white border border-gray-300 rounded-lg text-xs lg:text-sm font-medium w-24 lg:w-32 text-right" readonly="">
                                 </div>
-                                <div class="flex justify-between items-center p-4 bg-green-50 rounded-xl">
-                                    <span class="font-bold text-gray-900 flex items-center">
-                                        <svg class="w-5 h-5 mr-2 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                <div class="flex justify-between items-center p-2 lg:p-4 bg-green-50 rounded-xl">
+                                    <span class="text-xs lg:text-sm font-bold text-gray-900 flex items-center">
+                                        <svg class="w-4 h-4 lg:w-5 lg:h-5 mr-2 text-green-600" fill="currentColor" viewBox="0 0 20 20">
                                             <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582z"></path>
                                             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.51-1.31c-.562-.649-1.413-1.076-2.353-1.253V5z" clip-rule="evenodd"></path>
                                         </svg>
                                         Total Harga
                                     </span>
-                                    <input type="number" name="total" id="totalInput"
-                                            class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-lg font-bold text-green-600 w-40 text-right" readonly>
+                                    <input type="number" name="total" id="totalInput" class="px-3 lg:px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm lg:text-lg font-bold text-green-600 w-32 lg:w-40 text-right" readonly="">
                                 </div>
                             </div>
-                            <div class="mt-8">
+                            <div class="mt-6 lg:mt-8">
                                 <input type="hidden" name="produk_id" value="{{ $produk->id }}">
-                                <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg">
-                                    <span class="flex items-center justify-center">
-                                        <svg class="w-6 h-6 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-2 lg:py-4 px-6 lg:px-8 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg">
+                                    <span class="text-xs lg:text-sm flex items-center justify-center">
+                                        <svg class="w-5 h-5 lg:w-6 lg:h-6 mr-2 lg:mr-3" fill="currentColor" viewBox="0 0 20 20">
                                             <path d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 16a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"></path>
                                         </svg>
                                         Booking Sekarang
@@ -396,38 +379,38 @@
                         </div>
                     </form>
 
-                    <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
-                        <h5 class="text-lg font-semibold mb-6 text-gray-900 flex items-center">
-                            <svg class="w-6 h-6 mr-3 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                    <div class="bg-white rounded-2xl shadow-xl p-2 lg:p-8 border border-gray-100">
+                        <h5 class="text-sm sm:text-lg font-semibold mb-2 lg:mb-6 text-gray-900 flex items-center">
+                            <svg class="w-5 h-5 lg:w-6 lg:h-6 mr-2 lg:mr-3 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
                             </svg>
                             Informasi Penting
                         </h5>
-                        <ul class="space-y-4">
-                            <li class="flex items-start p-4 bg-blue-50 rounded-xl">
-                                <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
-                                    <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                        <ul class="space-y-2 lg:space-y-4">
+                            <li class="flex items-start p-3 lg:p-4 bg-blue-50 rounded-xl">
+                                <div class="w-6 h-6 lg:w-8 lg:h-8 bg-blue-500 rounded-full flex items-center justify-center mr-2 lg:mr-3 flex-shrink-0">
+                                    <svg class="w-3 h-3 lg:w-4 lg:h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
                                     </svg>
                                 </div>
-                                <span class="text-gray-700">Pemesanan akan dikenakan <span class="font-bold text-blue-600">DP sebesar {{ $settings['dp'] ?? '25' }}%</span> dari total harga</span>
+                                <span class="text-xs sm:text-base text-gray-700">Pemesanan akan dikenakan <span class="font-bold text-blue-600">DP sebesar {{ $settings['dp'] ?? '25' }}%</span> dari total harga</span>
                             </li>
-                            <li class="flex items-start p-4 bg-green-50 rounded-xl">
-                                <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
-                                    <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <li class="flex items-start p-3 lg:p-4 bg-green-50 rounded-xl">
+                                <div class="w-6 h-6 lg:w-8 lg:h-8 bg-green-500 rounded-full flex items-center justify-center mr-2 lg:mr-3 flex-shrink-0">
+                                    <svg class="w-3 h-3 lg:w-4 lg:h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
                                     </svg>
                                 </div>
-                                <span class="text-gray-700">Pilih tanggal check in dan check out pada kalender kemudian klik tombol <span class="font-bold text-green-600">Booking Sekarang</span> untuk pemesanan</span>
+                                <span class="text-xs sm:text-base text-gray-700">Pilih tanggal check in dan check out pada kalender kemudian klik tombol <span class="font-bold text-green-600">Booking Sekarang</span> untuk pemesanan</span>
                             </li>
-                            <li class="flex items-start p-4 bg-purple-50 rounded-xl">
-                                <div class="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
-                                    <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <li class="flex items-start p-3 lg:p-4 bg-purple-50 rounded-xl">
+                                <div class="w-6 h-6 lg:w-8 lg:h-8 bg-purple-500 rounded-full flex items-center justify-center mr-2 lg:mr-3 flex-shrink-0">
+                                    <svg class="w-3 h-3 lg:w-4 lg:h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
                                         <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
                                         <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
                                     </svg>
                                 </div>
-                                <span class="text-gray-700">Setelah pembayaran, Anda selaku pemesan akan mendapatkan notifikasi melalui <span class="font-bold text-purple-600">Whatsapp Admin</span></span>
+                                <span class="text-xs sm:text-base text-gray-700">Setelah pembayaran, Anda selaku pemesan akan mendapatkan notifikasi melalui <span class="font-bold text-purple-600">Whatsapp Admin</span></span>
                             </li>
                         </ul>
                     </div>
@@ -436,15 +419,15 @@
         </div>
     </section>
 
-    <section class="py-12 bg-white animate-fade-in-up">
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
-            <h5 class="text-3xl font-bold mb-8 text-gray-900 text-center flex items-center justify-center">
-                <svg class="w-8 h-8 mr-3 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+    <section class="py-5 bg-white animate-fade-in-up">
+        <div class="container mx-auto px-0 sm:px-6 lg:px-8 max-w-5xl">
+            <h5 class="text-sm sm:text-3xl font-bold mb-3 lg:mb-8 text-gray-900 text-center flex items-center justify-center">
+                <svg class="w-6 h-6 lg:w-8 lg:h-8 mr-2 lg:mr-3 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
                 </svg>
                 Rekomendasi Lainnya
             </h5>
-            <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8 max-w-4xl mx-auto px-2 md:px-0">
+            <div class="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6 xl:gap-8 max-w-4xl mx-auto px-2 md:px-0">
                 @foreach ($rekomendasis as $item)
                     <x-villa-card :villa="$item" :show-category="true" :show-rating="true" :show-price="true" :show-button="true" />
                 @endforeach
@@ -692,7 +675,27 @@
                 background: #94a3b8;
             }
 
+            /* Flickity Custom */
+            .flickity-page-dots .dot {
+                color: white;
+                background: white;
+            }
+            @media (max-width:768px){
+                .flickity-button.flickity-prev-next-button.next,
+                .flickity-button.flickity-prev-next-button.previous {
+                    scale: 0.7;
+                }
+            }
+
             /* Optimized Mobile Responsive Adjustments */
+            @media (max-width: 768px) {
+                .fc-toolbar-title {
+                    font-size: 0.9em !important;
+                }
+                .fc-col-header-cell-cushion, .fc-daygrid-day-number {
+                    font-size: 14px !important;
+                }
+            }
             @media (max-width: 640px) {
                 .fc-daygrid-day.selected-start .fc-daygrid-day-number,
                 .fc-daygrid-day.in-range .fc-daygrid-day-number,
@@ -1200,8 +1203,8 @@
         <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between py-3 sm:py-4 gap-3 sm:gap-0">
                 <div class="flex-1 min-w-0">
-                    <div class="text-xs sm:text-sm text-gray-600 font-medium">Harga mulai dari</div>
-                    <div class="text-lg sm:text-xl font-bold text-gray-900 truncate">
+                    <div class="text-xs text-gray-600 font-medium">Harga mulai dari</div>
+                    <div class="text-sm sm:text-lg md:text-xl font-bold text-gray-900 truncate">
                         @if($produk->isPromo())
                             Rp {{ number_format(min($produk->getPromoPriceWeekday(), $produk->getPromoPriceWeekend()), 0, ',', '.') }}/malam
                             @if($produk->getPromoDiscountPercentage() > 0)
@@ -1226,8 +1229,8 @@
                     </div>
                 </div>
                 <div class="sm:ml-4 w-full sm:w-auto">
-                    <a href="#calendar" class="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-3 px-6 sm:px-8 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg inline-block w-full sm:w-auto text-center">
-                        <span class="flex items-center justify-center">
+                    <a href="#calendar" class="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-2 lg:py-3 px-6 sm:px-8 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg inline-block w-full sm:w-auto text-center">
+                        <span class="flex items-center justify-center text-xs lg:text-sm">
                             <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                                 <path d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 16a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"></path>
                             </svg>
@@ -1281,7 +1284,7 @@
             <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden">
                 <!-- Modal Header -->
                 <div class="flex items-center justify-between p-6 border-b border-gray-200">
-                    <h3 class="text-xl font-bold text-gray-900 flex items-center">
+                    <h3 class="text-sm sm:text-xl font-bold text-gray-900 flex items-center">
                         <svg class="w-6 h-6 mr-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path>
                         </svg>
@@ -1306,7 +1309,7 @@
                             </svg>
                             <div>
                                 <p class="text-sm text-blue-800 font-medium">Informasi Peta</p>
-                                <p class="text-sm text-blue-700 mt-1">
+                                <p class="text-xs sm:text-sm text-blue-700 mt-1">
                                     Klik pada marker untuk melihat detail villa/hotel. Peta menampilkan semua lokasi yang tersedia di Villa Hotel Dieng.
                                 </p>
                             </div>
@@ -1317,3 +1320,4 @@
         </div>
     </div>
 </x-app-landing-layout>
+

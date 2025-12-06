@@ -226,7 +226,7 @@
         <!-- CTA Button -->
         @if($showButton)
         <a href="{{ route('produk', $villa->slug) }}"
-           class="w-full inline-flex items-center justify-center px-4 py-3 sm:py-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-sm font-medium rounded transition-colors duration-200 touch-manipulation min-h-[44px] sm:min-h-0">
+           class="w-full inline-flex items-center justify-center px-4 py-2 sm:py-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-sm font-medium rounded transition-colors duration-200 touch-manipulation min-h-[30px] sm:min-h-0">
             {{ $buttonText }}
         </a>
         @endif

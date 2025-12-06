@@ -45,22 +45,22 @@
 </script> --}}
 
 @if(count($villas) > 0)
-    <section class="py-16 lg:py-24 bg-gradient-to-br from-gray-50 to-white" aria-labelledby="best-villas-heading">
+    <section class="py-5 lg:py-24 bg-gradient-to-br from-gray-50 to-white" aria-labelledby="best-villas-heading">
         <div class="max-w-5xl container mx-auto px-4 sm:px-6 lg:px-8">
-            <header class="text-center mb-12">
-                <div class="inline-flex items-center space-x-2 bg-primary-100 text-primary-800 px-4 py-2 rounded-full mb-4">
+            <header class="text-center mb-5 lg:mb-12">
+                <div class="inline-flex items-center space-x-2 bg-primary-100 text-primary-800 px-3 lg:px-4 py-1 lg:py-2 rounded-full mb-2 lg:mb-4">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314-9.894 8 8 0 01-1.314 9.894z"></path>
                     </svg>
-                    <span class="text-sm font-medium">{{ $title }}</span>
+                    <span class="text-xs lg:text-sm font-medium">{{ $title }}</span>
                 </div>
-                <h2 id="best-villas-heading" class="text-3xl lg:text-4xl font-bold font-display text-gray-900 mb-4">
+                <h2 id="popular-villas-heading" class="text-base lg:text-3xl font-bold font-display text-gray-900 mb-2 lg:mb-4">
                     {{ $title }}
                 </h2>
-                <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                <p class="text-xs lg:text-lg text-gray-600 max-w-2xl mx-auto">
                     Pengalaman menginap mewah dengan fasilitas premium dan pelayanan terbaik
                 </p>
-                <div class="w-24 h-1 bg-gradient-to-r from-primary-600 to-accent-600 mx-auto mt-6 rounded-full"></div>
+                <div class="w-24 h-1 bg-gradient-to-r from-primary-600 to-accent-600 mx-auto mt-3 lg:mt-6 rounded-full"></div>
             </header>
             
             <div class="best-villas-carousel flickity" role="list" aria-label="Villa Terbaik Carousel">
@@ -87,9 +87,9 @@
             </div>
 
             <!-- View All Button -->
-            <div class="text-center mt-20">
+            <div class="text-center -mt-3 lg:mt-20">
                 <a href="{{ route('produk.all') }}"
-                class="inline-flex items-center px-8 py-3 border-2 border-primary-600 text-primary-600 hover:bg-primary-600 hover:text-white font-semibold rounded-full transition-all duration-200 transform hover:scale-105"
+                class="inline-flex items-center text-xs lg:text-base px-8 py-2 lg:py-3 border-2 border-primary-600 text-primary-600 hover:bg-primary-600 hover:text-white font-semibold rounded-full transition-all duration-200 transform hover:scale-105"
                 role="button">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H6zM14 16a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2h-2z"></path>

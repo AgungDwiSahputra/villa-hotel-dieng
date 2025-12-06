@@ -594,6 +594,10 @@
             .popular-villas-carousel .flickity-prev-next-button {
                 display: none;
             }
+            .flickity-page-dots{
+                scale: 0.6 !important;
+                bottom: 25px !important;
+            }
         }
         
         /* Smooth transitions for carousel items */

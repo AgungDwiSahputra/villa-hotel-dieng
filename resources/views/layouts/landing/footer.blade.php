@@ -21,7 +21,7 @@
                     </p>
                     
                     <!-- Social Media Links -->
-                    <div class="flex space-x-3 lg:space-x-4 pt-2">
+                    {{-- <div class="flex space-x-3 lg:space-x-4 pt-2">
                         @if(!empty($settings['sosmed_facebook']))
                         <a href="{{ $settings['sosmed_facebook'] }}"
                            target="_blank"
@@ -57,7 +57,7 @@
                             </svg>
                         </a>
                         @endif
-                    </div>
+                    </div> --}}
                 </div>
 
                 <!-- Quick Links -->

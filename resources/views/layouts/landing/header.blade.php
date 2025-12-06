@@ -1,5 +1,5 @@
 <!-- Modern Header Navigation -->
-<header class="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md shadow-sm transition-all duration-300" id="main-header">
+<header class="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-primary-900/90 via-primary-800/90 to-primary-900/90 backdrop-blur-md shadow-sm transition-all duration-300" id="main-header">
     <div class="container mx-auto px-3 sm:px-4 lg:px-8 max-w-5xl">
         <div class="flex items-center justify-between h-14 sm:h-16 lg:h-20">
             <!-- Logo Section -->
@@ -16,17 +16,17 @@
             <!-- Desktop Navigation -->
             <nav class="hidden lg:flex items-center space-x-6 xl:space-x-8" role="navigation" aria-label="Main navigation">
                 <a href="{{ route('index') }}"
-                   class="relative px-2 xl:px-3 py-2 text-sm font-medium text-gray-900 transition-colors duration-200 hover:text-primary-600 group {{ Route::is('index') ? 'text-primary-600' : '' }}">
+                    class="relative px-2 xl:px-3 py-2 text-sm font-medium text-white transition-colors duration-200 hover:text-primary-200 group {{ Route::is('index') ? 'text-primary-200' : '' }}">
                     Beranda
                     <span class="absolute bottom-0 left-0 w-full h-0.5 bg-primary-600 transform scale-x-0 transition-transform duration-200 group-hover:scale-x-100 {{ Route::is('index') ? 'scale-x-100' : '' }}"></span>
                 </a>
                 <a href="{{ route('tentang-kami') }}"
-                   class="relative px-2 xl:px-3 py-2 text-sm font-medium text-gray-900 transition-colors duration-200 hover:text-primary-600 group {{ Route::is('tentang-kami') ? 'text-primary-600' : '' }}">
+                    class="relative px-2 xl:px-3 py-2 text-sm font-medium text-white transition-colors duration-200 hover:text-primary-200 group {{ Route::is('tentang-kami') ? 'text-primary-200' : '' }}">
                     Tentang Kami
                     <span class="absolute bottom-0 left-0 w-full h-0.5 bg-primary-600 transform scale-x-0 transition-transform duration-200 group-hover:scale-x-100 {{ Route::is('tentang-kami') ? 'scale-x-100' : '' }}"></span>
                 </a>
                 <a href="{{ route('sk') }}"
-                   class="relative px-2 xl:px-3 py-2 text-sm font-medium text-gray-900 transition-colors duration-200 hover:text-primary-600 group {{ Route::is('sk') ? 'text-primary-600' : '' }}">
+                    class="relative px-2 xl:px-3 py-2 text-sm font-medium text-white transition-colors duration-200 hover:text-primary-200 group {{ Route::is('sk') ? 'text-primary-200' : '' }}">
                     Syarat & Ketentuan
                     <span class="absolute bottom-0 left-0 w-full h-0.5 bg-primary-600 transform scale-x-0 transition-transform duration-200 group-hover:scale-x-100 {{ Route::is('sk') ? 'scale-x-100' : '' }}"></span>
                 </a>
@@ -55,10 +55,10 @@
 
                 <!-- Mobile Menu Button -->
                 <button type="button"
-                        class="lg:hidden p-2 text-gray-600 hover:text-primary-600 hover:bg-gray-100 rounded-lg transition-colors duration-200"
-                        id="mobile-menu-button"
-                        aria-expanded="false"
-                        aria-controls="mobile-menu">
+                         class="lg:hidden p-2 text-white hover:text-primary-200 hover:bg-white/10 rounded-lg transition-colors duration-200"
+                         id="mobile-menu-button"
+                         aria-expanded="false"
+                         aria-controls="mobile-menu">
                     <span class="sr-only">Buka menu</span>
                     <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
@@ -70,7 +70,7 @@
 
     <!-- Mobile Menu -->
     <div class="lg:hidden hidden" id="mobile-menu">
-        <div class="px-3 sm:px-4 pt-2 pb-3 space-y-1 bg-white border-t border-gray-200">
+        <div class="px-3 sm:px-4 pt-2 pb-3 space-y-1 bg-primary-900/95 backdrop-blur-md border-t border-white/10">
             <!-- Mobile Search -->
             <div class="pt-3 pb-2">
                 <form method="GET" action="{{ route('produk.all') }}" class="relative">
@@ -92,15 +92,15 @@
 
             <!-- Mobile Navigation Links -->
             <a href="{{ route('index') }}"
-               class="block px-3 py-2.5 text-sm sm:text-base font-medium text-gray-900 hover:text-primary-600 hover:bg-gray-50 rounded-md transition-colors duration-200 {{ Route::is('index') ? 'text-primary-600 bg-primary-50' : '' }}">
+                class="block px-3 py-2.5 text-sm sm:text-base font-medium text-white hover:text-primary-200 hover:bg-white/10 rounded-md transition-colors duration-200 {{ Route::is('index') ? 'text-primary-200 bg-white/10' : '' }}">
                 Beranda
             </a>
             <a href="{{ route('tentang-kami') }}"
-               class="block px-3 py-2.5 text-sm sm:text-base font-medium text-gray-900 hover:text-primary-600 hover:bg-gray-50 rounded-md transition-colors duration-200 {{ Route::is('tentang-kami') ? 'text-primary-600 bg-primary-50' : '' }}">
+                class="block px-3 py-2.5 text-sm sm:text-base font-medium text-white hover:text-primary-200 hover:bg-white/10 rounded-md transition-colors duration-200 {{ Route::is('tentang-kami') ? 'text-primary-200 bg-white/10' : '' }}">
                 Tentang Kami
             </a>
             <a href="{{ route('sk') }}"
-               class="block px-3 py-2.5 text-sm sm:text-base font-medium text-gray-900 hover:text-primary-600 hover:bg-gray-50 rounded-md transition-colors duration-200 {{ Route::is('sk') ? 'text-primary-600 bg-primary-50' : '' }}">
+                class="block px-3 py-2.5 text-sm sm:text-base font-medium text-white hover:text-primary-200 hover:bg-white/10 rounded-md transition-colors duration-200 {{ Route::is('sk') ? 'text-primary-200 bg-white/10' : '' }}">
                 Syarat & Ketentuan
             </a>
 
