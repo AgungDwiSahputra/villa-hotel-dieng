@@ -445,7 +445,7 @@
         </section>
 
         <!-- Testimonials Section -->
-        <x-testimonials :testimonials="$testimonials" />
+        {{-- <x-testimonials :testimonials="$testimonials" /> --}}
     </main>
 
     <!-- Install App Button -->
