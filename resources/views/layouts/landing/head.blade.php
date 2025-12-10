@@ -94,11 +94,6 @@
         /* Mobile Optimization Styles */
         @media (max-width: 640px) {
             /* Hero Section Mobile Optimizations */
-            .hero-section {
-                min-height: 100vh;
-                padding-top: 3.5rem; /* Account for mobile header */
-            }
-            
             .hero-content {
                 text-align: center;
                 padding: 0 1rem;

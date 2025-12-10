@@ -5,7 +5,7 @@
                 <!-- Detail Unit -->
                 <div class="bg-white rounded-2xl shadow-xl p-2 lg:p-8 border border-gray-100 animate-fade-in-up">
                     <div class="relative mb-8">
-                        <div class="main-carousel rounded-2xl overflow-hidden shadow-2xl max-h-48 lg:max-h-64" data-flickity='{ "cellAlign": "center", "contain": true, "prevNextButtons": true, "pageDots": true, "autoPlay": 5000, "pauseAutoPlayOnHover": false, "wrapAround": true, "adaptiveHeight": false, "imagesLoaded": true }'>
+                        <div class="main-carousel rounded-2xl overflow-hidden shadow-2xl" data-flickity='{ "cellAlign": "center", "contain": true, "prevNextButtons": true, "pageDots": true, "autoPlay": 5000, "pauseAutoPlayOnHover": false, "wrapAround": true, "adaptiveHeight": false, "imagesLoaded": true }'>
                             @forelse ($produk->images as $image)
                                 <div class="carousel-cell relative">
                                     <div class="relative aspect-[4/3]">
@@ -18,7 +18,7 @@
                                         @endif
                                         <a href="{{ asset('storage/' . $image->image) }}" class="glightbox block group" data-gallery="gallery1">
                                             <img src="{{ asset('storage/' . $image->image) }}" alt="{{ $image->name }}"
-                                                class="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105">
+                                                class="w-full min-h-[413px] lg:min-h-[530px] h-full object-cover object-center transition-transform duration-700 group-hover:scale-105">
                                             <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                                         </a>
                                     </div>
@@ -35,7 +35,7 @@
                                         @endif
                                         <a href="{{ asset('images/produk/default.jpg') }}" class="glightbox block group" data-gallery="gallery1">
                                             <img src="{{ asset('images/produk/default.jpg') }}" alt="Gambar Default Produk"
-                                                class="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105">
+                                                class="w-full min-h-[413px] lg:min-h-[530px] h-full object-cover object-center transition-transform duration-700 group-hover:scale-105">
                                             <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                                         </a>
                                     </div>

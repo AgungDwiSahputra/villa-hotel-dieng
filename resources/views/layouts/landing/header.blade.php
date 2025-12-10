@@ -60,7 +60,7 @@
                          aria-expanded="false"
                          aria-controls="mobile-menu">
                     <span class="sr-only">Buka menu</span>
-                    <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-5 h-5 sm:w-6 sm:h-6 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                     </svg>
                 </button>
@@ -139,7 +139,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Change icon to hamburger
                 mobileMenuButton.innerHTML = `
                     <span class="sr-only">Buka menu</span>
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-6 h-6 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                     </svg>
                 `;
@@ -148,7 +148,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Change icon to close
                 mobileMenuButton.innerHTML = `
                     <span class="sr-only">Tutup menu</span>
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-6 h-6 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
                 `;
