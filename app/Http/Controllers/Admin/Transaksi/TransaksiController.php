@@ -25,13 +25,21 @@ class TransaksiController extends Controller implements HasMiddleware
         return $dataTable->render('admin.transaksi.transaksi.index');
     }
     public function store(Request $request){
-        $transaksi = Transaksi::find($request->id);
+        $request->validate([
+            'id' => 'required|uuid',
+            'status' => 'required|in:success,failed'
+        ]);
+
+        $transaksi = Transaksi::findOrFail($request->id);
         $transaksi->status = $request->status;
         $transaksi->save();
 
-        $transaksiDetail = TransaksiDetail::where('transaksi_id', $transaksi->id)->update([
-            'status' => $request->status,
+        // Update corresponding transaksi_details status
+        $detailStatus = $request->status === 'success' ? 'APPROVED' : 'REJECTED';
+        TransaksiDetail::where('transaksi_id', $transaksi->id)->update([
+            'status' => $detailStatus,
         ]);
+
         return response()->json(['status' => true]);
     }
 }

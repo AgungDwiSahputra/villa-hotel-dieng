@@ -13,7 +13,7 @@
                 <div class="row">
                     <input type="hidden" id="id" name="id">
                     <x-input-form-component col="12" title="Nama" id="name"/>
-                    <x-input-form-component col="6" title="Urutan" type="number" id="urutan" max="11"/>
+                    <x-input-form-component col="12" title="Urutan" type="number" id="urutan" max="11"/>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                         <button type="submit" class="btn btn-primary" id="btncreate">Save</button>

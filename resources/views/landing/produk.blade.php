@@ -174,7 +174,7 @@
                                         </div>
                                     @endforeach
                                 </div>
-                                @if ($produk->fasilitases->count() > 10)
+                                @if ($produk->fasilitases->count() > 6)
                                     <div class="mt-2 lg:mt-4 text-center">
                                         <button class="text-sm text-blue-600 hover:text-blue-800 font-medium transition-colors duration-200 inline-flex items-center"
                                             onclick="toggleItems('fasilitas')">
@@ -210,7 +210,7 @@
                                         </div>
                                     @endforeach
                                 </div>
-                                @if ($produk->wisatas->count() > 10)
+                                @if ($produk->wisatas->count() > 6)
                                     <div class="mt-2 lg:mt-4 text-center">
                                         <button class="text-xs lg:text-sm text-green-600 hover:text-green-800 font-medium transition-colors duration-200 inline-flex items-center"
                                             onclick="toggleItems('wisata')">
@@ -252,7 +252,7 @@
                                     </div>
                                 @endforelse
                             </div>
-                            @if ($produk->syarats->count() > 10)
+                            @if ($produk->syarats->count() > 6)
                                 <div class="mt-2 lg:mt-4 text-center">
                                     <button class="text-xs lg:text-sm text-yellow-600 hover:text-yellow-800 font-medium transition-colors duration-200 inline-flex items-center"
                                         onclick="toggleItems('syarat')">

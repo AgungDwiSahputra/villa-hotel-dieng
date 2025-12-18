@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
             Produk\ProdukCategorySeeder::class,
             Produk\ProdukSeeder::class,
             JeepTripSeeder::class,
+            TransaksiSeeder::class,
         ]);
 
         // Buat folder user jika belum ada

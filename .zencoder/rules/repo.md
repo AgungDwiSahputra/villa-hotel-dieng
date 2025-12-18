@@ -154,6 +154,7 @@ The database schema is visualized in the ERD diagram located at the project root
 
 - **transaksi_details** - Transaction line items
   - Fields: id, transaksi_id, produk_id, date, unit, status, timestamps
+  - Status Values: Uses 'REJECTED' for cancelled bookings (different from transaksis table which uses 'dibatalkan')
 
 ### Jeep Trip Management
 - **jeep_trips** - Jeep trip packages with pricing and details
@@ -595,6 +596,7 @@ MAIL_FROM_NAME="Villa Hotel Dieng"
 
 **Jeep Trip Management System**:
 - **Complete Jeep Trip Package Management**: Full CRUD operations for jeep tour packages
+- **Detailed User Guide**: Comprehensive admin and user documentation available at `docs/feature/jeep/README.md`
   - Multi-slot availability (Sunrise, Siang, Full Day)
   - Dynamic weekday/weekend pricing
   - Destination itinerary management
@@ -1061,10 +1063,14 @@ Cache::remember('cache_key', 3600, function () {
 - **Benefits**: More elegant appearance, better user experience, improved mobile usability, consistent with landing page design
 
 ### API Routes Configuration:
-- **File**: `routes/api.php` exists but currently disabled
-- **Status**: Commented out in `routes/web.php` line 81
-- **Purpose**: RESTful API endpoints with Laravel Sanctum authentication
-- **Note**: Ready for activation when API functionality is needed
+- **File**: `routes/api.php` with active endpoints
+- **Active Routes**:
+  - `GET /api/jeep-trip/availability` - Real-time jeep trip slot availability checking (public access)
+  - `POST /api/bearer/login` - Authentication endpoint
+  - `GET /api/user` - User information (Sanctum protected)
+- **Authentication**: Laravel Sanctum for protected routes, public access for availability endpoints
+- **Status**: Partially active with jeep trip availability endpoint operational
+- **Future Expansion**: Additional API endpoints ready for activation as needed
 
 ### Landing Page About & Terms Page Redesign:
 - **About Page Redesign** (`resources/views/landing/about.blade.php`):
@@ -1189,8 +1195,33 @@ Cache::remember('cache_key', 3600, function () {
   - `app/Http/Controllers/JeepTripController.php` - Enhanced validation and session management
 - **Benefits**: Eliminates DP validation failures, improves payment security, enhances user experience with proper error handling
 
+## Recent Updates (Desember 2025)
+
+### API Routes Status Update:
+- **Active Routes**: `/api/jeep-trip/availability` endpoint now fully operational for real-time availability checking
+- **Route Structure**: Updated documentation to reflect current active API endpoints
+- **Authentication**: Sanctum-based authentication for protected API routes
+- **Public Access**: Jeep trip availability endpoint accessible without authentication for booking forms
+
+### Database Status Consistency Enhancement:
+- **Status Standardization**: Confirmed consistent use of `'REJECTED'` status in `transaksi_details` table for cancelled bookings
+- **Documentation Alignment**: Updated availability methods documentation to match actual implementation
+- **Cross-Table Consistency**: Maintained different status values between `transaksis` (`'dibatalkan'`) and `transaksi_details` (`'REJECTED'`) tables as per business logic requirements
+
+### Jeep Trip Documentation Reference:
+- **External Documentation**: Added reference to comprehensive Jeep Trip user guide at `docs/feature/jeep/README.md`
+- **Admin Guide**: Detailed admin workflow for jeep trip package management
+- **User Guide**: Step-by-step booking instructions and payment process
+- **Technical Details**: Complete implementation details and troubleshooting guides
+
+### System Maintenance & Optimization:
+- **Performance Monitoring**: Ongoing optimization of database queries and caching strategies
+- **Error Handling**: Enhanced error tracking and logging across all modules
+- **Security Updates**: Regular security patches and validation improvements
+- **User Experience**: Continuous refinement of UI/UX based on user feedback
+
 ## Summary
-Dokumentasi ini telah diperbarui pada November 2025 untuk mencakup:
+Dokumentasi ini telah diperbarui pada Desember 2025 untuk mencakup:
 - **DP Amount Validation Critical Fix**: Resolved critical bug where checkout form sent total harga instead of DP amount, causing validation failures and preventing successful payments
 - **Root Cause Resolution**: Fixed hidden form field inconsistency where `$bookingData['total_harga']` was sent instead of `$dpAmount`, eliminating payment validation errors
 - **Security Enhancement**: Implemented comprehensive validation to prevent DP amount manipulation attacks with session integrity checks and CSRF protection
@@ -1231,9 +1262,13 @@ Dokumentasi ini telah diperbarui pada November 2025 untuk mencakup:
 - **Enhanced Product Management Form**: Complete form enhancement with all database fields (owner, fasilitas, rating, status, promo fields) for comprehensive villa/product data management
 - **Advanced Availability Filter & Badge System**: Complete overhaul of availability filtering with interactive status badges ("Hampir Penuh", "Habis") on villa cards, database status standardization, and real-time availability feedback for improved user experience
 - **Jeep Trip Button Conditional Display**: Smart button visibility based on active jeep trip packages, preventing confusion by hiding unavailable services and maintaining clean UI
+- **API Routes Status Update**: Updated documentation to reflect active `/api/jeep-trip/availability` endpoint and current API route status
+- **Database Status Consistency**: Added clarification on status value differences between `transaksis` and `transaksi_details` tables
+- **Jeep Trip Documentation Reference**: Added reference to comprehensive user guide at `docs/feature/jeep/README.md`
+- **System Maintenance Updates**: Ongoing performance monitoring, error handling improvements, and security enhancements
 
 ---
 
-**Versi Dokumen**: 2.4
-**Terakhir Diperbarui**: November 2025
-**Status**: ✅ Lengkap & Terkini dengan DP Amount Validation Critical Fix
+**Versi Dokumen**: 2.5
+**Terakhir Diperbarui**: Desember 2025
+**Status**: ✅ Lengkap & Terkini dengan Pembaruan Desember 2025

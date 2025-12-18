@@ -74,7 +74,10 @@
             min-width: 150px !important;
         }
 
-
+        /* Custom Data Table */
+        .dataTables_scrollBody {
+            min-height: 290px !important;
+        }
     </style>
     
     @stack('css')
