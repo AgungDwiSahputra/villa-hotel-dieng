@@ -1,3 +1,6 @@
+@php
+    \Log::info('Rendering action view for id: ' . $id);
+@endphp
 <a href="{{ route('admin.produk.image.index',['produk' => $id]) }}" class="btn btn-info waves-effect waves-light mb-1" title="Image"><i class="bx bx-image font-size-16 align-middle"></i></a>
 <a href="{{ route('admin.produk.fasilitas.index',['produk' => $id]) }}" class="btn btn-info waves-effect waves-light mb-1" title="Fasilitas"><i class="bx bx-cog font-size-16 align-middle"></i></a>
 <a href="{{ route('admin.produk.wisata.index',['produk' => $id]) }}" class="btn btn-info waves-effect waves-light mb-1" title="Wisata"><i class="bx bx-map font-size-16 align-middle"></i></a>

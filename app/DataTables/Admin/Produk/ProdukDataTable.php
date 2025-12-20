@@ -15,12 +15,28 @@ class ProdukDataTable extends DataTable
 {
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
-        return (new EloquentDataTable($query))
-            ->filterColumn('category_name', fn($query, $keyword) => $query->where('produk_categories.name', 'like', "%{$keyword}%"))
-            ->addColumn('action', 'admin.produk.produk.action')
-            ->editColumn('harga_weekend',fn($query) => 'Rp. '. number_format($query->harga_weekend,0,',','.'))
-            ->editColumn('harga_weekday',fn($query) => 'Rp. '. number_format($query->harga_weekday,0,',','.'))
-            ->addIndexColumn();
+        try {
+            $dataTable = (new EloquentDataTable($query))
+                ->filterColumn('category_name', fn($query, $keyword) => $query->where('produk_categories.name', 'like', "%{$keyword}%"))
+                ->addColumn('action', function ($query) {
+                    Log::info('Processing action column', ['id' => $query->id]);
+                    return view('admin.produk.produk.action', ['id' => $query->id])->render();
+                })
+                ->editColumn('harga_weekend', function ($query) {
+                    Log::info('Processing harga_weekend', ['value' => $query->harga_weekend, 'type' => gettype($query->harga_weekend)]);
+                    return 'Rp. ' . number_format($query->harga_weekend, 0, ',', '.');
+                })
+                ->editColumn('harga_weekday', function ($query) {
+                    Log::info('Processing harga_weekday', ['value' => $query->harga_weekday, 'type' => gettype($query->harga_weekday)]);
+                    return 'Rp. ' . number_format($query->harga_weekday, 0, ',', '.');
+                })
+                ->addIndexColumn();
+            Log::info('ProdukDataTable dataTable method executed successfully');
+            return $dataTable;
+        } catch (\Exception $e) {
+            Log::error('ProdukDataTable dataTable failed', ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+            throw $e;
+        }
     }
 
     public function query(Produk $model): QueryBuilder
