@@ -25,7 +25,9 @@ class ProdukController extends Controller implements HasMiddleware
 
     public function index(Request $request, ProdukDataTable $dataTable)
     {
-        Log::info('Produk index called, ajax: ' . ($request->ajax() ? 'true' : 'false'));
+        if ($request->ajax()) {
+            return $dataTable->ajax();
+        }
 
         return $dataTable->render('admin.produk.produk.index',[
             'categories' => ProdukCategory::orderBy('name')->get(),
