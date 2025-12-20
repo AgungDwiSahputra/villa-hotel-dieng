@@ -51,6 +51,14 @@ class JeepTripController extends Controller implements HasMiddleware
             // Create slug
             $validated['slug'] = Str::slug($request->nama_paket);
 
+            // Check if slug already exists
+            if (JeepTrip::where('slug', $validated['slug'])->exists()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Nama Paket sudah digunakan. Silakan gunakan nama paket yang berbeda.'
+                ], 422);
+            }
+
             // Create JeepTrip
             $jeepTrip = JeepTrip::create($validated);
 
@@ -124,7 +132,7 @@ class JeepTripController extends Controller implements HasMiddleware
 
             return response()->json([
                 'status' => false,
-                'message' => 'Terjadi kesalahan saat membuat paket Jeep Trip'
+                'message' => 'Terjadi kesalahan saat membuat paket Jeep Trip'. $e->getMessage()
             ], 500);
         }
     }
@@ -160,6 +168,14 @@ class JeepTripController extends Controller implements HasMiddleware
             // Update slug if name changed
             if ($request->nama_paket !== $jeepTrip->nama_paket) {
                 $validated['slug'] = Str::slug($request->nama_paket);
+
+                // Check if new slug already exists (excluding current record)
+                if (JeepTrip::where('slug', $validated['slug'])->where('id', '!=', $id)->exists()) {
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'Nama Paket sudah digunakan. Silakan gunakan nama paket yang berbeda.'
+                    ], 422);
+                }
             }
 
             // Update JeepTrip

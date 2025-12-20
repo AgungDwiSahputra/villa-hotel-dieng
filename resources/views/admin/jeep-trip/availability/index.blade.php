@@ -80,7 +80,8 @@
                             });
                             toastr.error(errorMessage);
                         } else {
-                            toastr.error('Terjadi kesalahan saat menyimpan data');
+                            const errorMsg = xhr.responseJSON?.message;
+                            toastr.error(errorMsg ? errorMsg : 'Terjadi kesalahan saat menyimpan data');
                         }
                     },
                     complete: function() {
