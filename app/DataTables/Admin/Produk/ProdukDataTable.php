@@ -4,6 +4,7 @@ namespace App\DataTables\Admin\Produk;
 
 use App\Models\Produk\Produk;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
+use Illuminate\Support\Facades\Log;
 use Yajra\DataTables\EloquentDataTable;
 use Yajra\DataTables\Html\Builder as HtmlBuilder;
 use Yajra\DataTables\Html\Button;
@@ -24,12 +25,19 @@ class ProdukDataTable extends DataTable
 
     public function query(Produk $model): QueryBuilder
     {
-        return $model->newQuery()
-        ->join('produk_categories', 'produks.category_id', '=', 'produk_categories.id')
-        ->select([
-            'produks.*',
-            'produk_categories.name as category_name',
-        ]);
+        try {
+            $query = $model->newQuery()
+                ->leftJoin('produk_categories', 'produks.category_id', '=', 'produk_categories.id')
+                ->select([
+                    'produks.*',
+                    'produk_categories.name as category_name',
+                ]);
+            Log::info('ProdukDataTable query executed successfully', ['count' => $query->count()]);
+            return $query;
+        } catch (\Exception $e) {
+            Log::error('ProdukDataTable query failed', ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+            throw $e;
+        }
     }
 
     public function html(): HtmlBuilder

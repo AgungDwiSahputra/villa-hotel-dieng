@@ -10,7 +10,6 @@ use App\Models\Produk\ProdukCategory;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class ProdukController extends Controller implements HasMiddleware
@@ -23,12 +22,8 @@ class ProdukController extends Controller implements HasMiddleware
         ];
     }
 
-    public function index(Request $request, ProdukDataTable $dataTable)
+    public function index(ProdukDataTable $dataTable)
     {
-        if ($request->ajax()) {
-            return $dataTable->ajax();
-        }
-
         return $dataTable->render('admin.produk.produk.index',[
             'categories' => ProdukCategory::orderBy('name')->get(),
         ]);
