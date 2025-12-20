@@ -16,11 +16,23 @@ class ProdukDataTable extends DataTable
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
         try {
+            Log::info('ProdukDataTable dataTable method called', [
+                'query_count' => $query->count(),
+                'request_params' => request()->all()
+            ]);
+
             $dataTable = (new EloquentDataTable($query))
                 ->filterColumn('category_name', fn($query, $keyword) => $query->where('produk_categories.name', 'like', "%{$keyword}%"))
                 ->addColumn('action', function ($query) {
                     Log::info('Processing action column', ['id' => $query->id]);
-                    return view('admin.produk.produk.action', ['id' => $query->id])->render();
+                    try {
+                        $view = view('admin.produk.produk.action', ['id' => $query->id])->render();
+                        Log::info('Action view rendered successfully', ['id' => $query->id, 'view_length' => strlen($view)]);
+                        return $view;
+                    } catch (\Exception $e) {
+                        Log::error('Failed to render action view', ['id' => $query->id, 'error' => $e->getMessage()]);
+                        return '';
+                    }
                 })
                 ->editColumn('harga_weekend', function ($query) {
                     Log::info('Processing harga_weekend', ['value' => $query->harga_weekend, 'type' => gettype($query->harga_weekend)]);
@@ -31,10 +43,17 @@ class ProdukDataTable extends DataTable
                     return 'Rp. ' . number_format($query->harga_weekday, 0, ',', '.');
                 })
                 ->addIndexColumn();
-            Log::info('ProdukDataTable dataTable method executed successfully');
+
+            Log::info('ProdukDataTable dataTable method executed successfully', [
+                'datatable_type' => get_class($dataTable)
+            ]);
             return $dataTable;
         } catch (\Exception $e) {
-            Log::error('ProdukDataTable dataTable failed', ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+            Log::error('ProdukDataTable dataTable failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'request_params' => request()->all()
+            ]);
             throw $e;
         }
     }
