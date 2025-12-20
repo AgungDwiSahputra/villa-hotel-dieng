@@ -4,7 +4,6 @@ namespace App\DataTables\Admin\Produk;
 
 use App\Models\Produk\Produk;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
-use Illuminate\Support\Facades\Log;
 use Yajra\DataTables\EloquentDataTable;
 use Yajra\DataTables\Html\Builder as HtmlBuilder;
 use Yajra\DataTables\Html\Button;
@@ -15,64 +14,28 @@ class ProdukDataTable extends DataTable
 {
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
-        try {
-            Log::info('ProdukDataTable dataTable method called', [
-                'query_count' => $query->count(),
-                'request_params' => request()->all()
-            ]);
-
-            $dataTable = (new EloquentDataTable($query))
-                ->filterColumn('category_name', fn($query, $keyword) => $query->where('produk_categories.name', 'like', "%{$keyword}%"))
-                ->addColumn('action', function ($query) {
-                    Log::info('Processing action column', ['id' => $query->id]);
-                    try {
-                        $view = view('admin.produk.produk.action', ['id' => $query->id])->render();
-                        Log::info('Action view rendered successfully', ['id' => $query->id, 'view_length' => strlen($view)]);
-                        return $view;
-                    } catch (\Exception $e) {
-                        Log::error('Failed to render action view', ['id' => $query->id, 'error' => $e->getMessage()]);
-                        return '';
-                    }
-                })
-                ->editColumn('harga_weekend', function ($query) {
-                    Log::info('Processing harga_weekend', ['value' => $query->harga_weekend, 'type' => gettype($query->harga_weekend)]);
-                    return 'Rp. ' . number_format($query->harga_weekend, 0, ',', '.');
-                })
-                ->editColumn('harga_weekday', function ($query) {
-                    Log::info('Processing harga_weekday', ['value' => $query->harga_weekday, 'type' => gettype($query->harga_weekday)]);
-                    return 'Rp. ' . number_format($query->harga_weekday, 0, ',', '.');
-                })
-                ->addIndexColumn();
-
-            Log::info('ProdukDataTable dataTable method executed successfully', [
-                'datatable_type' => get_class($dataTable)
-            ]);
-            return $dataTable;
-        } catch (\Exception $e) {
-            Log::error('ProdukDataTable dataTable failed', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-                'request_params' => request()->all()
-            ]);
-            throw $e;
-        }
+        return (new EloquentDataTable($query))
+            ->filterColumn('category_name', fn($query, $keyword) => $query->where('produk_categories.name', 'like', "%{$keyword}%"))
+            ->addColumn('action', function ($query) {
+                return view('admin.produk.produk.action', ['id' => $query->id])->render();
+            })
+            ->editColumn('harga_weekend', function ($query) {
+                return 'Rp. ' . number_format($query->harga_weekend, 0, ',', '.');
+            })
+            ->editColumn('harga_weekday', function ($query) {
+                return 'Rp. ' . number_format($query->harga_weekday, 0, ',', '.');
+            })
+            ->addIndexColumn();
     }
 
     public function query(Produk $model): QueryBuilder
     {
-        try {
-            $query = $model->newQuery()
-                ->leftJoin('produk_categories', 'produks.category_id', '=', 'produk_categories.id')
-                ->select([
-                    'produks.*',
-                    'produk_categories.name as category_name',
-                ]);
-            Log::info('ProdukDataTable query executed successfully', ['count' => $query->count()]);
-            return $query;
-        } catch (\Exception $e) {
-            Log::error('ProdukDataTable query failed', ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
-            throw $e;
-        }
+        return $model->newQuery()
+            ->leftJoin('produk_categories', 'produks.category_id', '=', 'produk_categories.id')
+            ->select([
+                'produks.*',
+                'produk_categories.name as category_name',
+            ]);
     }
 
     public function html(): HtmlBuilder

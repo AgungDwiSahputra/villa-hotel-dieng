@@ -10,7 +10,6 @@ use App\Models\Produk\ProdukCategory;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class ProdukController extends Controller implements HasMiddleware
@@ -25,34 +24,9 @@ class ProdukController extends Controller implements HasMiddleware
 
     public function index(ProdukDataTable $dataTable)
     {
-        Log::info('ProdukController index called', [
-            'is_ajax' => request()->ajax(),
-            'datatable_param' => request()->get('draw'),
-            'user_agent' => request()->userAgent(),
-            'url' => request()->fullUrl()
+        return $dataTable->render('admin.produk.produk.index',[
+            'categories' => ProdukCategory::orderBy('name')->get(),
         ]);
-
-        try {
-            $response = $dataTable->render('admin.produk.produk.index',[
-                'categories' => ProdukCategory::orderBy('name')->get(),
-            ]);
-
-            if (request()->ajax()) {
-                Log::info('ProdukController returning AJAX response', [
-                    'response_type' => gettype($response),
-                    'response_content' => is_string($response) ? substr($response, 0, 500) : json_encode($response)
-                ]);
-            }
-
-            return $response;
-        } catch (\Exception $e) {
-            Log::error('ProdukController index failed', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-                'is_ajax' => request()->ajax()
-            ]);
-            throw $e;
-        }
     }
 
     public function store(ProdukRequest $request)
