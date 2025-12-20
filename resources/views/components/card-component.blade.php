@@ -11,6 +11,6 @@
 
 @if($dataTable)
     @push('js')
-        {{ $dataTable->scripts() }}
+        {{ $dataTable->scripts(attributes: ['type' => 'module']) }}
     @endpush
 @endif
