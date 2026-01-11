@@ -227,13 +227,14 @@ class JeepTripController extends Controller implements HasMiddleware
             }
 
             // Handle slots
-            $jeepTrip->slots()->delete(); // Delete existing slots and their availabilities
+            // $jeepTrip->slots()->delete(); // Delete existing slots and their availabilities
             if ($request->has('slots') && is_array($request->slots)) {
                 foreach ($request->slots as $slotData) {
                     if (!empty($slotData['nama_slot'])) {
-                        JeepTripSlot::create([
+                        JeepTripSlot::updateOrCreate([
                             'jeep_trip_id' => $jeepTrip->id,
                             'nama_slot' => $slotData['nama_slot'],
+                        ], [
                             'jam_mulai' => $slotData['jam_mulai'],
                             'jam_selesai' => $slotData['jam_selesai'],
                             'is_active' => $slotData['is_active'] ?? true,
